@@ -7,7 +7,7 @@
 |:-:|:-:|
 |Windows|#TODO|
 |Linux (Ubuntu 24.04)|#TODO|
-|macOS|#TODO|
+<!--|macOS||-->
 
 OneShot (2016) engine reimplementation for modders.
 

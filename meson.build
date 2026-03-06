@@ -18,9 +18,8 @@ host_system = host_machine.system()
 host_cpu = host_machine.cpu()
 host_arch = host_machine.cpu_family()
 
-# We have Xcode project in "macos" directory to build for macOS systems
 if host_system == 'darwin'
-    error('This Meson project currently does not supports macOS building')
+    error('macOS isn\'t supported at the moment.')
 endif
 
 fs = import('fs')
@@ -45,7 +44,7 @@ appimagetool = get_option('appimagetool')
 # Get dependencies install prefix from MKXPZ_PREFIX vars.sh variable
 mkxp_deps_prefix = run_command('sh', '-c', 'echo $MKXPZ_PREFIX', check: true).stdout().strip()
 
-if mkxp_deps_prefix == '' and host_system != 'darwin'
+if mkxp_deps_prefix == ''
     error('Please source vars.sh file: source @0@/vars.sh'.format(host_system))
 endif
 
@@ -199,8 +198,8 @@ if steamworks_path != ''
         else
             steamworks_bindir = 'linux32'
         endif
-    elif host_system == 'darwin'
-        steamworks_bindir = 'osx'
+    # elif host_system == 'darwin'
+    #    steamworks_bindir = 'osx'
     else
         error('Unsupported host system for Steamworks SDK')
     endif

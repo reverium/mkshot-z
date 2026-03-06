@@ -32,18 +32,12 @@
 /windows/build-*/
 /linux/downloads/
 /linux/build-*/
-/macos/dependencies/downloads/
-/macos/dependencies/build-*/
-/macos/dependencies/Frameworks/Steamworks/*
 
 # IDEs
 .idea/
 
 # Visual Studio Code
 .vscode/*
-!.vscode/launch.json
-!.vscode/settings.json
-!.vscode/tasks.json
 .history/
 *.code-workspace
 

@@ -51,13 +51,6 @@ option(
 )
 
 option(
-    'fluidsynth',
-    type: 'boolean',
-    value: false,
-    description: 'Enable FluidSynth (MIDI support)'
-)
-
-option(
     'miniffi',
     type: 'boolean',
     value: false,

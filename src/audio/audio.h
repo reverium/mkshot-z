@@ -68,7 +68,6 @@ public:
 	            int pitch = 100);
 	void seStop();
 
-	void setupMidi();
 	float bgmPos(int track = 0);
 	float bgsPos();
 

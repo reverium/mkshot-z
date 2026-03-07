@@ -34,18 +34,6 @@ if dep_openal.version().version_compare('>=1.20.0')
 endif
 mkxp_cflags += '-DMKXPZ_ALCDEVICE=@0@'.format(alcdevice_struct)
 
-# Include FluidSynth when option is true
-if get_option('fluidsynth') == true
-    dep_fluidsynth = dependency('fluidsynth', static: is_static)
-    mkxp_dependencies += dep_fluidsynth
-    mkxp_cflags += '-DSHARED_FLUID'
-
-    # FluidSynth also wants DirectSound library on Windows
-    if host_system == 'windows'
-        mkxp_dependencies += cc.find_library('dsound', required: true)
-    endif
-endif
-
 # Win32 API: Required for GetUserNameEx
 if host_system == 'windows'
     mkxp_dependencies += cc.find_library('Secur32', required: true)
@@ -81,8 +69,6 @@ mkxp_sources += files(
     'audio/alstream.cpp',
     'audio/audio.cpp',
     'audio/audiostream.cpp',
-    'audio/fluid-fun.cpp',
-    'audio/midisource.cpp',
     'audio/sdlsoundsource.cpp',
     'audio/soundemitter.cpp',
     'audio/vorbissource.cpp',

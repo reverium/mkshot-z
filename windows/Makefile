@@ -133,7 +133,6 @@ download: \
 	$(DLDIR)/sdl2_ttf/CMakeLists.txt \
 	$(DLDIR)/sdl2_sound/CMakeLists.txt \
 	$(DLDIR)/openal/CMakeLists.txt \
-	$(DLDIR)/fluidsynth/CMakeLists.txt \
 	$(DLDIR)/libyaml/CMakeLists.txt \
 	$(DLDIR)/$(DLARCH)/libffi/configure.ac \
 	$(DLDIR)/$(DLARCH)/ruby/configure.ac
@@ -158,7 +157,6 @@ build: \
 	sdl2_ttf \
 	sdl2_sound \
 	openal \
-	fluidsynth \
 	ruby
 
 init: $(DLDIR) $(BINDIR) $(LIBDIR) $(INCDIR)
@@ -193,7 +191,7 @@ clean-prefix:
 	all download build init clean clean-download clean-prefix \
 	libogg libvorbis libtheora zlib physfs uchardet libiconv libpng libjpeg \
 	pixman harfbuzz freetype harfbuzz-ft sdl2 sdl2_image sdl2_ttf sdl2_sound \
-	openal fluidsynth libyaml libffi ruby
+	openal libyaml libffi ruby
 
 
 # ============================ Dependencies options ============================
@@ -287,12 +285,6 @@ OPTS_OPENAL := \
 	-DALSOFT_UTILS=OFF \
 	-DALSOFT_EXAMPLES=OFF \
 	-DALSOFT_EMBED_HRTF_DATA=ON
-
-OPTS_FLUIDSYNTH := \
-	-DBUILD_SHARED_LIBS=OFF \
-	-DLIB_SUFFIX="" \
-	-Denable-sdl2=OFF \
-	-Denable-readline=OFF
 
 OPTS_LIBYAML := \
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -681,26 +673,6 @@ $(DLDIR)/openal/$(BDIR)/Makefile: $(DLDIR)/openal/CMakeLists.txt
 $(DLDIR)/openal/CMakeLists.txt:
 	@printf "\e[94m=>\e[0m \e[36mDownloading OpenAL 1.23.1...\e[0m\n"
 	@$(GIT) -b 1.23.1 https://github.com/kcat/openal-soft $(DLDIR)/openal
-
-# ---------------------------- FluidSynth (no glib) ----------------------------
-fluidsynth: init $(LIBDIR)/libfluidsynth.a
-
-$(LIBDIR)/libfluidsynth.a: $(DLDIR)/fluidsynth/$(BDIR)/src/libfluidsynth.a
-	@printf "\e[94m=>\e[0m \e[36mInstalling FluidSynth...\e[0m\n"
-	@cd $(DLDIR)/fluidsynth; $(CMAKE_INSTALL)
-	@touch $(LIBDIR)/libfluidsynth.a
-
-$(DLDIR)/fluidsynth/$(BDIR)/src/libfluidsynth.a: $(DLDIR)/fluidsynth/$(BDIR)/Makefile
-	@printf "\e[94m=>\e[0m \e[36mBuilding FluidSynth...\e[0m\n"
-	@cd $(DLDIR)/fluidsynth; $(CMAKE_BUILD)
-
-$(DLDIR)/fluidsynth/$(BDIR)/Makefile: $(DLDIR)/fluidsynth/CMakeLists.txt
-	@printf "\e[94m=>\e[0m \e[36mConfiguring FluidSynth...\e[0m\n"
-	@cd $(DLDIR)/fluidsynth; $(CMAKE) $(OPTS_FLUIDSYNTH)
-
-$(DLDIR)/fluidsynth/CMakeLists.txt:
-	@printf "\e[94m=>\e[0m \e[36mDownloading FluidSynth 2.1.5 (no glib)...\e[0m\n"
-	@$(GIT) https://github.com/mkxp-z/fluidsynth-sans-glib $(DLDIR)/fluidsynth
 
 
 # ============================== Ruby 3.1 and etc. =============================

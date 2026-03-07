@@ -44,10 +44,7 @@
 
 extern "C" {
 #include <ruby.h>
-
-#if RAPI_FULL >= 190
 #include <ruby/encoding.h>
-#endif
 }
 
 #ifdef __WIN32__
@@ -671,9 +668,7 @@ RB_METHOD(mkxpStringToUTF8Bang) {
     rb_str_resize(self, ret.length());
     memcpy(RSTRING_PTR(self), ret.c_str(), RSTRING_LEN(self));
     
-#if RAPI_FULL >= 190
     rb_funcall(self, rb_intern("force_encoding"), 1, rb_enc_from_encoding(rb_utf8_encoding()));
-#endif
     
     return self;
 }
@@ -817,14 +812,8 @@ RB_METHOD(mriRgssMain) {
     
     while (true) {
         VALUE exc = Qnil;
-#if RAPI_FULL < 270
-        rb_rescue2((VALUE(*)(ANYARGS))rgssMainCb, rb_block_proc(),
-                   (VALUE(*)(ANYARGS))rgssMainRescue, (VALUE)&exc, rb_eException,
-                   (VALUE)0);
-#else
         rb_rescue2(rgssMainCb, rb_block_proc(), rgssMainRescue, (VALUE)&exc,
                    rb_eException, (VALUE)0);
-#endif
         
         if (NIL_P(exc))
             break;
@@ -879,13 +868,9 @@ RB_METHOD(_kernelCaller) {
     return trace;
 }
 
-#if RAPI_FULL > 187
 static VALUE newStringUTF8(const char *string, long length) {
     return rb_enc_str_new(string, length, rb_utf8_encoding());
 }
-#else
-#define newStringUTF8 rb_str_new
-#endif
 
 struct evalArg {
     VALUE string;
@@ -1095,21 +1080,12 @@ static void showExc(VALUE exc, const BacktraceData &btData) {
     VALUE bt0 = rb_ary_entry(bt, 0);
     VALUE name = rb_class_path(rb_obj_class(exc));
     
-    VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")",
-#if RAPI_MAJOR >= 2
-                          bt0, exc, name);
-#else
-    // Ruby 1.9's version of this function needs char*
-    RSTRING_PTR(bt0), RSTRING_PTR(exc), RSTRING_PTR(name));
-#endif
+    VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")", bt0, exc, name);
+
     /* omit "useless" last entry (from ruby:1:in `eval') */
     for (long i = 1, btlen = RARRAY_LEN(bt) - 1; i < btlen; ++i)
         rb_str_catf(ds, "\n\tfrom %" PRIsVALUE,
-#if RAPI_MAJOR >= 2
                     rb_ary_entry(bt, i));
-#else
-    RSTRING_PTR(rb_ary_entry(bt, i)));
-#endif
     Debug() << StringValueCStr(ds);
     
     char *s = RSTRING_PTR(bt0);
@@ -1160,7 +1136,6 @@ static void showExc(VALUE exc, const BacktraceData &btData) {
 static void mriBindingExecute() {
     Config &conf = shState->rtData().config;
     
-#if RAPI_MAJOR >= 2
     /* Normally only a ruby executable would do a sysinit,
      * but not doing it will lead to crashes due to closed
      * stdio streams on some platforms (eg. Windows) */
@@ -1175,18 +1150,10 @@ static void mriBindingExecute() {
     rubyArgsC.push_back("-e ");
     void *node;
     if (conf.jit.enabled) {
-#if RAPI_FULL >= 310
-        // Ruby v3.1.0 renamed the --jit options to --mjit.
         std::string verboseLevel("--mjit-verbose=");
         std::string maxCache("--mjit-max-cache=");
         std::string minCalls("--mjit-min-calls=");
         rubyArgsC.push_back("--mjit");
-#else
-        std::string verboseLevel("--jit-verbose=");
-        std::string maxCache("--jit-max-cache=");
-        std::string minCalls("--jit-min-calls=");
-        rubyArgsC.push_back("--jit");
-#endif
         verboseLevel += std::to_string(conf.jit.verboseLevel);
         maxCache += std::to_string(conf.jit.maxCache);
         minCalls += std::to_string(conf.jit.minCalls);
@@ -1212,11 +1179,7 @@ static void mriBindingExecute() {
         // out to the terminal, so let's leave it that way for now
         /*
          VALUE exc = rb_errinfo();
-         #if RAPI_FULL >= 250
          VALUE msg = rb_funcall(exc, rb_intern("full_message"), 0);
-         #else
-         VALUE msg = rb_funcall(exc, rb_intern("message"), 0);
-         #endif
          */
         showMsg("An error occurred while initializing Ruby. (Invalid JIT settings?)");
         ruby_cleanup(state);
@@ -1225,18 +1188,6 @@ static void mriBindingExecute() {
     }
     rb_enc_set_default_internal(rb_enc_from_encoding(rb_utf8_encoding()));
     rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
-#else
-    ruby_init();
-    rb_eval_string("$KCODE='U'");
-#ifdef __WIN32__
-    if (!conf.winConsole) {
-        VALUE iostr = rb_str_new2("NUL");
-        // Sysinit isn't a thing yet, so send io to /dev/null instead
-        rb_funcall(rb_gv_get("$stderr"), rb_intern("reopen"), 1, iostr);
-        rb_funcall(rb_gv_get("$stdout"), rb_intern("reopen"), 1, iostr);
-    }
-#endif
-#endif
     
     VALUE rbArgv = rb_get_argv();
     for (const auto &str : conf.launchArgs)
@@ -1248,9 +1199,9 @@ static void mriBindingExecute() {
     VALUE lpaths = rb_gv_get(":");
     rb_ary_clear(lpaths);
     
-#if defined(MKXPZ_BUILD_XCODE) && RAPI_MAJOR >= 2
+#if defined(MKXPZ_BUILD_XCODE)
     std::string resPath = mkxp_fs::getResourcePath();
-    resPath += "/Ruby/" + std::to_string(RAPI_MAJOR) + "." + std::to_string(RAPI_MINOR) + ".0";
+    resPath += "/Ruby/" + std::to_string(RUBY_API_VERSION_MAJOR) + "." + std::to_string(RUBY_API_VERSION_MINOR) + ".0";
     rb_ary_push(lpaths, rb_str_new(resPath.c_str(), resPath.size()));
 #endif
     
@@ -1281,11 +1232,7 @@ static void mriBindingExecute() {
     else
         runRMXPScripts(btData);
     
-#if RAPI_FULL > 187
     VALUE exc = rb_errinfo();
-#else
-    VALUE exc = rb_gv_get("$!");
-#endif
     if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
         showExc(exc, btData);
     

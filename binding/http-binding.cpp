@@ -10,9 +10,7 @@
 #include "util/json5pp.hpp"
 #include "binding-util.h"
 
-#if RAPI_MAJOR >= 2
 #include <ruby/thread.h>
-#endif
 
 #include "net/net.h"
 
@@ -47,7 +45,6 @@ bool strContainsStr(std::string &first, std::string second) {
 }
 
 VALUE getResponseBody(mkxp_net::HTTPResponse &res) {
-#if RAPI_FULL >= 190
     auto it = res.headers().find("Content-Type");
     if (it == res.headers().end())
         return rb_str_new(res.body().c_str(), res.body().length());
@@ -61,7 +58,6 @@ VALUE getResponseBody(mkxp_net::HTTPResponse &res) {
         strContainsStr(ctype, "application/x-httpd-php"))
         return rb_utf8_str_new(res.body().c_str(), res.body().length());
     
-#endif
     return rb_str_new(res.body().c_str(), res.body().length());
 }
 
@@ -74,7 +70,6 @@ VALUE formResponse(mkxp_net::HTTPResponse &res) {
     return ret;
 }
 
-#if RAPI_MAJOR >= 2
 void* httpGetInternal(void *req) {
     VALUE ret;
     
@@ -85,7 +80,6 @@ void* httpGetInternal(void *req) {
     
     return (void*)ret;
 }
-#endif
 
 RB_METHOD(httpGet) {
     RB_UNUSED_PARAM;
@@ -101,14 +95,8 @@ RB_METHOD(httpGet) {
         auto headers = hash2StringMap(rheaders);
         req.headers().insert(headers.begin(), headers.end());
     }
-#if RAPI_MAJOR >= 2
     return (VALUE)rb_thread_call_without_gvl(httpGetInternal, &req, 0, 0);
-#else
-    return (VALUE)httpGetInternal(&req);
-#endif
 }
-
-#if RAPI_MAJOR >= 2
 
 typedef struct {
     mkxp_net::HTTPRequest *req;
@@ -128,7 +116,6 @@ void* httpPostInternal(void *args) {
     
     return (void*)ret;
 }
-#endif
 
 RB_METHOD(httpPost) {
     RB_UNUSED_PARAM;
@@ -147,14 +134,9 @@ RB_METHOD(httpPost) {
     
     mkxp_net::StringMap postData = hash2StringMap(postDataHash);
     httpPostInternalArgs args {&req, &postData};
-#if RAPI_MAJOR >= 2
     return (VALUE)rb_thread_call_without_gvl(httpPostInternal, &args, 0, 0);
-#else
-    return httpPostInternal(&args);
-#endif
 }
 
-#if RAPI_MAJOR >= 2
 typedef struct {
     mkxp_net::HTTPRequest *req;
     const char *body;
@@ -175,7 +157,6 @@ void* httpPostBodyInternal(void *args) {
     
     return (void*)ret;
 }
-#endif
 
 RB_METHOD(httpPostBody) {
     RB_UNUSED_PARAM;
@@ -194,11 +175,7 @@ RB_METHOD(httpPostBody) {
     }
     
     httpPostBodyInternalArgs args {&req, RSTRING_PTR(body), RSTRING_PTR(ctype)};
-#if RAPI_MAJOR >= 2
     return (VALUE)rb_thread_call_without_gvl(httpPostBodyInternal, &args, 0, 0);
-#else
-    return httpPostBodyInternal(&args);
-#endif
 }
 
 VALUE json2rb(json5pp::value const &v) {

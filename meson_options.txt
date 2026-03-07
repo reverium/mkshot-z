@@ -92,32 +92,3 @@ option(
     value: false,
     description: 'Whether to show Steamshim debug output console'
 )
-
-# Ruby library dependency options
-option(
-    'mri_version',
-    type: 'string',
-    value: '3.1',
-    description: 'Version of Ruby library to link with'
-)
-
-option(
-    'mri_includes',
-    type: 'string',
-    value: '',
-    description: 'Manual include path to Ruby headers'
-)
-
-option(
-    'mri_libname',
-    type: 'string',
-    value: '',
-    description: 'Manual library name of Ruby library'
-)
-
-option(
-    'mri_libpath',
-    type: 'string',
-    value: '',
-    description: 'Manual library path to Ruby library'
-)

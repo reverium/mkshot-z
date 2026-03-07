@@ -8,9 +8,7 @@
 #include "miniffi.h"
 #include "binding-util.h"
 
-#if RAPI_MAJOR >= 2
 #include <ruby/thread.h>
-#endif
 
 #if defined(__linux__) || defined(__APPLE__)
 #define MVAL2RB(v) ULONG2NUM(v)
@@ -31,11 +29,7 @@
 #define _T_INTEGER 3
 #define _T_BOOL 4
 
-#if RAPI_FULL > 187
 DEF_TYPE_CUSTOMFREE(MiniFFI, SDL_UnloadObject);
-#else
-DEF_ALLOCFUNC_CUSTOMFREE(MiniFFI, SDL_UnloadObject);
-#endif
 
 static void *MiniFFI_GetFunctionHandle(void *libhandle, const char *func) {
     if (!libhandle)
@@ -182,7 +176,6 @@ RB_METHOD(MiniFFI_initialize) {
     return Qnil;
 }
 
-#if RAPI_MAJOR >= 2
 typedef struct {
     MINIFFI_FUNC function;
     MiniFFIFuncArgs *args;
@@ -193,7 +186,6 @@ void* miniffi_call_cb(void *args) {
     MFFICallCBArgs *a = (MFFICallCBArgs*)args;
     return (void*)miniffi_call_intern(a->function, a->args, a->nparams);
     }
-#endif
 
 RB_METHOD(MiniFFI_call) {
     MiniFFIFuncArgs param;
@@ -241,12 +233,8 @@ RB_METHOD(MiniFFI_call) {
         }
         params[i] = lParam;
     }
-#if RAPI_MAJOR >= 2
     MFFICallCBArgs cb_args {ApiFunction, &param, nimport};
     mffi_value ret = (mffi_value)rb_thread_call_without_gvl(miniffi_call_cb, &cb_args, 0, 0);
-#else
-    mffi_value ret = miniffi_call_intern(ApiFunction, &param, nimport);
-#endif
     
     switch (FIX2INT(own_exports)) {
         case _T_NUMBER:
@@ -267,11 +255,7 @@ RB_METHOD(MiniFFI_call) {
 
 void MiniFFIBindingInit() {
     VALUE cMiniFFI = rb_define_class("MiniFFI", rb_cObject);
-#if RAPI_FULL > 187
     rb_define_alloc_func(cMiniFFI, classAllocate<&MiniFFIType>);
-#else
-    rb_define_alloc_func(cMiniFFI, MiniFFIAllocate);
-#endif
     _rb_define_method(cMiniFFI, "initialize", MiniFFI_initialize);
     _rb_define_method(cMiniFFI, "call", MiniFFI_call);
     rb_define_alias(cMiniFFI, "Call", "call");

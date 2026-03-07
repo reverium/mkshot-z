@@ -75,11 +75,7 @@ void raiseRbExc(const Exception &exc) {
 }
 
 void raiseDisposedAccess(VALUE self) {
-#if RAPI_FULL > 187
   const char *klassName = RTYPEDDATA_TYPE(self)->wrap_struct_name;
-#else
-  const char *klassName = rb_obj_classname(self);
-#endif
   char buf[32];
 
   strncpy(buf, klassName, sizeof(buf));

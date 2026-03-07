@@ -1,21 +1,7 @@
 # Get Ruby dependency
-if get_option('mri_includes') == ''
-    mri_version = get_option('mri_version')
-
-    if mri_version.version_compare('<=1.8')
-        mkxp_cflags += '-DMKXPZ_LEGACY_RUBY'
-    elif mri_version.version_compare('>=3.0') and cxx.get_id() == 'clang'
-        mkxp_cflags += '-fdeclspec'
-    endif
-
-    mkxp_dependencies += dependency('ruby-@0@'.format(mri_version))
-else
-    mri_includes = get_option('mri_includes')
-    mri_libname = get_option('mri_libname')
-    mri_libpath = get_option('mri_libpath')
-
-    mkxp_cflags += '-I@0@'.format(mri_includes)
-    mkxp_dependencies += cc.find_library(mri_libname, dirs: [mri_libpath])
+mkxp_dependencies += dependency('ruby-3.1')
+if cxx.get_id() == 'clang'
+    mkxp_cflags += '-fdeclspec'
 endif
 
 mkxp_binding_sources = files(
@@ -46,6 +32,7 @@ mkxp_binding_sources = files(
     'oneshot/wallpaper-binding.cpp'
 )
 
+# TODO (why is it commented out?)
 #if mkxp_steam
 #    mkxp_binding_sources += files(
 #        'cusl-binding.cpp'

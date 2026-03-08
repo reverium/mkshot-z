@@ -1,14 +1,19 @@
-//
-//  json5pp.hpp
-//  Player
-//
-//  Created by ゾロアーク on 11/21/20.
-//
+/*
+** json5pp.cpp
+**
+** This file is part of mkxp-z, further modified for mkshot-z.
+**
+** Copyright (C) 2026 sevenleftslash <sevenleftslash@proton.me>
+** Created by ゾロアーク on 11/21/20.
+**
+** mkxp-z is licensed under GPLv2 or later.
+** mkshot-z is licensed under GPLv3 or later.
+*/
 
 // https://github.com/kimushu/json5pp
 
-#ifndef _JSON5PP_HPP_
-#define _JSON5PP_HPP_
+#pragma once
+
 
 #include <stdexcept>
 #include <string>
@@ -26,7 +31,7 @@ namespace json5pp {
 /*
  * json5pp uses semantic versioning
  * See: https://semver.org/
- */
+*/
 namespace version {
   static constexpr auto major = 2;
   static constexpr auto minor = 2;
@@ -36,7 +41,7 @@ namespace version {
 /**
  * @class syntax_error
  * A class of objects thrown as exceptions to report a JSON syntax error.
- */
+*/
 class syntax_error : public std::invalid_argument
 {
 public:
@@ -58,7 +63,7 @@ namespace impl {
 
 /**
  * @brief Parser/stringifier flags
- */
+*/
 enum flags : std::uint32_t
 {
   // Syntax flags
@@ -129,7 +134,7 @@ public:
 
 /**
  * @brief A class to hold JSON value
- */
+*/
 class value
 {
 private:
@@ -742,7 +747,7 @@ private:
  *
  * @param elements An initializer list of elements
  * @return JSON value object
- */
+*/
 inline value array(std::initializer_list<value> elements)
 {
   value v;
@@ -756,7 +761,7 @@ inline value array(std::initializer_list<value> elements)
  *
  * @param elements An initializer list of key:value pairs
  * @return JSON value object
- */
+*/
 inline value object(std::initializer_list<value::pair_type> elements)
 {
   value v;
@@ -771,7 +776,7 @@ namespace impl {
  * @brief Parser implementation
  *
  * @tparam F A combination of flags
- */
+*/
 template <flags_type F>
 class parser
 {
@@ -1438,7 +1443,7 @@ private:
  *
  * @tparam F A combination of flags
  * @tparam I An indent specification
- */
+*/
 template <flags_type F, indent_type I>
 class stringifier
 {
@@ -1717,7 +1722,7 @@ private:
  * @param istream An input stream
  * @param manip A flag manipulator
  * @return A new parser
- */
+*/
 template <flags_type S, flags_type C>
 parser<S&flags::parse_mask> operator>>(std::istream& istream, const manipulator_flags<S,C>& manip)
 {
@@ -1730,7 +1735,7 @@ parser<S&flags::parse_mask> operator>>(std::istream& istream, const manipulator_
  * @param ostream An output stream
  * @param manip A flag manipulator
  * @return A new stringifier
- */
+*/
 template <flags_type S, flags_type C>
 stringifier<S&flags::stringify_mask,0> operator<<(std::ostream& ostream, const manipulator_flags<S,C>& manip)
 {
@@ -1743,7 +1748,7 @@ stringifier<S&flags::stringify_mask,0> operator<<(std::ostream& ostream, const m
  * @param istream An input stream
  * @param manip An indent manipulator
  * @return A new parser
- */
+*/
 template <indent_type I>
 parser<0> operator>>(std::istream& istream, const manipulator_indent<I>& manip)
 {
@@ -1756,7 +1761,7 @@ parser<0> operator>>(std::istream& istream, const manipulator_indent<I>& manip)
  * @param ostream An output stream
  * @param manip An indent manipulator
  * @return A new stringifier
- */
+*/
 template <indent_type I>
 stringifier<0,I> operator<<(std::ostream& ostream, const manipulator_indent<I>& manip)
 {
@@ -1772,7 +1777,7 @@ stringifier<0,I> operator<<(std::ostream& ostream, const manipulator_indent<I>& 
  * @param stringifier A stringifier
  * @param value A manipulator / value
  * @param args Other manipulators / values
- */
+*/
 template <class S, class T, class... Args>
 static void flow_stringifier(S stringifier, T& value, Args&... args)
 {
@@ -1784,7 +1789,7 @@ static void flow_stringifier(S stringifier, T& value, Args&... args)
  *
  * @tparam S A typename of stringifier
  * @param stringifier A stringifier
- */
+*/
 template <class S>
 static void flow_stringifier(S& stringifier)
 {
@@ -1817,7 +1822,7 @@ private:
  * @param istream An input stream
  * @param v A value to store parsed value
  * @return A new parser
- */
+*/
 inline impl::parser<0> operator>>(std::istream& istream, value& v)
 {
   return impl::parser<0>(istream) >> v;
@@ -1829,7 +1834,7 @@ inline impl::parser<0> operator>>(std::istream& istream, value& v)
  * @param ostream An output stream
  * @param v A value to stringify
  * @return A new stringifier
- */
+*/
 inline impl::stringifier<0,0> operator<<(std::ostream& ostream, const value& v)
 {
   return impl::stringifier<0,0>(ostream) << v;
@@ -1839,190 +1844,190 @@ namespace rule {
 
 /**
  * @brief Allow single line comment starts with "//"
- */
+*/
 using single_line_comment       = impl::manipulator_flags<impl::flags::single_line_comment, 0>;
 
 /**
  * @brief Disallow single line comment starts with "//"
- */
+*/
 using no_single_line_comment    = impl::manipulator_flags<0, impl::flags::single_line_comment>;
 
 /**
  * @brief Allow multi line comment starts with "/ *" and ends with "* /"
- */
+*/
 using multi_line_comment        = impl::manipulator_flags<impl::flags::multi_line_comment, 0>;
 
 /**
  * @brief Disallow multi line comment starts with "/ *" and ends with "* /"
- */
+*/
 using no_multi_line_comment     = impl::manipulator_flags<0, impl::flags::multi_line_comment>;
 
 /**
  * @brief Allow any comments
- */
+*/
 using comments                  = impl::manipulator_flags<impl::flags::comments, 0>;
 
 /**
  * @brief Disallow any comments
- */
+*/
 using no_comments               = impl::manipulator_flags<0, impl::flags::comments>;
 
 /**
  * @brief Allow explicit plus sign(+) before non-negative number
- */
+*/
 using explicit_plus_sign        = impl::manipulator_flags<impl::flags::explicit_plus_sign, 0>;
 
 /**
  * @brief Disallow explicit plus sign(+) before non-negative number
- */
+*/
 using no_explicit_plus_sign     = impl::manipulator_flags<0, impl::flags::explicit_plus_sign>;
 
 /**
  * @brief Allow leading decimal point before number
- */
+*/
 using leading_decimal_point     = impl::manipulator_flags<impl::flags::leading_decimal_point, 0>;
 
 /**
  * @brief Disallow leading decimal point before number
- */
+*/
 using no_leading_decimal_point  = impl::manipulator_flags<0, impl::flags::leading_decimal_point>;
 
 /**
  * @brief Allow trailing decimal point after number
- */
+*/
 using trailing_decimal_point    = impl::manipulator_flags<impl::flags::trailing_decimal_point, 0>;
 
 /**
  * @brief Disallow trailing decimal point after number
- */
+*/
 using no_trailing_decimal_point = impl::manipulator_flags<0, impl::flags::trailing_decimal_point>;
 
 /**
  * @brief Allow leading/trailing decimal points beside number
- */
+*/
 using decimal_points            = impl::manipulator_flags<impl::flags::decimal_points, 0>;
 
 /**
  * @brief Disallow leading/trailing decimal points beside number
- */
+*/
 using no_decimal_points         = impl::manipulator_flags<0, impl::flags::decimal_points>;
 
 /**
  * @brief Allow infinity (infinity/-infinity) as number value
- */
+*/
 using infinity_number           = impl::manipulator_flags<impl::flags::infinity_number, 0>;
 
 /**
  * @brief Disallow infinity (infinity/-infinity) as number value
- */
+*/
 using no_infinity_number        = impl::manipulator_flags<0, impl::flags::infinity_number>;
 
 /**
  * @brief Allow NaN as number value
- */
+*/
 using not_a_number              = impl::manipulator_flags<impl::flags::not_a_number, 0>;
 
 /**
  * @brief Disallow NaN as number value
- */
+*/
 using no_not_a_number           = impl::manipulator_flags<0, impl::flags::not_a_number>;
 
 /**
  * @brief Allow hexadeciaml number
- */
+*/
 using hexadecimal               = impl::manipulator_flags<impl::flags::hexadecimal, 0>;
 
 /**
  * @brief Disallow hexadeciaml number
- */
+*/
 using no_hexadecimal            = impl::manipulator_flags<0, impl::flags::hexadecimal>;
 
 /**
  * @brief Allow single-quoted string
- */
+*/
 using single_quote              = impl::manipulator_flags<impl::flags::single_quote, 0>;
 
 /**
  * @brief Disallow single-quoted string
- */
+*/
 using no_single_quote           = impl::manipulator_flags<0, impl::flags::single_quote>;
 
 /**
  * @brief Allow multi line string escaped by "\"
- */
+*/
 using multi_line_string         = impl::manipulator_flags<impl::flags::multi_line_string, 0>;
 
 /**
  * @brief Disallow multi line string escaped by "\"
- */
+*/
 using no_multi_line_string      = impl::manipulator_flags<0, impl::flags::multi_line_string>;
 
 /**
  * @brief Allow trailing comma in arrays and objects
- */
+*/
 using trailing_comma            = impl::manipulator_flags<impl::flags::trailing_comma, 0>;
 
 /**
  * @brief Disallow trailing comma in arrays and objects
- */
+*/
 using no_trailing_comma         = impl::manipulator_flags<0, impl::flags::trailing_comma>;
 
 /**
  * @brief Allow unquoted keys in objects
- */
+*/
 using unquoted_key              = impl::manipulator_flags<impl::flags::unquoted_key, 0>;
 
 /**
  * @brief Disallow unquoted keys in objects
- */
+*/
 using no_unquoted_key           = impl::manipulator_flags<0, impl::flags::unquoted_key>;
 
 /**
  * @brief Set ECMA-404 standard rules
  * @see https://www.json.org/
- */
+*/
 using ecma404                   = impl::manipulator_flags<0, impl::flags::all_rules>;
 
 /**
  * @brief Set JSON5 rules
  * @see https://json5.org/
- */
+*/
 using json5                     = impl::manipulator_flags<impl::flags::json5_rules, 0>;
 
 /**
  * @brief Parse as finished(closed) JSON
- */
+*/
 using finished                  = impl::manipulator_flags<impl::flags::finished, 0>;
 
 /**
  * @brief Parse as streaming(non-closed) JSON
- */
+*/
 using streaming                 = impl::manipulator_flags<0, impl::flags::finished>;
 
 /**
  * @brief Use LF as newline code (when indent enabled)
- */
+*/
 using lf_newline                = impl::manipulator_flags<0, impl::flags::crlf_newline>;
 
 /**
  * @brief Use CR+LF as newline code (when indent enabled)
- */
+*/
 using crlf_newline              = impl::manipulator_flags<impl::flags::crlf_newline, 0>;
 
 /**
  * @brief Disable indent
- */
+*/
 using no_indent                 = impl::manipulator_indent<0>;
 
 /**
  * @brief Enable indent with tab "\t" character
- */
+*/
 template <impl::indent_type I = 1>
 using tab_indent                = impl::manipulator_indent<static_cast<impl::indent_type>(-I)>;
 
 /**
  * @brief Enable indent with space " " character
- */
+*/
 template <impl::indent_type I = 2>
 using space_indent              = impl::manipulator_indent<I>;
 
@@ -2034,7 +2039,7 @@ using space_indent              = impl::manipulator_indent<I>;
  * @param istream An input stream
  * @param finished If true, parse as finished(closed) JSON
  * @return JSON value
- */
+*/
 inline value parse(std::istream& istream, bool finished = true)
 {
   using namespace impl;
@@ -2052,7 +2057,7 @@ inline value parse(std::istream& istream, bool finished = true)
  *
  * @param string A string to be parsed
  * @return JSON value
- */
+*/
 inline value parse(const value::json_type& string)
 {
   std::istringstream istream(string);
@@ -2065,7 +2070,7 @@ inline value parse(const value::json_type& string)
  * @param pointer A pointer to string to be parsed
  * @param length Length of string (in bytes)
  * @return JSON value
- */
+*/
 inline value parse(const void* pointer, std::size_t length)
 {
   impl::imemstream istream(pointer, length);
@@ -2078,7 +2083,7 @@ inline value parse(const void* pointer, std::size_t length)
  * @param istream An input stream
  * @param finished If true, parse as finished(closed) JSON
  * @return JSON value
- */
+*/
 inline value parse5(std::istream& istream, bool finished = true)
 {
   using namespace impl;
@@ -2096,7 +2101,7 @@ inline value parse5(std::istream& istream, bool finished = true)
  *
  * @param string A string to be parsed
  * @return JSON value
- */
+*/
 inline value parse5(const value::json_type& string)
 {
   std::istringstream istream(string);
@@ -2109,7 +2114,7 @@ inline value parse5(const value::json_type& string)
  * @param pointer A pointer to string to be parsed
  * @param length Length of string (in bytes)
  * @return JSON value
- */
+*/
 inline value parse5(const void* pointer, std::size_t length)
 {
   impl::imemstream istream(pointer, length);
@@ -2123,7 +2128,7 @@ inline value parse5(const void* pointer, std::size_t length)
  * @param v A value to stringify
  * @param args A list of manipulators
  * @return JSON string
- */
+*/
 template <class... T>
 value::json_type stringify(const value& v, T... args)
 {
@@ -2139,7 +2144,7 @@ value::json_type stringify(const value& v, T... args)
  * @param v A value to stringify
  * @param args A list of manipulators
  * @return JSON string
- */
+*/
 template <class... T>
 value::json_type stringify5(const value& v, T... args)
 {
@@ -2154,7 +2159,7 @@ value::json_type stringify5(const value& v, T... args)
  * @tparam T A list of typenames of manipulators
  * @param args A list of manipulators
  * @return JSON string
- */
+*/
 template <class... T>
 value::json_type value::stringify(T... args) const
 {
@@ -2167,7 +2172,7 @@ value::json_type value::stringify(T... args) const
  * @tparam T A list of typenames of manipulators
  * @param args A list of manipulators
  * @return JSON string
- */
+*/
 template <class... T>
 value::json_type value::stringify5(T... args) const
 {

@@ -1,25 +1,16 @@
 /*
 ** main.cpp
 **
-** This file is part of mkxp.
+** This file is part of mkxp, further modified for mkshot-z.
 **
+** Copyright (C) 2026 sevenleftslash <sevenleftslash@proton.me>
 ** Copyright (C) 2013 - 2021 Amaryllis Kulla <ancurio@mapleshrine.eu>
 **
-** mkxp is free software: you can redistribute it and/or modify
-** it under the terms of the GNU General Public License as published by
-** the Free Software Foundation, either version 2 of the License, or
-** (at your option) any later version.
-**
-** mkxp is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License
-** along with mkxp.  If not, see <http://www.gnu.org/licenses/>.
+** mkxp is licensed under GPLv2 or later.
+** mkshot-z is licensed under GPLv3 or later.
 */
 
-#ifndef MKXPZ_BUILD_XCODE
+#ifndef MKSHOT_BUILD_XCODE
 #include "icon.png.xxd"
 #endif
 
@@ -36,26 +27,26 @@
 #include <unistd.h>
 #include <regex>
 
-#include "binding.h"
-#include "sharedstate.h"
-#include "eventthread.h"
-#include "util/debugwriter.h"
-#include "util/exception.h"
-#include "display/gl/gl-debug.h"
-#include "display/gl/gl-fun.h"
+#include "binding/binding.hpp"
+#include "core/sharedstate.hpp"
+#include "core/event-thread.hpp"
+#include "util/dbg-writer.hpp"
+#include "util/exception.hpp"
+#include "core/gfx/debug.hpp"
+#include "core/gfx/fun.hpp"
 
-#include "filesystem/filesystem.h"
+#include "core/fs/fs.hpp"
 
-#include "system/system.h"
+#include "core/sys/sys.hpp"
 
-#include "oneshot/i18n.h"
+#include "core/oneshot/i18n.hpp"
 
 #if defined(__WIN32__)
 #include <Winsock2.h>
-#include "util/win-consoleutils.h"
+#include "util/win-console.hpp"
 
 // Try to work around buggy GL drivers that tend to be in Optimus laptops
-// by forcing MKXP to use the dedicated card instead of the integrated one
+// by forcing MKShot to use the dedicated card instead of the integrated one
 #include <windows.h>
 extern "C" {
 __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -63,19 +54,19 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 #endif
 
-#ifdef MKXPZ_STEAM
-#include "steamshim_child.h"
+#ifdef MKSHOT_STEAM
+#include "steamshim/child.h"
 #endif
 
-#ifdef MKXPZ_BUILD_XCODE
+#ifdef MKSHOT_BUILD_XCODE
 #include <Availability.h>
-#include "TouchBar.h"
+#include "TouchBar.hpp"
 #if !defined(__MAC_10_15) || __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_15
-#define MKXPZ_INIT_GL_LATER
+#define MKSHOT_INIT_GL_LATER
 #endif
 #endif
 
-#ifndef MKXPZ_INIT_GL_LATER
+#ifndef MKSHOT_INIT_GL_LATER
 #define GLINIT_SHOWERROR(s) showInitError(s)
 #else
 #define GLINIT_SHOWERROR(s) rgssThreadError(threadData, s)
@@ -120,7 +111,7 @@ static SDL_GLContext initGL(SDL_Window *win, Config &conf,
 int rgssThreadFun(void *userdata) {
   RGSSThreadData *threadData = static_cast<RGSSThreadData *>(userdata);
 
-#ifdef MKXPZ_INIT_GL_LATER
+#ifdef MKSHOT_INIT_GL_LATER
   threadData->glContext =
       initGL(threadData->window, threadData->config, threadData);
   if (!threadData->glContext)
@@ -195,11 +186,11 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win) {
     } else {
         /* Windows and macOS have their own native ways of dealing
          * with default window icon; don't interfering with them */
-#if !defined(__WIN32__) && !defined(MKXPZ_BUILD_XCODE)
-#ifndef MKXPZ_BUILD_XCODE
+#if !defined(__WIN32__) && !defined(MKSHOT_BUILD_XCODE)
+#ifndef MKSHOT_BUILD_XCODE
         iconIO = SDL_RWFromConstMem(___assets_icon_png, ___assets_icon_png_len);
 #else
-        iconIO = SDL_RWFromFile(mkxp_fs::getPathForAsset("icon", "png").c_str(), "rb");
+        iconIO = SDL_RWFromFile(mkshot_fs::getPathForAsset("icon", "png").c_str(), "rb");
 #endif
 #endif
     }
@@ -245,9 +236,9 @@ int main(int argc, char *argv[]) {
     }
 #endif
     if (!dataDir[0]) {
-        strncpy(dataDir, mkxp_fs::getDefaultGameRoot().c_str(), sizeof(dataDir));
+        strncpy(dataDir, mkshot_fs::getDefaultGameRoot().c_str(), sizeof(dataDir));
     }
-    mkxp_fs::setCurrentDirectory(dataDir);
+    mkshot_fs::setCurrentDirectory(dataDir);
 #endif
     
     /* now we load the config */
@@ -270,24 +261,15 @@ int main(int argc, char *argv[]) {
 
     /* Print welcoming text to console output */
     {
-        std::string mkxpz_version(MKXPZ_VERSION);
+        std::string mkshot_version(MKSHOT_VERSION);
         std::string git_hash;
 
-    #ifdef MKXPZ_BUILD_XCODE
-        if (!getPlistValue("MKXPGitHash").empty())
-            git_hash = getPlistValue("MKXPGitHash");
-        else
-            git_hash = "0000000000000000000000000000000000000000";
-    #else
-        git_hash = MKXPZ_GIT_HASH;
-    #endif
+        std::string str_version = mkshot_version + " (" + git_hash.substr(0, 7) + ")";
 
-        std::string str_version = mkxpz_version + " (" + git_hash.substr(0, 7) + ")";
-
-        Debug() << "Starting ModShot version " + str_version;
+        Debug() << "Starting mkshot-z version " + str_version;
     }
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
     if (!STEAMSHIM_init()) {
       showInitError("Failed to initialize Steamworks. The application cannot "
                     "continue launching.");
@@ -311,7 +293,7 @@ int main(int argc, char *argv[]) {
                     SDL_GetError());
       SDL_Quit();
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
       STEAMSHIM_deinit();
 #endif
 
@@ -324,7 +306,7 @@ int main(int argc, char *argv[]) {
       IMG_Quit();
       SDL_Quit();
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
       STEAMSHIM_deinit();
 #endif
 
@@ -338,7 +320,7 @@ int main(int argc, char *argv[]) {
       IMG_Quit();
       SDL_Quit();
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
       STEAMSHIM_deinit();
 #endif
 
@@ -370,7 +352,7 @@ int main(int argc, char *argv[]) {
 
     // LoadLibrary properly initializes EGL, it won't work otherwise.
     // Doesn't completely do it though, needs a small patch to SDL
-#ifdef MKXPZ_BUILD_XCODE
+#ifdef MKSHOT_BUILD_XCODE
     SDL_setenv("ANGLE_DEFAULT_PLATFORM", (conf.preferMetalRenderer) ? "metal" : "opengl", true);
     SDL_GL_LoadLibrary("@rpath/libEGL.dylib");
 #endif
@@ -383,22 +365,22 @@ int main(int argc, char *argv[]) {
     if (!win) {
       showInitError(std::string("Error creating window: ") + SDL_GetError());
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
       STEAMSHIM_deinit();
 #endif
       return 0;
     }
     
-#ifdef MKXPZ_BUILD_XCODE
+#ifdef MKSHOT_BUILD_XCODE
     {
-        std::string downloadsPath = "/Users/" + mkxp_sys::getUserName() + "/Downloads";
+        std::string downloadsPath = "/Users/" + mkshot_sys::getUserName() + "/Downloads";
         
-        if (mkxp_fs::getCurrentDirectory().find(downloadsPath) == 0) {
+        if (mkshot_fs::getCurrentDirectory().find(downloadsPath) == 0) {
             showInitError(conf.game.title +
                           " cannot run from the Downloads directory.\n\n" +
                           "Please move the application to the Applications folder (or anywhere else) " +
                           "and try again.");
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
             STEAMSHIM_deinit();
 #endif
             return 0;
@@ -406,14 +388,14 @@ int main(int argc, char *argv[]) {
     }
 #endif
     
-#if defined(MKXPZ_BUILD_XCODE)
+#if defined(MKSHOT_BUILD_XCODE)
 #define DEBUG_FSELECT_MSG "Select the folder from which to load game files. This is the folder containing OneShot game files."
 #define DEBUG_FSELECT_PROMPT "Load Game"
     if (conf.manualFolderSelect) {
-        std::string dataDirStr = mkxp_fs::selectPath(win, DEBUG_FSELECT_MSG, DEBUG_FSELECT_PROMPT);
+        std::string dataDirStr = mkshot_fs::selectPath(win, DEBUG_FSELECT_MSG, DEBUG_FSELECT_PROMPT);
         if (!dataDirStr.empty()) {
             conf.gameFolder = dataDirStr;
-            mkxp_fs::setCurrentDirectory(dataDirStr.c_str());
+            mkshot_fs::setCurrentDirectory(dataDirStr.c_str());
             Debug() << "Current directory set to" << dataDirStr;
             conf.read(argc, argv);
             
@@ -434,7 +416,7 @@ int main(int argc, char *argv[]) {
       IMG_Quit();
       SDL_Quit();
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
       STEAMSHIM_deinit();
 #endif
       return 0;
@@ -449,14 +431,14 @@ int main(int argc, char *argv[]) {
 
     EventThread eventThread;
 
-#ifndef MKXPZ_INIT_GL_LATER
+#ifndef MKSHOT_INIT_GL_LATER
     SDL_GLContext glCtx = initGL(win, conf, 0);
 #else
     SDL_GLContext glCtx = NULL;
 #endif
 
     RGSSThreadData rtData(&eventThread, argv[0], win, alcDev, mode.refresh_rate,
-                          mkxp_sys::getScalingFactor(), conf, glCtx);
+                          mkshot_sys::getScalingFactor(), conf, glCtx);
 
     int winW, winH, drwW, drwH;
     SDL_GetWindowSize(win, &winW, &winH);
@@ -468,7 +450,7 @@ int main(int argc, char *argv[]) {
     /* Load and post key bindings */
     rtData.bindingUpdateMsg.post(loadBindings(conf));
     
-#ifdef MKXPZ_BUILD_XCODE
+#ifdef MKSHOT_BUILD_XCODE
     if (conf.manualFolderSelect) {
         /* Update window title */
         eventThread.requestWindowRename(conf.windowTitle.c_str());
@@ -535,7 +517,7 @@ int main(int argc, char *argv[]) {
     OneshotImpl::i18n::unloadLocale();
     OneshotImpl::i18n::unloadLanguageMetadata();
 
-#ifdef MKXPZ_STEAM
+#ifdef MKSHOT_STEAM
     STEAMSHIM_deinit();
 #endif
     Sound_Quit();
@@ -574,7 +556,7 @@ static SDL_GLContext initGL(SDL_Window *win, Config &conf,
 
 // This breaks scaling for Retina screens.
 // Using Metal should be rendering this irrelevant anyway, hopefully
-#ifndef MKXPZ_BUILD_XCODE
+#ifndef MKSHOT_BUILD_XCODE
   if (!conf.enableBlitting)
     gl.BlitFramebuffer = 0;
 #endif

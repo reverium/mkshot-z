@@ -1,0 +1,71 @@
+/*
+** gl-meta.h
+**
+** This file is part of mkxp, further modified for mkshot-z.
+**
+** Copyright (C) 2026 sevenleftslash <sevenleftslash@proton.me>
+** Copyright (C) 2014 - 2021 Amaryllis Kulla <ancurio@mapleshrine.eu>
+**
+** mkxp is licensed under GPLv2 or later.
+** mkshot-z is licensed under GPLv3 or later.
+*/
+
+#pragma once
+
+
+#include "core/gfx/fun.hpp"
+#include "core/gfx/util.hpp"
+#include "core/gfx/vertex.hpp"
+
+#include <SDL_surface.h>
+
+namespace GLMeta
+{
+
+/* EXT_unpack_subimage */
+void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
+                        GLint dstX, GLint dstY, GLsizei dstW, GLsizei dstH,
+                        SDL_Surface *src, GLenum format);
+void subRectImageEnd();
+
+/* ARB_vertex_array_object */
+struct VAO
+{
+	/* Set manually, then call vaoInit() */
+	const VertexAttribute *attr;
+	size_t attrCount;
+	GLsizei vertSize;
+	VBO::ID vbo;
+	IBO::ID ibo;
+
+	/* Don't touch */
+	GLuint nativeVAO;
+};
+
+template<class VertexType>
+inline void vaoFillInVertexData(VAO &vao)
+{
+	vao.attr      = VertexTraits<VertexType>::attr;
+	vao.attrCount = VertexTraits<VertexType>::attrCount;
+	vao.vertSize  = sizeof(VertexType);
+}
+
+void vaoInit(VAO &vao, bool keepBound = false);
+void vaoFini(VAO &vao);
+void vaoBind(VAO &vao);
+void vaoUnbind(VAO &vao);
+
+/* EXT_framebuffer_blit */
+int blitScaleIsSpecial(TEXFBO &target, bool targetPreferHires, const IntRect &targetRect, TEXFBO &source, const IntRect &sourceRect);
+int smoothScalingMethod(int scaleIsSpecial);
+void blitBegin(TEXFBO &target, bool preferHires = false, int scaleIsOne = 0);
+void blitBeginScreen(const Vec2i &size, int scaleIsOne = 0);
+void blitSource(TEXFBO &source, int scaleIsOne = 0);
+void blitRectangle(const IntRect &src, const Vec2i &dstPos);
+void blitRectangle(const IntRect &src, const IntRect &dst,
+                   bool smooth = false);
+void blitEnd();
+
+}
+
+

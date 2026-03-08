@@ -1,0 +1,294 @@
+/*
+** binding-util.cpp
+**
+** This file is part of mkxp, further modified for mkshot-z.
+**
+** Copyright (C) 2026 sevenleftslash <sevenleftslash@proton.me>
+** Copyright (C) 2013 - 2021 Amaryllis Kulla <ancurio@mapleshrine.eu>
+**
+** mkxp is licensed under GPLv2 or later.
+** mkshot-z is licensed under GPLv3 or later.
+*/
+
+#include "binding/util.hpp"
+
+#include "util/exception.hpp"
+#include "core/shared-state.hpp"
+#include "util/util.hpp"
+
+#include <assert.h>
+#include <stdarg.h>
+#include <string.h>
+
+RbData *getRbData() { return static_cast<RbData *>(shState->bindingData()); }
+
+struct {
+  RbException id;
+  const char *name;
+} static customExc[] = {
+    {MKSHOT, "MKShotError"}, {PHYSFS, "PHYSFSError"}, {SDL, "SDLError"}};
+
+RbData::RbData() {
+  for (size_t i = 0; i < ARRAY_SIZE(customExc); ++i)
+    exc[customExc[i].id] = rb_define_class(customExc[i].name, rb_eException);
+
+  exc[RGSS] = rb_define_class("RGSSError", rb_eStandardError);
+  exc[Reset] =
+      rb_define_class(rgssVer >= 3 ? "RGSSReset" : "Reset", rb_eException);
+
+  exc[ErrnoENOENT] = rb_const_get(rb_const_get(rb_cObject, rb_intern("Errno")),
+                                  rb_intern("ENOENT"));
+  exc[IOError] = rb_eIOError;
+  exc[TypeError] = rb_eTypeError;
+  exc[ArgumentError] = rb_eArgError;
+}
+
+RbData::~RbData() {}
+
+/* Indexed with Exception::Type */
+static const RbException excToRbExc[] = {
+    RGSS,        /* RGSSError   */
+    ErrnoENOENT, /* NoFileError */
+    IOError,
+
+    TypeError,   ArgumentError,
+
+    PHYSFS, /* PHYSFSError */
+    SDL,    /* SDLError    */
+    MKSHOT    /* MKShotError   */
+};
+
+void raiseRbExc(const Exception &exc) {
+  RbData *data = getRbData();
+  VALUE excClass = data->exc[excToRbExc[exc.type]];
+
+  rb_raise(excClass, "%s", exc.msg.c_str());
+}
+
+void raiseDisposedAccess(VALUE self) {
+  const char *klassName = RTYPEDDATA_TYPE(self)->wrap_struct_name;
+  char buf[32];
+
+  strncpy(buf, klassName, sizeof(buf));
+  buf[0] = tolower(buf[0]);
+
+  rb_raise(getRbData()->exc[RGSS], "disposed %s", buf);
+}
+
+int rb_get_args(int argc, VALUE *argv, const char *format, ...) {
+  char c;
+  VALUE *arg = argv;
+  va_list ap;
+  bool opt = false;
+  int argI = 0;
+
+  va_start(ap, format);
+
+  while ((c = *format++)) {
+    switch (c) {
+    case '|':
+      break;
+    default:
+      // FIXME print num of needed args vs provided
+      if (argc <= argI && !opt)
+        rb_raise(rb_eArgError, "wrong number of arguments");
+
+      break;
+    }
+
+    if (argI >= argc)
+      break;
+
+    switch (c) {
+    case 'o': {
+      if (argI >= argc)
+        break;
+
+      VALUE *obj = va_arg(ap, VALUE *);
+
+      *obj = *arg++;
+      ++argI;
+
+      break;
+    }
+
+    case 'S': {
+      if (argI >= argc)
+        break;
+
+      VALUE *str = va_arg(ap, VALUE *);
+      VALUE tmp = *arg;
+
+      /*
+      if (!RB_TYPE_P(tmp, RUBY_T_STRING))
+        rb_raise(rb_eTypeError, "Argument %d: Expected string", argI);
+      */
+      // mkxp-oneshot
+      tmp = rb_str_to_str(tmp);
+
+      *str = tmp;
+      ++argI;
+
+      break;
+    }
+
+    case 's': {
+      if (argI >= argc)
+        break;
+
+      const char **s = va_arg(ap, const char **);
+      int *len = va_arg(ap, int *);
+
+      VALUE tmp = *arg;
+
+      /*
+      if (!RB_TYPE_P(tmp, RUBY_T_STRING))
+        rb_raise(rb_eTypeError, "Argument %d: Expected string", argI);
+      */
+      // mkxp-oneshot
+      tmp = rb_str_to_str(tmp);
+
+      *s = RSTRING_PTR(tmp);
+      *len = RSTRING_LEN(tmp);
+      ++argI;
+
+      break;
+    }
+
+    case 'z': {
+      if (argI >= argc)
+        break;
+
+      const char **s = va_arg(ap, const char **);
+
+      VALUE tmp = *arg++;
+
+      /*
+      if (!RB_TYPE_P(tmp, RUBY_T_STRING))
+        rb_raise(rb_eTypeError, "Argument %d: Expected string", argI);
+      */
+      // mkxp-oneshot
+      tmp = rb_str_to_str(tmp);
+
+      *s = RSTRING_PTR(tmp);
+      ++argI;
+
+      break;
+    }
+
+    case 'f': {
+      if (argI >= argc)
+        break;
+
+      double *f = va_arg(ap, double *);
+      VALUE fVal = *arg++;
+
+      rb_float_arg(fVal, f, argI);
+
+      ++argI;
+      break;
+    }
+
+    case 'i': {
+      if (argI >= argc)
+        break;
+
+      int *i = va_arg(ap, int *);
+      VALUE iVal = *arg++;
+
+      rb_int_arg(iVal, i, argI);
+
+      ++argI;
+      break;
+    }
+
+    case 'b': {
+      if (argI >= argc)
+        break;
+
+      bool *b = va_arg(ap, bool *);
+      VALUE bVal = *arg++;
+
+      rb_bool_arg(bVal, b, argI);
+
+      ++argI;
+      break;
+    }
+
+    case 'n': {
+      if (argI >= argc)
+        break;
+
+      ID *sym = va_arg(ap, ID *);
+
+      VALUE symVal = *arg++;
+
+      if (!SYMBOL_P(symVal))
+        rb_raise(rb_eTypeError, "Argument %d: Expected symbol", argI);
+
+      *sym = SYM2ID(symVal);
+      ++argI;
+
+      break;
+    }
+
+    case '|':
+      opt = true;
+      break;
+
+    default:
+      rb_raise(rb_eFatal, "invalid argument specifier %c", c);
+    }
+  }
+
+#ifndef NDEBUG
+
+  /* Pop remaining arg pointers off
+   * the stack to check for RB_ARG_END */
+  format--;
+
+  while ((c = *format++)) {
+    switch (c) {
+    case 'o':
+    case 'S':
+      va_arg(ap, VALUE *);
+      break;
+
+    case 's':
+      va_arg(ap, const char **);
+      va_arg(ap, int *);
+      break;
+
+    case 'z':
+      va_arg(ap, const char **);
+      break;
+
+    case 'f':
+      va_arg(ap, double *);
+      break;
+
+    case 'i':
+      va_arg(ap, int *);
+      break;
+
+    case 'b':
+      va_arg(ap, bool *);
+      break;
+    }
+  }
+
+  // FIXME print num of needed args vs provided
+  if (!c && argc > argI)
+    rb_raise(rb_eArgError, "wrong number of arguments");
+
+  /* Verify correct termination */
+  void *argEnd = va_arg(ap, void *);
+  (void)argEnd;
+  assert(argEnd == RB_ARG_END_VAL);
+
+#endif
+
+  va_end(ap);
+
+  return argI;
+}

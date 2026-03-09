@@ -3,7 +3,7 @@
 **
 ** This file is part of mkxp, further modified for mkshot-z.
 **
-** Copyright (C) 2026 sevenleftslash <sevenleftslash@proton.me>
+** Copyright (C) mkshot-z contributors <https://github.com/mkshot-org>
 ** Copyright (C) 2013 - 2021 Amaryllis Kulla <ancurio@mapleshrine.eu>
 **
 ** mkxp is free software: you can redistribute it and/or modify

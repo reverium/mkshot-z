@@ -19,7 +19,7 @@
 #include "binding/types.hpp"
 #include "core/gfx/gfx.hpp"
 
-#include "binding/scene-element.hpp"
+#include "binding/scene.hpp"
 #include "binding/disposable.hpp"
 
 template<class C>

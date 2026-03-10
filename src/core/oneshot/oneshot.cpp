@@ -10,12 +10,12 @@
 ** mkshot-z is licensed under GPLv3-or-later.
 */
 
-#include "core/oneshot/oneshot.h"
-#include "core/oneshot/journal.h"
-#include "core/oneshot/wallpaper.h"
-#include "core/event-thread.h"
-#include "core/sys/sys.h"
-#include "util/dbg-writer.h"
+#include "core/oneshot/oneshot.hpp"
+#include "core/oneshot/journal.hpp"
+#include "core/oneshot/wallpaper.hpp"
+#include "core/event-thread.hpp"
+#include "core/sys/sys.hpp"
+#include "util/dbg-writer.hpp"
 
 #if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN
@@ -26,8 +26,8 @@
 #elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
 #include <dispatch/dispatch.h>
 #else
-#include "util/xdg-user-dirs.h"
-#include "gnome-fun.h"
+#include "util/xdg-user-dirs.hpp"
+#include "core/oneshot/gnome-fun.hpp"
 #endif
 
 #include <SDL.h>

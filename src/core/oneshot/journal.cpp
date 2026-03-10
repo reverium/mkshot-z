@@ -13,9 +13,9 @@
 #include "core/oneshot/journal.hpp"
 #include "core/event-thread.hpp"
 #include "core/shared-state.hpp"
-#include "core/sys/sys.h"
+#include "core/sys/sys.hpp"
 #include "core/fs/fs.hpp"
-#include "util/dbg-writer.h"
+#include "util/dbg-writer.hpp"
 
 #if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN

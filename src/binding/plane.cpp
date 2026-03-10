@@ -14,7 +14,7 @@
 #include "binding/util.hpp"
 #include "binding/disposable.hpp"
 #include "binding/plane.hpp"
-#include "binding/viewport-element.hpp"
+#include "binding/viewport.hpp"
 
 DEF_TYPE(Plane);
 

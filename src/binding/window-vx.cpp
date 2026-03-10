@@ -12,7 +12,7 @@
 
 #include "binding/util.hpp"
 #include "binding/disposable.hpp"
-#include "viewportelement.hpp"
+#include "binding/viewport.hpp"
 #include "core/gfx/window-vx.hpp"
 
 #include "core/gfx/bitmap.hpp"

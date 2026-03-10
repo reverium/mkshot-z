@@ -14,10 +14,10 @@
 #include "binding/util.hpp"
 #include "binding/disposable.hpp"
 #include "binding/flashable.hpp"
-#include "binding/scene-element.hpp"
+#include "binding/scene.hpp"
 #include "core/sharedstate.hpp"
 #include "core/gfx/sprite.hpp"
-#include "binding/viewport-element.hpp"
+#include "binding/viewport.hpp"
 
 DEF_TYPE(Sprite);
 

@@ -10,7 +10,7 @@
 ** mkshot-z is licensed under GPLv3-or-later.
 */
 
-#include "xfconf-fun.h"
+#include "core/oneshot/xfconf-fun.hpp"
 #include "util/dbg-writer.hpp"
 
 #include <vector>

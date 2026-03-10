@@ -10,10 +10,10 @@
 ** mkshot-z is licensed under GPLv3-or-later.
 */
 
-#include "core/oneshot/wallpaper.h"
-#include "core/sys/sys.h"
-#include "core/fs/fs.h"
-#include "util/dbg-writer.h"
+#include "core/oneshot/wallpaper.hpp"
+#include "core/sys/sys.hpp"
+#include "core/fs/fs.hpp"
+#include "util/dbg-writer.hpp"
 
 #include <string>
 
@@ -28,11 +28,11 @@
 #include <fstream>
 #include <iomanip>
 
-#include "gnome-fun.h"
-#include "xfconf-fun.h"
-#include "util/xdg-user-dirs.h"
+#include "core/oneshot/gnome-fun.hpp"
+#include "core/oneshot/xfconf-fun.hpp"
+#include "util/xdg-user-dirs.hpp"
 #elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
-#include "oneshot-apple.h"
+#include "core/oneshot/apple.h"
 #endif
 
 namespace fs = std::experimental::filesystem;

@@ -12,7 +12,7 @@
 
 #include "binding/util.hpp"
 #include "binding/disposable.hpp"
-#include "viewportelement.hpp"
+#include "binding/viewport.hpp"
 #include "core/gfx/window.hpp"
 
 DEF_TYPE(Window);

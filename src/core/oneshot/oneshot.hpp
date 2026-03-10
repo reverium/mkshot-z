@@ -13,7 +13,7 @@
 #ifndef ONESHOT_H
 #define ONESHOT_H
 
-#include "core/etc/internal.h"
+#include "core/etc/internal.hpp"
 
 #include <string>
 

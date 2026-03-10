@@ -10,9 +10,9 @@
 ** mkshot-z is licensed under GPLv3 or later.
 */
 
-#include "font.hpp"
+#include "core/gfx/font.hpp"
 
-#include "sharedstate.hpp"
+#include "core/shared-state.hpp"
 #include "core/fs/fs.hpp"
 #include "util/exception.hpp"
 #include "util/boost-hash.hpp"

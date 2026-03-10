@@ -14,7 +14,7 @@
 #include "binding/util.hpp"
 #include "binding/disposable.hpp"
 #include "binding/flashable.hpp"
-#include "binding/scene-element.hpp"
+#include "binding/scene.hpp"
 #include "core/shared-state.hpp"
 #include "core/gfx/viewport.hpp"
 

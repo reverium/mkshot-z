@@ -1,3 +1,3 @@
-#include "module-rpg1.rb.xxd"
-#include "module-rpg2.rb.xxd"
-#include "module-rpg3.rb.xxd"
+#include "binding/module-rgss1.rb.xxd"
+#include "binding/module-rgss2.rb.xxd"
+#include "binding/module-rgss3.rb.xxd"

@@ -15,7 +15,7 @@
 
 #include <cstddef>
 
-#include "gnome-fun.h"
+#include "core/oneshot/gnome-fun.hpp"
 
 #ifndef __XFCONF_CHANNEL_H__
 typedef struct _XfconfChannel XfconfChannel;

@@ -12,7 +12,6 @@
 
 #pragma once
 
-
 #include "binding/util.hpp"
 
 DECL_TYPE(Table);
@@ -27,7 +26,3 @@ DECL_TYPE(Plane);
 DECL_TYPE(Viewport);
 DECL_TYPE(Tilemap);
 DECL_TYPE(Window);
-
-DECL_TYPE(MiniFFI);
-
-

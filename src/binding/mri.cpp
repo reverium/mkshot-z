@@ -82,10 +82,6 @@ void graphicsBindingInit();
 
 void fileIntBindingInit();
 
-#ifdef MKSHOT_MINIFFI
-void MiniFFIBindingInit();
-#endif
-
 /*
 #ifdef MKSHOT_STEAM
 void CUSLBindingInit();
@@ -174,11 +170,7 @@ static void mriBindingInit() {
     graphicsBindingInit();
     
     fileIntBindingInit();
-    
-#ifdef MKSHOT_MINIFFI
-    MiniFFIBindingInit();
-#endif
-    
+
     /*
 #ifdef MKSHOT_STEAM
     CUSLBindingInit();

@@ -1,0 +1,143 @@
+/*
+** sprite-binding.cpp
+**
+** This file is part of mkxp, further modified for mkshot-z.
+**
+** Copyright (C) mkshot-z contributors <https://github.com/mkshot-org>
+** Copyright (C) 2013 - 2021 Amaryllis Kulla <ancurio@mapleshrine.eu>
+**
+** mkxp is licensed under GPLv2 or later.
+** mkshot-z is licensed under GPLv3 or later.
+*/
+
+#include "binding/types.hpp"
+#include "binding/util.hpp"
+#include "binding/disposable.hpp"
+#include "binding/flashable.hpp"
+#include "binding/scene-element.hpp"
+#include "core/sharedstate.hpp"
+#include "core/gfx/sprite.hpp"
+#include "binding/viewport-element.hpp"
+
+DEF_TYPE(Sprite);
+
+RB_METHOD(spriteInitialize) {
+    GFX_LOCK;
+    Sprite *s = viewportElementInitialize<Sprite>(argc, argv, self);
+    
+    setPrivateData(self, s);
+    
+    /* Wrap property objects */
+    s->initDynAttribs();
+    
+    wrapProperty(self, &s->getSrcRect(), "src_rect", RectType);
+    wrapProperty(self, &s->getColor(), "color", ColorType);
+    wrapProperty(self, &s->getTone(), "tone", ToneType);
+    
+    GFX_UNLOCK;
+    return self;
+}
+
+DEF_GFX_PROP_OBJ_REF(Sprite, Bitmap, Bitmap, "bitmap")
+DEF_GFX_PROP_OBJ_REF(Sprite, Bitmap, Pattern, "pattern")
+DEF_GFX_PROP_OBJ_VAL(Sprite, Rect, SrcRect, "src_rect")
+DEF_GFX_PROP_OBJ_VAL(Sprite, Color, Color, "color")
+DEF_GFX_PROP_OBJ_VAL(Sprite, Tone, Tone, "tone")
+
+DEF_GFX_PROP_I(Sprite, X)
+DEF_GFX_PROP_I(Sprite, Y)
+DEF_GFX_PROP_I(Sprite, OX)
+DEF_GFX_PROP_I(Sprite, OY)
+DEF_GFX_PROP_I(Sprite, BushDepth)
+DEF_GFX_PROP_I(Sprite, BushOpacity)
+DEF_GFX_PROP_I(Sprite, Opacity)
+DEF_GFX_PROP_I(Sprite, BlendType)
+DEF_GFX_PROP_I(Sprite, PatternBlendType)
+DEF_GFX_PROP_I(Sprite, PatternOpacity)
+DEF_GFX_PROP_I(Sprite, PatternScrollX)
+DEF_GFX_PROP_I(Sprite, PatternScrollY)
+DEF_GFX_PROP_I(Sprite, WaveAmp)
+DEF_GFX_PROP_I(Sprite, WaveLength)
+DEF_GFX_PROP_I(Sprite, WaveSpeed)
+
+DEF_GFX_PROP_F(Sprite, ZoomX)
+DEF_GFX_PROP_F(Sprite, ZoomY)
+DEF_GFX_PROP_F(Sprite, Angle)
+DEF_GFX_PROP_F(Sprite, WavePhase)
+DEF_GFX_PROP_F(Sprite, PatternZoomX)
+DEF_GFX_PROP_F(Sprite, PatternZoomY)
+
+DEF_GFX_PROP_B(Sprite, Mirror)
+DEF_GFX_PROP_B(Sprite, PatternTile)
+DEF_GFX_PROP_B(Sprite, Invert)
+DEF_GFX_PROP_B(Sprite, Obscured)
+
+RB_METHOD(spriteWidth) {
+    RB_UNUSED_PARAM;
+    
+    Sprite *s = getPrivateData<Sprite>(self);
+    
+    int value = 0;
+    GUARD_EXC(value = s->getWidth();)
+    
+    return rb_fix_new(value);
+}
+
+RB_METHOD(spriteHeight) {
+    RB_UNUSED_PARAM;
+    
+    Sprite *s = getPrivateData<Sprite>(self);
+    
+    int value = 0;
+    GUARD_EXC(value = s->getHeight();)
+    
+    return rb_fix_new(value);
+}
+
+void spriteBindingInit() {
+    VALUE klass = rb_define_class("Sprite", rb_cObject);
+    rb_define_alloc_func(klass, classAllocate<&SpriteType>);
+    
+    disposableBindingInit<Sprite>(klass);
+    flashableBindingInit<Sprite>(klass);
+    viewportElementBindingInit<Sprite>(klass);
+    
+    _rb_define_method(klass, "initialize", spriteInitialize);
+    
+    INIT_PROP_BIND(Sprite, Bitmap, "bitmap");
+    INIT_PROP_BIND(Sprite, SrcRect, "src_rect");
+    INIT_PROP_BIND(Sprite, X, "x");
+    INIT_PROP_BIND(Sprite, Y, "y");
+    INIT_PROP_BIND(Sprite, OX, "ox");
+    INIT_PROP_BIND(Sprite, OY, "oy");
+    INIT_PROP_BIND(Sprite, ZoomX, "zoom_x");
+    INIT_PROP_BIND(Sprite, ZoomY, "zoom_y");
+    INIT_PROP_BIND(Sprite, Angle, "angle");
+    INIT_PROP_BIND(Sprite, Mirror, "mirror");
+    INIT_PROP_BIND(Sprite, BushDepth, "bush_depth");
+    INIT_PROP_BIND(Sprite, Opacity, "opacity");
+    INIT_PROP_BIND(Sprite, BlendType, "blend_type");
+    INIT_PROP_BIND(Sprite, Color, "color");
+    INIT_PROP_BIND(Sprite, Tone, "tone");
+    
+    _rb_define_method(klass, "width", spriteWidth);
+    _rb_define_method(klass, "height", spriteHeight);
+    
+    INIT_PROP_BIND(Sprite, BushOpacity, "bush_opacity");
+    
+    INIT_PROP_BIND(Sprite, Pattern, "pattern");
+    INIT_PROP_BIND(Sprite, PatternBlendType, "pattern_blend_type");
+    INIT_PROP_BIND(Sprite, PatternTile, "pattern_tile");
+    INIT_PROP_BIND(Sprite, PatternOpacity, "pattern_opacity");
+    INIT_PROP_BIND(Sprite, PatternScrollX, "pattern_scroll_x");
+    INIT_PROP_BIND(Sprite, PatternScrollY, "pattern_scroll_y");
+    INIT_PROP_BIND(Sprite, PatternZoomX, "pattern_zoom_x");
+    INIT_PROP_BIND(Sprite, PatternZoomY, "pattern_zoom_y");
+    INIT_PROP_BIND(Sprite, Invert, "invert");
+    INIT_PROP_BIND(Sprite, Obscured, "obscured");
+    
+    INIT_PROP_BIND(Sprite, WaveAmp, "wave_amp");
+    INIT_PROP_BIND(Sprite, WaveLength, "wave_length");
+    INIT_PROP_BIND(Sprite, WaveSpeed, "wave_speed");
+    INIT_PROP_BIND(Sprite, WavePhase, "wave_phase");
+}

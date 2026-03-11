@@ -3,7 +3,7 @@
 **
 ** This file is part of mkxp-z, further modified for mkshot-z.
 **
-** Copyright (C) mkshot-z contributors <https://github.com/mkshot-org>
+** Copyright (C) 2026 mkshot-z contributors <https://github.com/mkshot-org>
 ** Created by ゾロアーク on 6/22/21.
 **
 ** mkxp-z is licensed under GPLv2 or later.

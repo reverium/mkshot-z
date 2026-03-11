@@ -277,21 +277,15 @@ static void mriBindingInit() {
     else
         rb_gv_set("debug", Qfalse);
     
-    /* Set mkshot-z version constants */
-    std::string mkshot_version(MKSHOT_VERSION);
+    /* Set mkshot-z git hash constants */
     std::string git_hash;
     
-    std::string str_version = mkshot_version + "/" + git_hash.substr(0, 7);
-    
-    VALUE rbstr_version = rb_utf8_str_new_cstr(str_version.c_str());
     VALUE rbstr_git_hash = rb_utf8_str_new_cstr(git_hash.c_str());
     VALUE rbstr_git_hash_short = rb_utf8_str_new_cstr(git_hash.substr(0, 7).c_str());
     
-    rb_str_freeze(rbstr_version);
     rb_str_freeze(rbstr_git_hash);
     rb_str_freeze(rbstr_git_hash_short);
     
-    rb_define_const(mod, "VERSION", rbstr_version);
     rb_define_const(mod, "GIT_HASH", rbstr_git_hash);
     rb_define_const(mod, "GIT_HASH_SHORT", rbstr_git_hash_short);
     

@@ -64,6 +64,8 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #if !defined(__MAC_10_15) || __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_15
 #define MKSHOT_INIT_GL_LATER
 #endif
+#else
+#define MKSHOT_INIT_GL_LATER
 #endif
 
 #ifndef MKSHOT_INIT_GL_LATER
@@ -261,12 +263,11 @@ int main(int argc, char *argv[]) {
 
     /* Print welcoming text to console output */
     {
-        std::string mkshot_version(MKSHOT_VERSION);
         std::string git_hash;
 
-        std::string str_version = mkshot_version + " (" + git_hash.substr(0, 7) + ")";
+        std::string str_hash = "(" + git_hash.substr(0, 7) + ")";
 
-        Debug() << "Starting mkshot-z version " + str_version;
+        Debug() << "Starting mkshot-z " + str_hash;
     }
 
 #ifdef MKSHOT_STEAM

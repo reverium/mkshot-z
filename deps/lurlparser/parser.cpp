@@ -25,7 +25,7 @@
  * SOFTWARE.
 */
 
-#include "LUrlParser/parser.hpp"
+#include "lurlparser/parser.hpp"
 
 #include <algorithm>
 #include <cstring>

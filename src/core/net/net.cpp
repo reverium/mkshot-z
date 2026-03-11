@@ -15,7 +15,7 @@
 #include "util/exception.hpp"
 
 #include "httplib.hpp"
-#include "LUrlParser/parser.hpp"
+#include "lurlparser/parser.hpp"
 #include "core/net/net.hpp"
 
 const char* httpErrorNames[] = {

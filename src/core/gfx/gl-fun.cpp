@@ -90,7 +90,7 @@ void initGLFunctions()
     int glMajor = *ver - '0';
     
     if (glMajor < 2)
-#ifndef GLES2_HEADER
+#ifndef ENABLE_GLES2
         throw Exception(Exception::MKShotError,
                   "A graphics card that supports OpenGL 2.0 or later is required.\n\n"
                   "Driver information:\n"

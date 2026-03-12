@@ -13,7 +13,7 @@
 #pragma once
 
 
-#ifdef GLES2_HEADER
+#ifdef ENABLE_GLES2
 #include <SDL_opengles2.h>
 #define APIENTRYP GL_APIENTRYP
 #else
@@ -107,7 +107,7 @@ typedef void (APIENTRYP _PFNGLBINDVERTEXARRAYPROC) (GLuint array);
 /* GLES only */
 typedef void (APIENTRYP _PFNGLRELEASESHADERCOMPILERPROC) (void);
 
-#ifdef GLES2_HEADER
+#ifdef ENABLE_GLES2
 #define GL_NUM_EXTENSIONS 0x821D
 #define GL_READ_FRAMEBUFFER 0x8CA8
 #define GL_DRAW_FRAMEBUFFER 0x8CA9

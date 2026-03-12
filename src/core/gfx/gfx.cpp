@@ -741,7 +741,7 @@ struct FPSLimiter {
     
 private:
     void delayTicks(uint64_t ticks) {
-#if defined(HAVE_NANOSLEEP) && defined(MKSHOT_NANOSLEEP)
+#ifdef HAVE_NANOSLEEP
         struct timespec req;
         uint64_t nsec = ticks / tickFreqNS;
         req.tv_sec = nsec / NS_PER_S;
@@ -866,7 +866,7 @@ struct GraphicsPrivate {
         TEX::bind(obscuredTex);
         TEX::setRepeat(false);
         TEX::setSmooth(false);
-#ifdef GLES2_HEADER
+#ifdef ENABLE_GLES2
         gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 640, 480, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 #else
         gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
@@ -1047,7 +1047,7 @@ struct GraphicsPrivate {
     void redrawScreen() {
         if (shState->oneshot().obscuredDirty) {
             TEX::bind(obscuredTex);
-#ifdef GLES2_HEADER
+#ifdef ENABLE_GLES2
             TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
 #else
             TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_RED);

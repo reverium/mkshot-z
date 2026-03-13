@@ -36,7 +36,7 @@ int systemImpl::getScalingFactor()
 
 bool systemImpl::isWine()
 {
-    // Always false on Mac builds, see systemImpl.cpp
+    // Always false on Mac builds, see sys-impl.cpp
     return false;
 }
 

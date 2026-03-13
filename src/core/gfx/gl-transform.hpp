@@ -1,6 +1,4 @@
 /*
-** tilequad.h
-**
 ** This file is part of mkxp, further modified for mkshot-z. It is based on parts of "SFML 2.0" (license further below)
 **
 ** Copyright (C) 2026 mkshot-z contributors <https://github.com/mkshot-org>

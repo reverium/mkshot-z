@@ -280,11 +280,13 @@ static void mriBindingInit() {
     std::string ver_hash;
 
 #if defined(MKSHOT_BUILD_XCODE)
-    ver_hash = getPlistValue("MKShotGitHash");
+    ver_hash = getPlistValue("MKShotVerHash");
 #elif defined(MKSHOT_VER_HASH)
     ver_hash = MKSHOT_VER_HASH;
 #endif
 
+    // fallback value is already set by the build system
+    // but let it be like that
     if (ver_hash.empty()) {
         ver_hash = "no hash found :p";
     }
@@ -1175,7 +1177,7 @@ static void mriBindingExecute() {
             rb_ary_push(lpaths, pathv);
         }
     }
-#ifndef WORKDIR_CURRENT
+#ifndef KEEP_CWD
     else {
         rb_ary_push(lpaths, rb_utf8_str_new_cstr(mkshot_fs::getCurrentDirectory().c_str()));
     }

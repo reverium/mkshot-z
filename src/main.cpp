@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
     SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
     SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 
-#ifdef GLES2_HEADER
+#ifdef GLES2
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 #endif
 
@@ -228,7 +228,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
 
-#ifndef WORKDIR_CURRENT
+#ifndef KEEP_CWD
     char dataDir[512]{};
 #if defined(__linux__)
     char *tmp{};
@@ -344,7 +344,7 @@ int main(int argc, char *argv[]) {
     if (conf.fullscreen)
       winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
     
-#ifdef GLES2_HEADER
+#ifdef GLES2
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);

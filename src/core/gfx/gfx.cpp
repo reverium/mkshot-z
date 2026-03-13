@@ -866,7 +866,7 @@ struct GraphicsPrivate {
         TEX::bind(obscuredTex);
         TEX::setRepeat(false);
         TEX::setSmooth(false);
-#ifdef ENABLE_GLES2
+#ifdef GLES2
         gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, 640, 480, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 #else
         gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 640, 480, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
@@ -1047,7 +1047,7 @@ struct GraphicsPrivate {
     void redrawScreen() {
         if (shState->oneshot().obscuredDirty) {
             TEX::bind(obscuredTex);
-#ifdef ENABLE_GLES2
+#ifdef GLES2
             TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_LUMINANCE);
 #else
             TEX::uploadSubImage(0, 0, 640, 480, shState->oneshot().obscuredMap().data(), GL_RED);

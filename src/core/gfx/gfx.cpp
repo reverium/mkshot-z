@@ -42,8 +42,6 @@
 #include <SDL_mutex.h>
 #include <SDL_thread.h>
 
-#include "theoraplay/play.h"
-
 #ifdef MKSHOT_STEAM
 #include "steamshim/child.hpp"
 #endif
@@ -67,6 +65,7 @@
 #define MOVIE_AUDIO_BUFFER_SIZE 2048
 #define AUDIO_BUFFER_LEN_MS 2000
 
+/* This code is commented out for reference, as theora support has been removed.
 typedef struct AudioQueue
 {
     const THEORAPLAY_AudioPacket *audio;
@@ -425,6 +424,7 @@ struct MovieOpenHandler : FileSystem::OpenHandler
         return true;
     }
 };
+This code is commented out for reference, as theora support has been removed. */
 
 struct PingPong {
     TEXFBO rt[2];

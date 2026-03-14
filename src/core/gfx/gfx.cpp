@@ -50,7 +50,7 @@
 #include <SDL_mutex.h>
 #include <SDL_thread.h>
 
-#include "theoraplay/play.h"
+#include "core/theoraplay/play.h"
 
 #ifdef MKSHOT_STEAM
 #include "core/steamshim/child.hpp"
@@ -433,7 +433,6 @@ struct MovieOpenHandler : FileSystem::OpenHandler
         return true;
     }
 };
-This code is commented out for reference, as theora support has been removed. */
 
 struct PingPong {
     TEXFBO rt[2];

@@ -1,0 +1,30 @@
+/*
+** mkshot-z - Experimental OneShot (2016) engine reimplementation
+**
+** Copyright (C) 2026 Team Reverium <https://github.com/reverium>
+** Copyright (C) 2024 hat_kid <https://github.com/thehatkid> (ModShot-mkxp-z)
+** Copyright (C) 2013-2023 Amaryllis Kulla and mkxp-z contributors
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+** GNU General Public License for more details.
+*/
+
+#import <Foundation/Foundation.h>
+#import "core/steam/steamshim_mac_helpers.h"
+
+std::string execPath() {
+    NSString *p = [NSBundle.mainBundle.executablePath stringByDeletingLastPathComponent];
+    std::string ret([NSString pathWithComponents:@[p, @(GAME_LAUNCH_NAME)]].UTF8String);
+    return ret;
+}
+
+std::string appResourcePath() {
+    return std::string(NSBundle.mainBundle.resourcePath.UTF8String);
+}

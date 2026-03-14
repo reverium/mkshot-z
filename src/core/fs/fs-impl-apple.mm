@@ -1,7 +1,7 @@
 /*
 ** This file is part of mkxp-z, further modified for mkshot-z.
 **
-** Copyright (C) 2026 mkshot-z contributors <https://github.com/mkshot-org>
+** Copyright (C) 2026 Team Reverium <https://github.com/reverium>
 ** Created by ゾロアーク on 11/21/20.
 **
 ** mkxp-z is licensed under GPLv2 or later.

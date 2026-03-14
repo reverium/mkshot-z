@@ -6,7 +6,7 @@
     // 
     // The "gameFolder" path is resolved either relative to the directory
     // containing the mkshot-z executable (the default behavior), or relative
-    // to the Current Working Directory (when compiled with -DWORKDIR_CURRENT).
+    // to the Current Working Directory (when compiled with -DKEEP_CWD).
     // All other paths are resolved relative to "gameFolder" and ignoring
     // both RTPs and encrypted archives.
     // 

@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include <al.h>
+include <al.h>
 #include <alext.h>
 
 #include <SDL_audio.h>

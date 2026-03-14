@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include "util/util.hpp"
+include "util/util.hpp"
 #include "core/gfx/util.hpp"
 
 class Scene;

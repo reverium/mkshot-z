@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include <string>
+include <string>
 #include <SDL_video.h>
 
 namespace filesystemImpl {

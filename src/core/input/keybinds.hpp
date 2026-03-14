@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include "core/input/input.hpp"
+include "core/input/input.hpp"
 
 #include <SDL_scancode.h>
 #include <SDL_gamecontroller.h>

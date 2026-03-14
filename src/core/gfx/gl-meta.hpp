@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include "core/gfx/fun.hpp"
+include "core/gfx/fun.hpp"
 #include "core/gfx/util.hpp"
 #include "core/gfx/vertex.hpp"
 

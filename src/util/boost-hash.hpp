@@ -18,8 +18,6 @@
 
 #pragma once
 
-
-
 // Need to use Map and Set, unordered can't handle pair apparently
 #include <map>
 #include <set>

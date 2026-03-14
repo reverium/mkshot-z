@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include <string>
+include <string>
 #include <string.h>
 
 #include <iconv.h>

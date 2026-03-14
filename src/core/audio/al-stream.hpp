@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include "core/audio/al-util.hpp"
+include "core/audio/al-util.hpp"
 #include "util/sdl.hpp"
 
 #include <string>

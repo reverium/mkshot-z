@@ -18,8 +18,7 @@
 
 #pragma once
 
-
-#include <SDL_scancode.h>
+include <SDL_scancode.h>
 #include <SDL_mouse.h>
 #include <SDL_mutex.h>
 #include <SDL_atomic.h>

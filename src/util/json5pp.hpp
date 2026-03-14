@@ -20,8 +20,7 @@
 
 #pragma once
 
-
-#include <stdexcept>
+include <stdexcept>
 #include <string>
 #include <vector>
 #include <map>

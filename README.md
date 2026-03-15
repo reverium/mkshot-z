@@ -23,10 +23,10 @@ Contributions are welcome. In case you're interested, the current development ro
 `mkshot-z` is free and open-source software licensed under the **GPLv3 or later**. See [LICENSE](LICENSE) for more details.
 
 ## Credits
-- [@thehatkid](https://github.com/thehatkid): For <code>[ModShot][mshot]</code>.
-- [`mkxp-z` contributors][xpz]: For the <code>[ModShot-mkxp-z][mshot]</code> base.
-- [`mkxp-oneshot` contributors][xpshot]: For the original OneShot engine implementation.
-- [Ancurio & `mkxp` contributors][xp]: For the <code>[mkxp-oneshot][xpshot]</code> base.
+- [@thehatkid](https://github.com/thehatkid): For <code>[ModShot (mkxp-z)][mshot]</code>.
+- [mkxp-z contributors][xpz]: For the <code>[ModShot-mkxp-z][mshot]</code> base.
+- [mkxp-oneshot contributors][xpshot]: For the original OneShot engine implementation.
+- [Ancurio & mkxp contributors][xp]: For the <code>[mkxp-oneshot][xpshot]</code> base.
 
 [mshot]: https://github.com/thehatkid/ModShot-mkxp-z
 [xpz]: https://github.com/mkxp-z/mkxp-z

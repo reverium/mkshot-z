@@ -13,8 +13,17 @@ Its functionality is too restrictive for extensive modding, and its architecture
 Existing RMXP runtime reimplementations don't improve the situation. Furthermore, they're not suited for modding OneShot in particular.<br>
 Using <code>[mkxp-oneshot][xpshot]</code> for your mods is greatly discouraged: it was made for the game specifically and extending upon it will be really difficult; not only that, you won't even be able to build it without manual intervention (Issue [#36](https://github.com/elizagamedev/mkxp-oneshot/issues/36)).
 
-This project's goal is to provide a modern, feature-complete and extensible successor to <code>[mkxp-oneshot][xpshot]</code><br>
+This project's goal is to provide a modern, feature-complete and extensible successor to <code>[mkxp-oneshot][xpshot]</code>.<br>
 <code>[ModShot (mkxp-z)][mshot]</code> was the chosen one for this, but it's no longer worked on, hence why we use it as the base.
+
+## Usage
+Sorry, but this project isn't in the state where it should be used. Stay tuned...
+
+<!--
+Instead of stable releases and versioning, we have autobuilds with a short commit hash.
+
+Get one [here](https://github.com/reverium/mkshot-z/releases/latest) and consult the [documentation](https://github.com/reverium/mkshot-z/wiki) for more info.
+--->
 
 ## Contributing
 Contributions are welcome. In case you're interested, the current development roadmap and priority tasks are at [TODO](TODO).
@@ -24,7 +33,7 @@ Contributions are welcome. In case you're interested, the current development ro
 
 ## Credits
 - [@thehatkid](https://github.com/thehatkid): For <code>[ModShot (mkxp-z)][mshot]</code>.
-- [mkxp-z contributors][xpz]: For the <code>[ModShot-mkxp-z][mshot]</code> base.
+- [mkxp-z contributors][xpz]: For the <code>[ModShot (mkxp-z)][mshot]</code> base.
 - [mkxp-oneshot contributors][xpshot]: For the original OneShot engine implementation.
 - [Ancurio & mkxp contributors][xp]: For the <code>[mkxp-oneshot][xpshot]</code> base.
 

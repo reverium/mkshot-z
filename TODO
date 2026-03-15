@@ -1,9 +1,13 @@
 x = done
 ~ = in progress
+
+everything is positioned relative to priority
 _________________________
 
 - Pinned
-[ ] Bring macOS support back
+[ ] General: Bring macOS support back
+[ ] Repo: Add documentation
+[ ] Repo: Setup autobuilds
 
 [x] General: Remove unneeded functionality from the engine
 [x] General: Restructure the file tree and make include paths consistent (relative to either `src/` or `assets/`)

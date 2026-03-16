@@ -21,7 +21,7 @@
 #include <string>
 #include <cstring>
 
-#ifdef _WIN32
+#ifdef __WIN32__
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -38,7 +38,7 @@
 #include <SDL_stdinc.h>
 #include <SDL_loadso.h>
 
-#ifdef _WIN32
+#ifdef __WIN32__
 static std::string wideToUTF8(const wchar_t *wcStr)
 {
 	std::string ret;

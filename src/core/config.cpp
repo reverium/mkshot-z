@@ -29,7 +29,7 @@
 #include "util/sdl.hpp"
 #include "util/util.hpp"
 
-#include "deps/json5pp.hpp"
+#include "json5pp.hpp"
 
 #include "util/ini-config.hpp"
 #include "util/encoding.hpp"

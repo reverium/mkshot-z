@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "deps/libnsgif/lzw.h"
+#include "libnsgif/lzw.h"
 
 /**
  * \file

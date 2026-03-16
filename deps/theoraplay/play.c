@@ -10,7 +10,7 @@
 //  libtheora-1.1.1/examples/player_example.c, but this is all my own
 //  code.
 
-#ifndef _WIN32
+#ifndef __WIN32__
 // Defines for usleep(3) compatibility
 #define _BSD_SOURCE
 #define _DEFAULT_SOURCE
@@ -21,7 +21,7 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef _WIN32
+#ifdef __WIN32__
 #include <windows.h>
 #define THEORAPLAY_THREAD_T    HANDLE
 #define THEORAPLAY_MUTEX_T     HANDLE
@@ -34,7 +34,7 @@
 #define THEORAPLAY_MUTEX_T     pthread_mutex_t
 #endif
 
-#include "deps/theoraplay/play.h"
+#include "theoraplay/play.h"
 #include <theora/theoradec.h>
 #include <vorbis/codec.h>
 
@@ -97,14 +97,14 @@ static unsigned char *ConvertVideoFrame420ToIYUV(const th_info *tinfo,
 // RGB
 #define THEORAPLAY_CVT_FNNAME_420 ConvertVideoFrame420ToRGB
 #define THEORAPLAY_CVT_RGB_ALPHA 0
-#include "deps/theoraplay/cvtrgb.h"
+#include "theoraplay/cvtrgb.h"
 #undef THEORAPLAY_CVT_RGB_ALPHA
 #undef THEORAPLAY_CVT_FNNAME_420
 
 // RGBA
 #define THEORAPLAY_CVT_FNNAME_420 ConvertVideoFrame420ToRGBA
 #define THEORAPLAY_CVT_RGB_ALPHA 1
-#include "deps/theoraplay/cvtrgb.h"
+#include "theoraplay/cvtrgb.h"
 #undef THEORAPLAY_CVT_RGB_ALPHA
 #undef THEORAPLAY_CVT_FNNAME_420
 
@@ -139,7 +139,7 @@ typedef struct TheoraDecoder
 } TheoraDecoder;
 
 
-#ifdef _WIN32
+#ifdef __WIN32__
 static inline int Thread_Create(TheoraDecoder *ctx, void *(*routine) (void*))
 {
     ctx->worker = CreateThread(

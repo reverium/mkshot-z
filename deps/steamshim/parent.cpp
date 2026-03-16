@@ -18,7 +18,7 @@
 
 // Copyright (C) 2013 - 2015 Ryan C. Gordon
 
-#ifdef _WIN32
+#ifdef __WIN32__
 #define WIN32_LEAN_AND_MEAN 1
 #define UNICODE
 #include <windows.h>
@@ -44,7 +44,7 @@ typedef int PipeType;
 #include <stdlib.h>
 
 #ifdef __APPLE__
-#include "deps/steamshim/mac_helpers.h"
+#include "steamshim/mac_helpers.h"
 #endif
 
 #include "steam/steam_api_flat.h"
@@ -69,7 +69,7 @@ static bool setEnvVar(const char *key, const char *val);
 static bool launchChild(ProcessType *pid);
 static int closeProcess(ProcessType *pid);
 
-#ifdef _WIN32
+#ifdef __WIN32__
 static void fail(const char *err) {
   MessageBoxA(NULL, err, "ERROR", MB_ICONERROR | MB_OK);
   ExitProcess(1);

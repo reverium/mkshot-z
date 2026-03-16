@@ -413,7 +413,7 @@ RB_METHOD(mkshotPlatform) {
     if (mkshot_sys::isRosetta())
         platform += " (Rosetta)";
     
-#elif defined _WIN32
+#elif defined __WIN32__
     std::string platform("Windows");
     
     if (mkshot_sys::isWine()) {

@@ -38,7 +38,7 @@
 
 #include <SDL.h>
 
-#ifdef _WIN32
+#ifdef __WIN32__
 static std::string wideToUTF8(const wchar_t *wcStr)
 {
 	std::string ret;

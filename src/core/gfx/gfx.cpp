@@ -50,10 +50,10 @@
 #include <SDL_mutex.h>
 #include <SDL_thread.h>
 
-#include "deps/theoraplay/play.h"
+#include "theoraplay/play.h"
 
 #ifdef MKSHOT_STEAM
-#include "deps/steamshim/child.hpp"
+#include "steamshim/child.hpp"
 #endif
 
 #include <algorithm>

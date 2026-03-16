@@ -23,7 +23,7 @@
 
 #include <SDL_loadso.h>
 
-#ifdef __LINUX__
+#ifdef __linux__
 #define XFCONF_LIBNAME "libxfconf-0.so"
 #else
 #error "This code is currently only for Linux platforms."

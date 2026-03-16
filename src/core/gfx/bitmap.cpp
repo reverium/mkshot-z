@@ -52,7 +52,7 @@
 #include "sigslot.hpp"
 
 extern "C" {
-#include "deps/libnsgif/gif.h"
+#include "libnsgif/gif.h"
 }
 
 #define GUARD_MEGA \

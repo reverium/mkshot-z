@@ -21,7 +21,7 @@
 
 #include <SDL_loadso.h>
 
-#ifdef __LINUX__
+#ifdef __linux__
 #define GTK2_LIBNAME "libgtk-x11-2.0.so.0"
 #define GTK3_LIBNAME "libgtk-3.so.0"
 #define GDK2_LIBNAME "libgdk-x11-2.0.so.0"

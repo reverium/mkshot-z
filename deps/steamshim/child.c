@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef __WIN32__
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 #include <stdio.h>
@@ -24,7 +24,7 @@ typedef int PipeType;
 #endif
 #include <stdlib.h>
 
-#include "deps/steamshim/child.h"
+#include "steamshim/child.h"
 
 #ifdef STEAMSHIM_DEBUG
 #define dbgpipe printf
@@ -41,7 +41,7 @@ static char *getEnvVar(const char *key, char *buf, const size_t buflen);
 static int pipeReady(PipeType fd);
 
 
-#ifdef _WIN32
+#ifdef __WIN32__
 
 static int pipeReady(PipeType fd)
 {
@@ -179,7 +179,7 @@ int STEAMSHIM_init(void)
         return 0;
     } /* if */
 
-#ifndef _WIN32
+#ifndef __WIN32__
     signal(SIGPIPE, SIG_IGN);
 #endif
 
@@ -201,7 +201,7 @@ void STEAMSHIM_deinit(void)
 
     GPipeRead = GPipeWrite = NULLPIPE;
 
-#ifndef _WIN32
+#ifndef __WIN32__
     signal(SIGPIPE, SIG_DFL);
 #endif
 } /* STEAMSHIM_deinit */

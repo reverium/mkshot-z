@@ -1,34 +1,9 @@
-include(FetchContent)
-
-## Dependencies ##
-find_package(Vorbis REQUIRED CONFIG)
-find_package(Theora REQUIRED CONFIG)
-find_package(PhysFS REQUIRED CONFIG)
-find_package(uchardet REQUIRED CONFIG)
-find_package(pixman REQUIRED CONFIG)
-find_package(SDL2 REQUIRED CONFIG)
-find_package(SDL2_image REQUIRED CONFIG)
-find_package(SDL2_ttf REQUIRED CONFIG)
-find_package(SDL2_sound REQUIRED CONFIG)
-find_package(OpenAL REQUIRED CONFIG)
-find_package(Ruby REQUIRED CONFIG)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE
-    Vorbis::vorbisfile
-    Theora::theoradec
-    physfs::physfs
-    uchardet::uchardet
-    pixman::pixman
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
-    SDL2_sound::SDL2_sound
-    OpenAL::OpenAL
-    Ruby::Ruby
-)
-
 ##  General Sources / Includes ##
-list(APPEND MKSHOT_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/embed/include")
+include_directories(${RUBY_INCLUDE_DIRS})
+set(MKSHOT_INCLUDE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_SOURCE_DIR}/embed/include"
+)
 
 set(MKSHOT_SOURCES
     main.cpp
@@ -114,10 +89,10 @@ set(MKSHOT_SOURCES
 
     util/ini-config.cpp
 
-    deps/libnsgif/gif.c
-    deps/libnsgif/lzw.c
+    ${CMAKE_SOURCE_DIR}/deps/libnsgif/gif.c
+    ${CMAKE_SOURCE_DIR}/deps/libnsgif/lzw.c
 
-    deps/theoraplay/play.c
+    ${CMAKE_SOURCE_DIR}/deps/theoraplay/play.c
 )
 
 IF(WIN32)
@@ -134,34 +109,47 @@ ENDIF()
 
 
 ## Compiler flags / defines ##
-target_compile_definitions(${PROJECT_NAME} PRIVATE MKSHOT_VER_HASH="${MKSHOT_VER_HASH}")
+set(MKSHOT_DEFINES
+    MKSHOT_VER_HASH="${MKSHOT_VER_HASH}"
+)
+set(MKSHOT_CFLAGS)
+set(MKSHOT_LDFLAGS)
 
 IF(MKSHOT_FORCE_32BIT)
-    add_compile_options("-m32")
-    add_link_options("-m32")
+    list(APPEND MKSHOT_CFLAGS "-m32")
+    list(APPEND MKSHOT_LDFLAGS "-m32")
 ENDIF()
 
 IF(MKSHOT_GLES2)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GLES2)
+    list(APPEND MKSHOT_DEFINES "GLES2")
 ENDIF()
 
 IF(MKSHOT_KEEP_CWD)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE KEEP_CWD)
+    list(APPEND MKSHOT_DEFINES "KEEP_CWD")
 ENDIF()
 
-IF(MKSHOT_STEAMWORKS_PATH)
-ENDIF()
-
-
-## Steam ##
 IF(MKSHOT_STEAM)
     list(APPEND MKSHOT_SOURCES
         binding/steam.cpp
         core/steam/steam.cpp
     )
+    list(APPEND MKSHOT_DEFINES MKSHOT_STEAM)
 
-    set(MKSHOT_SHIM_SOURCES deps/steamshim/parent.cpp deps/steamshim/child.c)
+    set(STEAMSHIM_MM "" PATH)
     IF(APPLE)
-        list(APPEND MKSHOT_SHIM_SOURCES deps/steamshim/mac_helpers.mm)
+        set(STEAMSHIM_MM "${CMAKE_SOURCE_DIR}/deps/steamshim/mac_helpers.mm")
     ENDIF()
+
+    set(STEAMSHIM_DEFINES)
+    set(STEAMSHIM_CFLAGS)
+    set(STEAMSHIM_LDFLAGS)
+    
+    add_executable("steamshim" "${CMAKE_SOURCE_DIR}/deps/steamshim/parent.cpp" "${CMAKE_SOURCE_DIR}/deps/steamshim/child.h" "${STEAMSHIM_MM}")
+    target_include_directories("steamshim" PRIVATE "${CMAKE_SOURCE_DIR}/deps/steamshim")
 ENDIF()
+
+add_executable("${PROJECT_NAME}" ${MKSHOT_SOURCES})
+target_compile_definitions("${PROJECT_NAME}" PRIVATE ${MKSHOT_DEFINES})
+target_include_directories("${PROJECT_NAME}" PRIVATE ${MKSHOT_INCLUDE})
+target_compile_options("${PROJECT_NAME}" PRIVATE ${MKSHOT_CFLAGS})
+target_link_options("${PROJECT_NAME}" PRIVATE ${MKSHOT_LDFLAGS})

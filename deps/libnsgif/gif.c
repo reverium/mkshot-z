@@ -13,10 +13,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "deps/libnsgif/gif.h"
-#include "deps/libnsgif/log.h"
+#include "libnsgif/gif.h"
+#include "libnsgif/log.h"
 
-#include "deps/libnsgif/lzw.h"
+#include "libnsgif/lzw.h"
 
 /**
  *

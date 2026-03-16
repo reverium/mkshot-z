@@ -26,7 +26,7 @@ RB_METHOD(nikoPrepare)
 {
 	RB_UNUSED_PARAM;
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifndef __WIN32__
 	// Needed on non-Windows to prepare (start) Journal program
 	shState->oneshot().journal->nikoPrepare();
 #endif

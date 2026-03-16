@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
 #include "icon.png.h"
 #endif
 
@@ -47,7 +47,7 @@
 
 #include "core/oneshot/i18n.hpp"
 
-#if defined(__WIN32__)
+#ifdef __WIN32__
 #include <Winsock2.h>
 #include "util/win-console.hpp"
 
@@ -61,12 +61,12 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #endif
 
 #ifdef MKSHOT_STEAM
-#include "deps/steamshim/child.h"
+#include "steamshim/child.h"
 #endif
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
 #include <Availability.h>
-#include "TouchBar.hpp"
+#include "TouchBar.h"
 #if !defined(__MAC_10_15) || __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_15
 #define MKSHOT_INIT_GL_LATER
 #endif

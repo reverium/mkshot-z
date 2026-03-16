@@ -22,7 +22,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 IF(WIN32)
     # and no, msvc isn't supported
     # (never will be)
-    IF(NOT DEFINED ENV{MSYSTEM})
+    IF(Not DEFINED ENV{MSYSTEM})
         message(FATAL_ERROR
         "Building on Windows requires you to use MSYS2: <https://www.msys2.org>.\n"
         "Please consult the documentation before proceeding.")
@@ -33,6 +33,9 @@ ELSEIF(NOT LINUX)
     message(FATAL_ERROR "This operating system isn't supported. 'Detected: ${CMAKE_SYSTEM_NAME}'.")
 ENDIF()
 
+set(MKSHOT_GCC OFF)
+set(MKSHOT_CLANG OFF)
+
 message(STATUS "Detected: ${CMAKE_CXX_COMPILER_ID}")
 IF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(MKSHOT_GCC ON)
@@ -40,20 +43,22 @@ ELSEIF(CMAKE_CXX_COMPILER_ID MATCHES "^Clang|AppleClang")
     set(MKSHOT_CLANG ON)
 ELSE()
     message(FATAL_ERROR "mkshot-z only supports GCC or Clang.")
-endif()
+ENDIF()
 
 
 ## Options ##
 option(MKSHOT_DYNAMIC "Build and link mkshot-z dependencies dynamically." OFF)
+set(MKSHOT_STATIC $<NOT:MKSHOT_DYNAMIC>)
 option(MKSHOT_FORCE_32BIT "Force the compiler to build in 32-bit mode." OFF)
 option(MKSHOT_GLES2 "Use OpenGL ES 2.0 instead of OpenGL." OFF)
 option(MKSHOT_HTTP "Add support for HTTP requests." OFF)
 option(MKSHOT_KEEP_CWD "Keep Current Working Directory on startup." OFF)
 
+# Steam
 set(MKSHOT_STEAMWORKS_PATH "" CACHE PATH "Path to Steamworks SDK. Provide this to enable the Steam features.")
 set(MKSHOT_STEAM_APPID "" CACHE STRING "Steam AppID value. Set this to use 'SteamAPI_RestartAppIfNecessary()'.")
 option(MKSHOT_STEAMSHIM_DEBUG "Whether to show Steamshim debug output console." OFF)
-
+set(MKSHOT_STEAM OFF)
 
 ## Prerequisites ##
 # get short git hash (we use that instead of versioning)
@@ -80,5 +85,7 @@ ELSE()
     message(WARNING "Git executable not found. Hash value will fallback to '${MKSHOT_VER_HASH}'.")
 ENDIF()
 
+# subdirs
+add_subdirectory(deps)
 add_subdirectory(embed)
 add_subdirectory(src)

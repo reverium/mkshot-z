@@ -13,9 +13,8 @@ _________________________
 [ ] Repo: Setup autobuilds
 
 - TODO
-[~] General: Change platform-specific defines
-[-] General: Meson/Xcode + Makefiles -> CMake + Conan
-[-] General: Embed assets without involving xxd
+[~] General: Meson/Xcode + Makefiles -> CMake + Conan
+[~] General: Embed assets without involving xxd
 [ ] General: C++14 -> C++23
 [ ] Configuration: JSON5 -> TOML
 [ ] General: SDL2 -> SDL3

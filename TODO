@@ -1,29 +1,22 @@
-x = done
-~ = wip
-- = wip, temporarily stale
+[o] = wip
+[x] = temporarily stale
 
-everything is positioned relative to priority
+everything is sorted by priority
 _________________________
 
-- Pinned
-[ ] OneShot: Film puzzle auto-solves itself
+^ Pinned
 [ ] General: Bring macOS support back
-[ ] Repo: Add documentation
-[ ] OneShot: Wayland support
 [ ] Repo: Setup autobuilds
 
-- TODO
-[~] General: Meson/Xcode + Makefiles -> CMake + Conan
-[~] General: Embed assets without involving xxd
-[ ] General: C++14 -> C++23
-[ ] Configuration: JSON5 -> TOML
+-----
+
+[o] General: Meson/Xcode + Makefiles -> CMake + Conan
+[o] General: Embed assets without involving xxd
 [ ] General: SDL2 -> SDL3
+[ ] General: Refactor cross-platform handling, it's horrible.
+[ ] General: C++14 -> C++20
+[ ] Configuration: JSON5 -> TOML
 [ ] Audio: SDL_sound + OpenAL -> Miniaudio
 [ ] Audio: Add support for OGG/Opus, MP3, WAV, FLAC, WEBM/Vorbis, WEBM/Opus
 [ ] Images: Add support for JPEG-XL, WEBP, APNG
 [ ] Video: Theora -> WEBM/VP8, WEBM/VP9
-
-- Done
-[x] General: Remove unneeded functionality from the engine
-[x] General: Restructure the file tree and keep include paths consistent (relative to `src/`)
-[x] General: Use short Git hash for versioning

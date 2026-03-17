@@ -6,13 +6,11 @@
 Experimental OneShot (2016) engine reimplementation for modders, derived from [ModShot (mkxp-z)][mshot].
 
 ## Why?
-The engine OneShot uses (RPG Maker XP / RMXP) is nearly two decades old. It's old, slow and rather sucky.<br>
-Its functionality is too restrictive for extensive modding, and the architecture is ill-suited for modern use cases.
+The engine OneShot uses (RPG Maker XP / RMXP) is nearly two decades old. It's old, slow and rather sucky. Its functionality is too restrictive for extensive modding, and the architecture is ill-suited for modern use cases. Existing RMXP runtime reimplementations don't improve the situation: furthermore, they're not suited for modding OneShot in particular.
 
-Existing RMXP runtime reimplementations don't improve the situation. Furthermore, they're not suited for modding OneShot in particular.<br>
 Using [mkxp-oneshot][xpshot] for your mods is greatly discouraged: it's designed for OneShot, not developers. You won't even be able to build it without manual intervention due to Conan remote inactivity (see elizagamedev/mkxp-oneshot#36).
 
-This project's goal is to provide a modern, feature-complete and extensible successor to [mkxp-oneshot][xpshot].<br>
+This project's goal is to provide a modern, feature-complete and extensible successor to the original.<br>
 [ModShot (mkxp-z)][mshot] was the chosen one for this, but it's no longer worked on, hence why we use it as the base.
 
 ## Usage
@@ -32,11 +30,6 @@ Contributions are welcome. In case you're interested, the current development ro
 
 ## Credits
 - [@thehatkid](https://github.com/thehatkid): For [ModShot (mkxp-z)][mshot].
-- [mkxp-z contributors][xpz]: For the [ModShot (mkxp-z)][mshot] base.
-- [mkxp-oneshot contributors][xpshot]: For the original OneShot engine implementation.
-- [Ancurio & mkxp contributors][xp]: For the [mkxp-oneshot][xpshot] base.
 
 [mshot]: https://github.com/thehatkid/ModShot-mkxp-z
-[xpz]: https://github.com/mkxp-z/mkxp-z
 [xpshot]: https://github.com/elizagamedev/mkxp-oneshot
-[xp]: https://github.com/Ancurio/mkxp

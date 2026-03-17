@@ -23,9 +23,9 @@
 #include "core/sys/sys.hpp"
 #include "util/dbg-writer.hpp"
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
 #include <dispatch/dispatch.h>
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#elif defined(__WIN32__)
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -82,7 +82,7 @@ struct OneshotPrivate
 	std::vector<uint8_t> obscuredMap;
 	bool obscuredCleared;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	bool gtkIsInit = false;
 #endif
 
@@ -104,7 +104,7 @@ struct OneshotPrivate
 	}
 };
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 typedef struct
 {
 	// Input
@@ -180,9 +180,9 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 {
 	p = new OneshotPrivate();
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	p->os = "windows";
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#elif defined(__APPLE__)
 	p->os = "macos";
 #else
 	p->os = "linux";
@@ -194,7 +194,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	p->lang = mkshot_sys::getLanguage();
 	p->userName = mkshot_sys::getUserFullName();
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	wchar_t wcPath[MAX_PATH];
 
 	if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PERSONAL, NULL, 0, wcPath)))
@@ -205,7 +205,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	p->gamePath = p->docsPath + "\\My Games";
 
 	p->journal = "_______.exe";
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#elif defined(__APPLE__)
 	std::string path = std::string(SDL_getenv("HOME")) + "/Documents";
 
 	p->docsPath = path;
@@ -224,7 +224,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) : threadData(threadData)
 	Debug() << "Game path    :" << p->gamePath;
 	Debug() << "Docs path    :" << p->docsPath;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	char const *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
 	if (xdg_current_desktop && xdg_current_desktop[0] != '\0') {
 		std::string desktop(xdg_current_desktop);
@@ -363,7 +363,7 @@ void Oneshot::update()
 bool Oneshot::msgbox(int type, const char *body, const char *title)
 {
 	if (title && title[0] == '\0')
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 		// Zero Width Space to remove filename of executable in message box
 		// title with enabled Visual Styles (ComCtl32).
 		title = "\u200b";
@@ -371,7 +371,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 		title = "";
 #endif
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	// Using GTK+ dialogs instead.
 	// SDL message boxes on Linux systems are quite "ugly"...
 	if (p->gtkIsInit) {
@@ -445,7 +445,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	}
 
 	int result;
-#if MKSHOT_BUILD_MACOS
+#if __APPLE__
 	int *btn = &result;
 	// Message boxes and UI changes must be performed from the main thread
 	// on macOS Mojave and above. This block ensures the message box

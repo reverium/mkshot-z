@@ -24,7 +24,7 @@
 
 #ifndef __XFCONF_CHANNEL_H__
 typedef struct _XfconfChannel XfconfChannel;
-#endif // __XFCONF_CHANNEL_H__
+#endif
 
 /* Xfconf prototypes */
 typedef gboolean (*XFCONFINITPROC)(GError **error);

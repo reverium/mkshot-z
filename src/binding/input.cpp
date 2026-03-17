@@ -536,17 +536,6 @@ struct {
     { "LEFT",  Input::Left  },
     { "RIGHT", Input::Right },
 
-    /*
-    // RGSS variant
-    { "A", Input::A },
-    { "B", Input::B },
-    { "C", Input::C },
-    { "X", Input::X },
-    { "Y", Input::Y },
-    { "Z", Input::Z },
-    */
-
-    // OneShot (mkxp-oneshot) variant
     { "ACTION",     Input::Action     },
     { "CANCEL",     Input::Cancel     },
     { "MENU",       Input::Menu       },

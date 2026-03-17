@@ -27,7 +27,7 @@
 #include <string.h>
 #include <iostream>
 
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
 #include "bicubic.frag.h"
 #include "bitmap-blit.frag.h"
 #include "blur-h.vert.h"
@@ -59,7 +59,7 @@
 #include "xbrz.frag.h"
 #endif
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
 #include "core/fs/fs.hpp"
 #define INIT_SHADER(vert, frag, name) \
 { \
@@ -77,7 +77,7 @@
 
 #define GET_U(name) u_##name = gl.GetUniformLocation(program, #name)
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     std::string Shader::shaderCommon = "";
 #endif
 
@@ -105,7 +105,7 @@ static void printProgramLog(GLuint program)
 
 Shader::Shader()
 {
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     if (Shader::shaderCommon.empty())
         Shader::shaderCommon = mkshot_fs::contentsOfAssetAsString("Shaders/common", "h");
 #endif
@@ -133,7 +133,7 @@ void Shader::unbind()
 	glState.program.set(0);
 }
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
 std::string &Shader::commonHeader() {
     return Shader::shaderCommon;
 }
@@ -163,7 +163,7 @@ static void setupShaderSource(GLuint shader, GLenum type,
 		++i;
 	}
 
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
 	shaderSrc[i] = (const GLchar*) ___shader_common_h;
 	shaderSrcSize[i] = ___shader_common_h_len;
 #else

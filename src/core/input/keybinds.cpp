@@ -69,22 +69,6 @@ static const KbBindingData defaultKbBindings[] =
 	{ SDL_SCANCODE_LEFT,  Input::Left  },
 	{ SDL_SCANCODE_RIGHT, Input::Right },
 
-	/*
-	// mkxp keyboard bindings
-	{ SDL_SCANCODE_SPACE,  Input::C     },
-	{ SDL_SCANCODE_RETURN, Input::C     },
-	{ SDL_SCANCODE_ESCAPE, Input::B     },
-	{ SDL_SCANCODE_KP_0,   Input::B     },
-	{ SDL_SCANCODE_LSHIFT, Input::A     },
-	{ SDL_SCANCODE_X,      Input::B     },
-	{ SDL_SCANCODE_D,      Input::Z     },
-	{ SDL_SCANCODE_Q,      Input::L     },
-	{ SDL_SCANCODE_W,      Input::R     },
-	{ SDL_SCANCODE_A,      Input::X     },
-	{ SDL_SCANCODE_S,      Input::Y     }
-	*/
-
-	// OneShot (mkxp-oneshot) keyboard bindings
 	{ SDL_SCANCODE_Z,      Input::Action     },
 	{ SDL_SCANCODE_SPACE,  Input::Action     },
 	{ SDL_SCANCODE_X,      Input::Cancel     },
@@ -127,19 +111,6 @@ static const CtrlBindingData defaultCtrlBindings[] =
 	{ SDL_CONTROLLER_BUTTON_DPAD_LEFT,  Input::Left  },
 	{ SDL_CONTROLLER_BUTTON_DPAD_RIGHT, Input::Right },
 
-	/*
-	// mkxp bindings
-	{ SDL_CONTROLLER_BUTTON_X,             Input::A },
-	{ SDL_CONTROLLER_BUTTON_B,             Input::B },
-	{ SDL_CONTROLLER_BUTTON_A,             Input::C },
-	{ SDL_CONTROLLER_BUTTON_Y,             Input::X },
-	{ SDL_CONTROLLER_BUTTON_LEFTSTICK,     Input::Y },
-	{ SDL_CONTROLLER_BUTTON_RIGHTSTICK,    Input::Z },
-	{ SDL_CONTROLLER_BUTTON_LEFTSHOULDER,  Input::L },
-	{ SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, Input::R },
-	*/
-
-	// OneShot (mkxp-oneshot) bindings
 	{ SDL_CONTROLLER_BUTTON_A,             Input::Action     },
 	{ SDL_CONTROLLER_BUTTON_B,             Input::Cancel     },
 	{ SDL_CONTROLLER_BUTTON_X,             Input::Run        },

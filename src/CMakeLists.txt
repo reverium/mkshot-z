@@ -80,7 +80,7 @@ set(MKSHOT_SOURCES
 
     core/net/net.cpp
 
-    core/sys/sys-impl.cpp
+    core/sys/sys.cpp
 
     core/config.cpp
     core/event-thread.cpp
@@ -100,7 +100,7 @@ IF(WIN32)
 ELSEIF(LINUX)
     list(APPEND MKSHOT_SOURCES core/oneshot/gnome-fun.cpp core/oneshot/xfconf-fun.cpp util/xdg-user-dirs.cpp)
 ELSEIF(APPLE)
-    list(APPEND MKSHOT_SOURCES core/oneshot/apple.mm core/fs/fs-impl-apple.mm core/sys/sys-impl-apple.mm)
+    list(APPEND MKSHOT_SOURCES core/oneshot/oneshot-apple.mm core/fs/fs-apple.mm core/sys/sys-apple.mm)
 ENDIF()
 
 IF(MKSHOT_HTTP)

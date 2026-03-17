@@ -27,7 +27,6 @@
 #include "util/dbg-writer.hpp"
 #include "util/boost-hash.hpp"
 #include "util/exception.hpp"
-#include "util/encoding.hpp"
 
 #include "core/config.hpp"
 
@@ -147,9 +146,6 @@ RB_METHOD(mriRgssMain);
 RB_METHOD(mriRgssStop);
 RB_METHOD(_kernelCaller);
 
-RB_METHOD(mkshotStringToUTF8);
-RB_METHOD(mkshotStringToUTF8Bang);
-
 VALUE json2rb(json5pp::value const &v);
 json5pp::value rb2json(VALUE v);
 
@@ -257,8 +253,7 @@ static void mriBindingInit() {
     
     _rb_define_module_function(mod, "default_font_family=", mkshotSetDefaultFontFamily);
     
-    _rb_define_method(rb_cString, "to_utf8", mkshotStringToUTF8);
-    _rb_define_method(rb_cString, "to_utf8!", mkshotStringToUTF8Bang);
+
     
     VALUE cmod = rb_define_module("CFG");
     _rb_define_module_function(cmod, "[]", mkshotGetJSONSetting);
@@ -285,7 +280,7 @@ static void mriBindingInit() {
     /* Set mkshot-z git hash constants */
     std::string ver_hash;
 
-#if defined(MKSHOT_BUILD_MACOS)
+#ifdef __APPLE__
     ver_hash = getPlistValue("MKShotVerHash");
 #elif defined(MKSHOT_VER_HASH)
     ver_hash = MKSHOT_VER_HASH;
@@ -434,6 +429,7 @@ RB_METHOD(mkshotPlatform) {
     return rb_utf8_str_new_cstr(platform.c_str());
 }
 
+// TODO: get rid of this nonsense
 RB_METHOD(mkshotIsMacHost) {
     RB_UNUSED_PARAM;
     
@@ -613,33 +609,6 @@ RB_METHOD(mkshotSetDefaultFontFamily) {
     shState->fontState().setDefaultFontFamily(family);
     
     return Qnil;
-}
-
-RB_METHOD(mkshotStringToUTF8) {
-    RB_UNUSED_PARAM;
-    
-    rb_check_argc(argc, 0);
-    
-    std::string ret(RSTRING_PTR(self), RSTRING_LEN(self));
-    GUARD_EXC(ret = Encoding::convertString(ret); );
-    
-    return rb_utf8_str_new(ret.c_str(), ret.length());
-}
-
-RB_METHOD(mkshotStringToUTF8Bang) {
-    RB_UNUSED_PARAM;
-    
-    rb_check_argc(argc, 0);
-    
-    std::string ret(RSTRING_PTR(self), RSTRING_LEN(self));
-    GUARD_EXC(ret = Encoding::convertString(ret); );
-    
-    rb_str_resize(self, ret.length());
-    memcpy(RSTRING_PTR(self), ret.c_str(), RSTRING_LEN(self));
-    
-    rb_funcall(self, rb_intern("force_encoding"), 1, rb_enc_from_encoding(rb_utf8_encoding()));
-    
-    return self;
 }
 
 #ifdef __APPLE__
@@ -1168,7 +1137,7 @@ static void mriBindingExecute() {
     VALUE lpaths = rb_gv_get(":");
     rb_ary_clear(lpaths);
     
-#if defined(MKSHOT_BUILD_MACOS)
+#ifdef __APPLE__
     std::string resPath = mkshot_fs::getResourcePath();
     resPath += "/Ruby/" + std::to_string(RUBY_API_VERSION_MAJOR) + "." + std::to_string(RUBY_API_VERSION_MINOR) + ".0";
     rb_ary_push(lpaths, rb_str_new(resPath.c_str(), resPath.size()));

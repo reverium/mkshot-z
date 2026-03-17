@@ -35,7 +35,7 @@
 
 #include "core/oneshot/oneshot.hpp"
 
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
 #include "core/settings-menu.hpp"
 #include "gamecontrollerdb.txt.h"
 #else
@@ -179,7 +179,7 @@ void EventThread::process(RGSSThreadData &rtData)
     
     bool terminate = false;
     
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     SDL_GameControllerAddMappingsFromFile(mkshot_fs::getPathForAsset("gamecontrollerdb", "txt").c_str());
 #else
     SDL_GameControllerAddMappingsFromRW(
@@ -211,7 +211,7 @@ void EventThread::process(RGSSThreadData &rtData)
     SDL_StopTextInput();
     
     textInputBuffer.clear();
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
     SettingsMenu *sMenu = 0;
 #else
     // Will always be 0
@@ -225,7 +225,7 @@ void EventThread::process(RGSSThreadData &rtData)
             Debug() << "event-thread: Event error";
             break;
         }
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
         if (sMenu && sMenu->onEvent(event))
         {
             if (sMenu->destroyReq())
@@ -362,7 +362,7 @@ void EventThread::process(RGSSThreadData &rtData)
                         break;
                     }
 
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
                     if (!sMenu)
                     {
                         sMenu = new SettingsMenu(rtData);
@@ -568,7 +568,7 @@ void EventThread::process(RGSSThreadData &rtData)
                         break;
                         
                     case REQUEST_SETTINGS :
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
                         if (!sMenu)
                         {
                             sMenu = new SettingsMenu(rtData);
@@ -625,7 +625,7 @@ void EventThread::process(RGSSThreadData &rtData)
     if (SDL_GameControllerGetAttached(ctrl))
         SDL_GameControllerClose(ctrl);
     
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
     delete sMenu;
 #endif
 }
@@ -809,7 +809,7 @@ void EventThread::showMessageBox(const char *body, int flags)
 {
     msgBoxDone.clear();
     
-    // mkxp has already been asked to quit.
+    // mkshot-z has already been asked to quit.
     // Don't break things if the window wants to close
     if (shState->rtData().rqTerm)
         return;
@@ -848,7 +848,7 @@ SDL_GameController *EventThread::controller() const
 
 void EventThread::notifyFrame()
 {
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     uint32_t frames = round(shState->graphics().averageFrameRate());
     updateTouchBarFPSDisplay(frames);
 #endif
@@ -856,7 +856,7 @@ void EventThread::notifyFrame()
         return;
     
     SDL_Event event;
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     event.user.code = frames;
 #else
     event.user.code = round(shState->graphics().averageFrameRate());

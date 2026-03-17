@@ -18,20 +18,6 @@
 
 #pragma once
 
-#define MKSHOT_PLATFORM_WINDOWS 0
-#define MKSHOT_PLATFORM_MACOS 1
-#define MKSHOT_PLATFORM_LINUX 2
-
-#ifdef __WIN32__
-#define MKSHOT_PLATFORM MKSHOT_PLATFORM_WINDOWS
-#elif defined __APPLE__
-#define MKSHOT_PLATFORM MKSHOT_PLATFORM_MACOS
-#elif defined __linux__
-#define MKSHOT_PLATFORM MKSHOT_PLATFORM_LINUX
-#else
-#error "Can't identify platform."
-#endif
-
 #include <string>
 
 namespace systemImpl

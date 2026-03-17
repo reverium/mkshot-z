@@ -57,7 +57,7 @@ std::string systemImpl::getLanguage()
 {
 	std::string ret;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	wchar_t wcBuf[18] = {'\0'};
 
 	wchar_t wcLang[9];
@@ -106,7 +106,7 @@ std::string systemImpl::getUserName()
 {
 	std::string ret;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	DWORD size = 0;
 	GetUserNameW(0, &size);
 	if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
@@ -118,7 +118,7 @@ std::string systemImpl::getUserName()
 #else
 	uid_t userId;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#ifdef __APPLE__
 	userId = geteuid();
 #else
 	userId = getuid();
@@ -131,7 +131,7 @@ std::string systemImpl::getUserName()
 #endif
 
 	if (ret.empty()) {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 		const char *user = SDL_getenv("USERNAME");
 #else
 		const char *user = SDL_getenv("USER");
@@ -150,7 +150,7 @@ std::string systemImpl::getUserFullName()
 {
 	std::string ret;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	ULONG size = 0;
 	GetUserNameExW(NameDisplay, 0, &size);
 	if (GetLastError() == ERROR_MORE_DATA) {
@@ -162,7 +162,7 @@ std::string systemImpl::getUserFullName()
 #else
 	uid_t userId;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#ifdef __APPLE__
 	userId = geteuid();
 #else
 	userId = getuid();
@@ -199,7 +199,7 @@ int systemImpl::getScalingFactor()
 
 bool systemImpl::isWine()
 {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	void *ntdll = SDL_LoadObject("ntdll.dll");
 	return SDL_LoadFunction(ntdll, "wine_get_host_version") != 0;
 #else
@@ -216,7 +216,7 @@ bool systemImpl::isRosetta()
 
 systemImpl::WineHostType systemImpl::getRealHostType()
 {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	void *ntdll = SDL_LoadObject("ntdll.dll");
 
 	void (*wine_get_host_version)(const char **, const char **) =

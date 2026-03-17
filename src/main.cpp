@@ -194,12 +194,11 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win) {
     } else {
         /* Windows and macOS have their own native ways of dealing
          * with default window icon; don't interfering with them */
-#if !defined(__WIN32__) && !defined(MKSHOT_BUILD_MACOS)
-#ifndef MKSHOT_BUILD_MACOS
+         // oh my god who made the previous version
+#if !defined(__APPLE__)
         iconIO = SDL_RWFromConstMem(___assets_icon_png, ___assets_icon_png_len);
-#else
+#elif !defined(__WIN32__)
         iconIO = SDL_RWFromFile(mkshot_fs::getPathForAsset("icon", "png").c_str(), "rb");
-#endif
 #endif
     }
 
@@ -357,7 +356,7 @@ int main(int argc, char *argv[]) {
 
     // LoadLibrary properly initializes EGL, it won't work otherwise.
     // Doesn't completely do it though, needs a small patch to SDL
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     SDL_setenv("ANGLE_DEFAULT_PLATFORM", (conf.preferMetalRenderer) ? "metal" : "opengl", true);
     SDL_GL_LoadLibrary("@rpath/libEGL.dylib");
 #endif
@@ -376,7 +375,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
     
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     {
         std::string downloadsPath = "/Users/" + mkshot_sys::getUserName() + "/Downloads";
         
@@ -393,7 +392,7 @@ int main(int argc, char *argv[]) {
     }
 #endif
     
-#if defined(MKSHOT_BUILD_MACOS)
+#ifdef __APPLE__
 #define DEBUG_FSELECT_MSG "Select the folder from which to load game files. This is the folder containing OneShot game files."
 #define DEBUG_FSELECT_PROMPT "Load Game"
     if (conf.manualFolderSelect) {
@@ -455,7 +454,7 @@ int main(int argc, char *argv[]) {
     /* Load and post key bindings */
     rtData.bindingUpdateMsg.post(loadBindings(conf));
     
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
     if (conf.manualFolderSelect) {
         /* Update window title */
         eventThread.requestWindowRename(conf.windowTitle.c_str());
@@ -561,7 +560,7 @@ static SDL_GLContext initGL(SDL_Window *win, Config &conf,
 
 // This breaks scaling for Retina screens.
 // Using Metal should be rendering this irrelevant anyway, hopefully
-#ifndef MKSHOT_BUILD_MACOS
+#ifndef __APPLE__
   if (!conf.enableBlitting)
     gl.BlitFramebuffer = 0;
 #endif

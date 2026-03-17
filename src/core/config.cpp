@@ -32,7 +32,6 @@
 #include "json5pp.hpp"
 
 #include "util/ini-config.hpp"
-#include "util/encoding.hpp"
 
 #include "core/sys/sys.hpp"
 
@@ -116,8 +115,7 @@ json::value readConfFile(const char *path) {
     }
     
     try {
-        std::string cfg = mkshot_fs::contentsOfFileAsString(path);
-        ret = json::parse5(Encoding::convertString(cfg));
+        ret = json::parse5(mkshot_fs::contentsOfFileAsString(path));
     }
     catch (const std::exception &e) {
         Debug() << "Failed to parse" << path << ":" << e.what();
@@ -394,41 +392,6 @@ void Config::readGameINI() {
         return;
     }
     
-    /*
-    std::string iniFileName(execName + ".ini");
-    SDLRWStream iniFile(iniFileName.c_str(), "r");
-    
-    bool convSuccess = false;
-    if (iniFile)
-    {
-        INIConfiguration ic;
-        if (ic.load(iniFile.stream()))
-        {
-            GUARD(game.title = ic.getStringProperty("Game", "Title"););
-            GUARD(game.scripts = ic.getStringProperty("Game", "Scripts"););
-            
-            strReplace(game.scripts, '\\', '/');
-            
-            if (game.title.empty()) {
-                Debug() << iniFileName + ": Could not find Game.Title";
-            }
-            
-            if (game.scripts.empty())
-                Debug() << iniFileName + ": Could not find Game.Scripts";
-        }
-    }
-    else
-        Debug() << "Could not read" << iniFileName;
-    
-    try {
-        game.title = Encoding::convertString(game.title);
-        convSuccess = true;
-    }
-    catch (const Exception &e) {
-        Debug() << iniFileName + ": Could not determine encoding of Game.Title";
-    }
-    */
-    
     if (game.title.empty())
         game.title = "OneShot";
     
@@ -439,28 +402,7 @@ void Config::readGameINI() {
         dataPathApp = "Oneshot";
     
     customDataPath = mkshot_fs::normalizePath(prefPath(dataPathOrg.c_str(), dataPathApp.c_str()).c_str(), true, true);
-    
-    /*
-    if (rgssVersion == 0) {
-        // Try to guess RGSS version based on Data/Scripts extension
-        rgssVersion = 1;
-        
-        if (!game.scripts.empty()) {
-            const char *p = &game.scripts[game.scripts.size()];
-            const char *head = &game.scripts[0];
-            
-            while (--p != head)
-                if (*p == '.')
-                    break;
-            
-            if (!strcmp(p, ".rvdata"))
-                rgssVersion = 2;
-            else if (!strcmp(p, ".rvdata2"))
-                rgssVersion = 3;
-        }
-    }
-    */
-    
+
     if (game.scripts.empty())
         game.scripts = "Data/xScripts.rxdata";
     

@@ -23,12 +23,12 @@
 
 #include <string>
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#elif defined(__linux__)
 #include <vector>
 #include <map>
 #include <fstream>
@@ -37,13 +37,13 @@
 #include "core/oneshot/gnome-fun.hpp"
 #include "core/oneshot/xfconf-fun.hpp"
 #include "util/xdg-user-dirs.hpp"
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
-#include "core/oneshot/apple.h"
+#elif defined(__APPLE__)
+#include "core/oneshot/oneshot-apple.h"
 #endif
 
 namespace fs = std::experimental::filesystem;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 static std::wstring utf8ToWide(const char *str)
 {
 	std::wstring ret;
@@ -60,7 +60,7 @@ static std::wstring utf8ToWide(const char *str)
 }
 #endif
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 struct XfceRGBA
 {
 	double red;
@@ -74,7 +74,7 @@ struct WallpaperPrivate
 {
 	bool isCached = false;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	bool setStyle = false;
 	bool setTile = false;
 
@@ -85,7 +85,7 @@ struct WallpaperPrivate
 
 	DWORD szStyleSize = sizeof(szStyle) - 1;
 	DWORD szTileSize = sizeof(szTile) - 1;
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#elif defined(__linux__)
 	std::string desktop;
 	std::string fallbackPath;
 
@@ -131,7 +131,8 @@ Wallpaper::Wallpaper()
 {
 	p = new WallpaperPrivate();
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
+
 	p->fallbackPath = xdgUserDirsGet("DESKTOP") + "/ONESHOT_hint.png";
 
 	const char *xdg_current_desktop = SDL_getenv("XDG_CURRENT_DESKTOP");
@@ -139,6 +140,8 @@ Wallpaper::Wallpaper()
 		std::string desktop(xdg_current_desktop);
 		std::transform(desktop.begin(), desktop.end(), desktop.begin(), ::tolower);
 
+		// how does one even...??????
+		// TODO:
 		if (desktop.find("gnome") != std::string::npos || desktop.find("unity") != std::string::npos) {
 			p->desktop = "gnome";
 		} else if (desktop.find("cinnamon") != std::string::npos) {
@@ -151,7 +154,6 @@ Wallpaper::Wallpaper()
 			p->desktop = "xfce";
 		} else if (desktop.find("kde") != std::string::npos) {
 			p->desktop = "kde";
-		// TODO
 		/* } else if (desktop.find("lxde") != std::string::npos) {
 			p->desktop = "lxde";
 		} else if (desktop.find("lxqt") != std::string::npos) {
@@ -246,7 +248,7 @@ Wallpaper::Wallpaper()
 
 Wallpaper::~Wallpaper()
 {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	if (p->xfInit && HAVE_XFCONF != NULL)
 		dynXfconf.shutdown();
 #endif
@@ -262,13 +264,13 @@ void Wallpaper::set(const char *name, int color)
 		pathFS = mkshot_fs::getCurrentDirectory() + "/Wallpaper/" + std::string(name);
 
 	if (!pathFS.has_extension())
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 		pathFS += ".bmp";
 #else
 		pathFS += ".png";
 #endif
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	// Replace "w32" with "unix" in filename
 	std::string filename = pathFS.filename();
 	if (filename.rfind("w32") != std::string::npos) {
@@ -283,7 +285,7 @@ void Wallpaper::set(const char *name, int color)
 
 	cache();
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	std::wstring wPath = utf8ToWide(path.c_str());
 
 	wchar_t wpStyle[2] = {L'0', L'\0'};
@@ -310,7 +312,7 @@ void Wallpaper::set(const char *name, int color)
 
 	if (!SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (PVOID)wPath.c_str(), SPIF_UPDATEINIFILE))
 		Debug() << "Failure to set wallpaper image";
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#elif defined(__linux__)
 	if (p->desktop == "gnome" || p->desktop == "cinnamon" || p->desktop == "mate" || p->desktop == "deepin") {
 		// Set wallpaper via GSettings (dconf)
 
@@ -411,7 +413,7 @@ void Wallpaper::set(const char *name, int color)
 		dstHint.close();
 		srcHint.close();
 	}
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#elif defined(__APPLE__)
 	double r = ((color >> 16) & 0xFF) / 255.0;
 	double g = ((color >> 8) & 0xFF) / 255.0;
 	double b = (color & 0xFF) / 255.0;
@@ -422,7 +424,7 @@ void Wallpaper::set(const char *name, int color)
 
 void Wallpaper::reset()
 {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	if (p->desktop.empty() || p->desktop == "nope" || p->desktop.rfind("error") != std::string::npos) {
 		// Delete fallback image file
 		if (access(p->fallbackPath.c_str(), F_OK) == 0)
@@ -434,7 +436,7 @@ void Wallpaper::reset()
 	if (!p->isCached)
 		return;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	int colorId = COLOR_BACKGROUND;
 
 	HKEY hKey = NULL;
@@ -457,7 +459,7 @@ void Wallpaper::reset()
 
 	if (!SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, (PVOID)p->szFile, SPIF_UPDATEINIFILE))
 		Debug() << "Failure to set old wallpaper image";
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#elif defined(__linux__)
 	if (p->desktop == "gnome" || p->desktop == "cinnamon" || p->desktop == "mate" || p->desktop == "deepin") {
 		// Reset wallpaper via GSettings (dconf)
 
@@ -584,7 +586,7 @@ void Wallpaper::reset()
 		if (system(command.str().c_str()) != 0)
 			Debug() << "Failure to execute qdbus command";
 	}
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#elif defined(__APPLE__)
 	OneshotApple::desktopImageReset();
 #endif
 }
@@ -594,7 +596,7 @@ void Wallpaper::cache()
 	if (p->isCached)
 		return;
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	HKEY hKey = NULL;
 
 	if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Control Panel\\Desktop", 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
@@ -613,7 +615,7 @@ void Wallpaper::cache()
 		p->isCached = true;
 	else
 		Debug() << "Failure to get current wallpaper image";
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#elif defined(__linux__)
 	if (p->desktop == "gnome" || p->desktop == "cinnamon" || p->desktop == "mate" || p->desktop == "deepin") {
 		// Get wallpaper via GSettings (dconf)
 
@@ -751,7 +753,7 @@ void Wallpaper::cache()
 			p->isCached = true;
 		}
 	}
-#elif MKSHOT_PLATFORM == MKSHOT_PLATFORM_MACOS
+#elif defined(__APPLE__)
 	OneshotApple::desktopImageCache();
 
 	p->isCached = true;

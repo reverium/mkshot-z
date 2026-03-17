@@ -1133,7 +1133,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event)
 		}
 
 		/* Don't let the user bind keys that trigger
-		 * mkxp functions */
+		 * mkshot-z functions */
 		switch(event.key.keysym.scancode)
 		{
 		case SDL_SCANCODE_F1:

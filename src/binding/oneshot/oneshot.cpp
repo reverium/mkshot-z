@@ -141,7 +141,7 @@ void oneshotBindingInit()
 
 	rb_const_set(module, rb_intern("OS"), rb_str_new2(shState->oneshot().os().c_str()));
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_LINUX
+#ifdef __linux__
 	rb_const_set(module, rb_intern("DE"), rb_str_new2(shState->oneshot().desktopEnv.c_str()));
 #endif
 

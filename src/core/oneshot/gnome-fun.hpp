@@ -16,6 +16,8 @@
 ** GNU General Public License for more details.
 */
 
+// TODO: fuh gtk there's surely a better way to handle popups on linux
+
 #pragma once
 
 #include <cstddef>
@@ -64,6 +66,8 @@ typedef struct _GdkDisplay GdkDisplay;
 typedef struct _GdkMonitor GdkMonitor;
 typedef struct _GdkRGBA GdkRGBA;
 
+// LOL
+// i just fucking love macros please more
 #ifndef	FALSE
 #define	FALSE (0)
 #endif

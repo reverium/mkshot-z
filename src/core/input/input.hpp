@@ -39,13 +39,6 @@ public:
 
 		Down = 2, Left = 4, Right = 6, Up = 8,
 
-		/*
-		// RGSS variant
-		A = 11, B = 12, C = 13,
-		X = 14, Y = 15, Z = 16,
-		*/
-
-		// OneShot (mkxp-oneshot) variant
 		Action = 11, Cancel = 12, Menu = 13,
 		Items = 14, Run = 15, Deactivate = 16,
 

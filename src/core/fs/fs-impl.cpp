@@ -22,8 +22,7 @@
 #include "util/exception.hpp"
 #include "util/dbg-writer.hpp"
 
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 #include <fstream>
 
@@ -40,7 +39,7 @@ std::string filesystemImpl::contentsOfFileAsString(const char *path) {
     try {
         std::ifstream ifs(path);
         ret = std::string ( (std::istreambuf_iterator<char>(ifs) ),
-                       (std::istreambuf_iterator<char>()    ) );
+                            (std::istreambuf_iterator<char>()    ) );
     } catch (...) {
         throw Exception(Exception::NoFileError, "Failed to read file at %s", path);
     }

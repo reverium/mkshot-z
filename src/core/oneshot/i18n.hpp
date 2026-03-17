@@ -16,8 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#ifndef ONESHOT_I18N
-#define ONESHOT_I18N
+#pragma once
 
 #include <string>
 
@@ -39,5 +38,3 @@ namespace OneshotImpl
 		std::string stringUnescape(const std::string &input);
 	}
 }
-
-#endif // ONESHOT_I18N

@@ -23,7 +23,7 @@
 #include "core/fs/fs.hpp"
 #include "util/dbg-writer.hpp"
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -37,7 +37,7 @@
 
 #include <SDL.h>
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 #include <SDL_syswm.h>
 
 static std::wstring utf8ToWide(const char *str)
@@ -66,7 +66,7 @@ struct JournalData
 	volatile int msgLen;
 	volatile char msgBuf[JOURNAL_BUFFER_SIZE];
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	std::string pipePath;
 	int pipeFD;
 #endif
@@ -83,7 +83,7 @@ struct JournalPrivate
 
 	JournalData journal;
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	JournalData niko;
 #endif
 
@@ -97,7 +97,7 @@ struct JournalPrivate
 
 		memset((char *)journal.msgBuf, 0, JOURNAL_BUFFER_SIZE);
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 		niko.thread = nullptr;
 		niko.mutex = SDL_CreateMutex();
 
@@ -130,7 +130,7 @@ struct JournalPrivate
 	{
 		SDL_DestroyMutex(journal.mutex);
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 		SDL_DestroyMutex(niko.mutex);
 #endif
 	}
@@ -140,7 +140,7 @@ int journal_server(void *data)
 {
 	JournalPrivate *p = static_cast<JournalPrivate *>(data);
 
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	HANDLE pipe = CreateNamedPipeW(
 		L"\\\\.\\pipe\\oneshot-journal-to-game",
 		PIPE_ACCESS_OUTBOUND,
@@ -197,7 +197,7 @@ int journal_server(void *data)
 	return 0;
 }
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 int journal_niko_server(void *data)
 {
 	JournalPrivate *p = static_cast<JournalPrivate *>(data);
@@ -227,7 +227,7 @@ Journal::Journal()
 {
 	p = new JournalPrivate();
 
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	mkfifo(p->journal.pipePath.c_str(), 0666);
 	mkfifo(p->niko.pipePath.c_str(), 0666);
 #endif
@@ -235,7 +235,7 @@ Journal::Journal()
 
 Journal::~Journal()
 {
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	unlink(p->journal.pipePath.c_str());
 	remove(p->journal.pipePath.c_str());
 	unlink(p->niko.pipePath.c_str());
@@ -268,7 +268,7 @@ void Journal::set(const char *name)
 	SDL_UnlockMutex(p->journal.mutex);
 
 	// Write message to the Journal pipe
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	HANDLE pipe = CreateFileW(
 		L"\\\\.\\pipe\\oneshot-game-to-journal",
 		GENERIC_WRITE, 0,
@@ -319,11 +319,11 @@ void Journal::setLang(const char *lang)
 
 void Journal::nikoPrepare()
 {
-#if MKSHOT_PLATFORM != MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	std::string name;
 	std::string cwd = mkshot_fs::getCurrentDirectory();
 
-#ifdef MKSHOT_BUILD_MACOS
+#ifdef __APPLE__
 	name = "_______.app/Contents/MacOS/_______";
 #else
 	name = "_______";
@@ -351,7 +351,7 @@ void Journal::nikoPrepare()
 
 void Journal::nikoStart()
 {
-#if MKSHOT_PLATFORM == MKSHOT_PLATFORM_WINDOWS
+#ifdef __WIN32__
 	// Calculate where to stick the window
 	SDL_SysWMinfo wmInfo;
 	SDL_VERSION(&wmInfo.version);

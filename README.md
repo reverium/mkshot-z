@@ -2,6 +2,7 @@
 
 >[!WARNING]
 > **WIP.**
+> It won't build...
 
 Experimental OneShot (2016) engine reimplementation for modders, derived from [ModShot (mkxp-z)](https://github.com/thehatkid/ModShot-mkxp-z).
 

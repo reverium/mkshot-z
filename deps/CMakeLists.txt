@@ -8,10 +8,10 @@ pkg_check_modules(MKSHOT_PIXMAN REQUIRED IMPORTED_TARGET pixman-1)
 
 find_package(PhysFS REQUIRED)
 find_package(uchardet REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(SDL2_sound REQUIRED)
+find_package(SDL3 REQUIRED)
+find_package(SDL3_image REQUIRED)
+find_package(SDL3_ttf REQUIRED)
+find_package(SDL3_sound REQUIRED)
 find_package(OpenAL REQUIRED)
 find_package(Ruby REQUIRED)
 
@@ -21,10 +21,10 @@ set(MKSHOT_LINKLIBS
     PkgConfig::MKSHOT_PIXMAN
     physfs
     uchardet
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
-    SDL2_sound::SDL2_sound
+    SDL3::SDL3
+    SDL3_image::SDL3_image
+    SDL3_ttf::SDL3_ttf
+    SDL3_sound::SDL3_sound
     OpenAL::OpenAL
     ${RUBY_LIBRARIES}
 )

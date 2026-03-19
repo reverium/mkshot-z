@@ -22,7 +22,9 @@
 #import <Metal/Metal.h>
 #import <sys/sysctl.h>
 
+/* TODO: settings menu rewrite
 #import "SettingsMenuController.hpp"
+*/
 
 std::string mkshot_sys::getLanguage()
 {

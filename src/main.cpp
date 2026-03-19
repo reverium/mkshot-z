@@ -66,7 +66,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 
 #ifdef __APPLE__
 #include <Availability.h>
-#include "TouchBar.h"
+#include "core/macos/touch-bar.hpp"
 #if !defined(__MAC_10_15) || __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_15
 #define MKSHOT_INIT_GL_LATER
 #endif
@@ -91,21 +91,21 @@ static void printGLInfo() {
     const std::string renderer(glGetStringInt(GL_RENDERER));
     const std::string version(glGetStringInt(GL_VERSION));
     std::regex rgx("ANGLE \\((.+), ANGLE Metal Renderer: (.+), Version (.+)\\)");
-        
+
     std::smatch matches;
     if (std::regex_search(renderer, matches, rgx)) {
-        
+
         Debug() << "Backend           :" << "Metal";
         Debug() << "Metal Device      :" << matches[2] << "(" + matches[1].str() + ")";
         Debug() << "Renderer Version  :" << matches[3].str();
-        
+
     std::smatch vmatches;
         if (std::regex_search(version, vmatches, std::regex("\\(ANGLE (.+) git hash: .+\\)"))) {
             Debug() << "ANGLE Version     :" << vmatches[1].str();
         }
         return;
     }
-    
+
   Debug() << "Backend      :" << "OpenGL";
   Debug() << "GL Vendor    :" << glGetStringInt(GL_VENDOR);
   Debug() << "GL Renderer  :" << renderer;
@@ -247,7 +247,7 @@ int main(int argc, char *argv[]) {
     }
     mkshot_fs::setCurrentDirectory(dataDir);
 #endif
-    
+
     /* now we load the config */
     Config conf;
     conf.read(argc, argv);
@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
       winFlags |= SDL_WINDOW_RESIZABLE;
     if (conf.fullscreen)
       winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    
+
 #ifdef GLES2
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
@@ -361,7 +361,7 @@ int main(int argc, char *argv[]) {
     SDL_GL_LoadLibrary("@rpath/libEGL.dylib");
 #endif
 #endif
-    
+
     win = SDL_CreateWindow(conf.windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED,
                            SDL_WINDOWPOS_UNDEFINED, conf.defScreenW,
                            conf.defScreenH, winFlags);
@@ -374,11 +374,11 @@ int main(int argc, char *argv[]) {
 #endif
       return 0;
     }
-    
+
 #ifdef __APPLE__
     {
         std::string downloadsPath = "/Users/" + mkshot_sys::getUserName() + "/Downloads";
-        
+
         if (mkshot_fs::getCurrentDirectory().find(downloadsPath) == 0) {
             showInitError(conf.game.title +
                           " cannot run from the Downloads directory.\n\n" +
@@ -391,7 +391,7 @@ int main(int argc, char *argv[]) {
         }
     }
 #endif
-    
+
 #ifdef __APPLE__
 #define DEBUG_FSELECT_MSG "Select the folder from which to load game files. This is the folder containing OneShot game files."
 #define DEBUG_FSELECT_PROMPT "Load Game"
@@ -402,7 +402,7 @@ int main(int argc, char *argv[]) {
             mkshot_fs::setCurrentDirectory(dataDirStr.c_str());
             Debug() << "Current directory set to" << dataDirStr;
             conf.read(argc, argv);
-            
+
             if (conf.windowTitle.empty())
                 conf.windowTitle = conf.game.title;
         }
@@ -447,19 +447,19 @@ int main(int argc, char *argv[]) {
     int winW, winH, drwW, drwH;
     SDL_GetWindowSize(win, &winW, &winH);
     rtData.windowSizeMsg.post(Vec2i(winW, winH));
-    
+
     SDL_GL_GetDrawableSize(win, &drwW, &drwH);
     rtData.drawableSizeMsg.post(Vec2i(drwW, drwH));
 
     /* Load and post key bindings */
     rtData.bindingUpdateMsg.post(loadBindings(conf));
-    
+
 #ifdef __APPLE__
     if (conf.manualFolderSelect) {
         /* Update window title */
         eventThread.requestWindowRename(conf.windowTitle.c_str());
     }
-    
+
     /* Create Touch Bar */
     initTouchBar(win, conf);
 #endif
@@ -538,7 +538,7 @@ static SDL_GLContext initGL(SDL_Window *win, Config &conf,
 
   /* Setup GL context. Must be done in main thread since macOS 10.15 */
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    
+
   if (conf.debugMode)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 

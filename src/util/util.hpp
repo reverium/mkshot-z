@@ -18,10 +18,11 @@
 
 #pragma once
 
-#include <stdio.h>
-#include <string>
 #include <algorithm>
+#include <string>
 #include <vector>
+
+namespace fs = std::filesystem;
 
 static inline int
 wrapRange(int value, int min, int max)
@@ -35,18 +36,6 @@ wrapRange(int value, int min, int max)
 	return value % (max - min);
 }
 
-template<typename T>
-static inline T clamp(T value, T min, T max)
-{
-	if (value < min)
-		return min;
-
-	if (value > max)
-		return max;
-
-	return value;
-}
-
 static inline int
 findNextPow2(int start)
 {
@@ -58,37 +47,23 @@ findNextPow2(int start)
 }
 
 /* Reads the contents of the file at 'path' and
- * appends them to 'out'. Returns false on failure */
+** appends them to 'out'. Returns false on failure
+*/
 inline bool readFile(const char *path,
                      std::string &out)
 {
-	FILE *f = fopen(path, "rb");
+    size_t size;
+    void *data = SDL_LoadFile(path, &size);
 
-	if (!f)
-		return false;
+    if (!data) {
+        SDL_Log("Failed to read %s: %s", path, SDL_GetError());
+        return false;
+    }
 
-	fseek(f, 0, SEEK_END);
-	long size = ftell(f);
-	fseek(f, 0, SEEK_SET);
+    out.append(static_cast<const char*>(data), size);
 
-	size_t back = out.size();
-
-	out.resize(back+size);
-	size_t read = fread(&out[back], 1, size, f);
-	fclose(f);
-
-	if (read != (size_t) size)
-		out.resize(back+read);
-
-	return true;
-}
-
-inline void strReplace(std::string &str,
-                       char before, char after)
-{
-	for (size_t i = 0; i < str.size(); ++i)
-		if (str[i] == before)
-			str[i] = after;
+    SDL_free(data);
+    return true;
 }
 
 /* Check if [C]ontainer contains [V]alue */
@@ -147,5 +122,3 @@ inline C *dataPtr(std::vector<C> &v)
 
 #define DEF_ATTR_SIMPLE_STATIC(klass, name, type, location) \
 	DEF_ATTR_SIMPLE_DETAILED(klass, name, type, location, )
-
-

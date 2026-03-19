@@ -96,7 +96,7 @@ std::string mkshot_fs::getCurrentDirectory() {
 
 std::string mkshot_fs::normalizePath(const char *path, bool preferred, bool absolute) {
     stdfs::path stdPath(path);
-    
+
     if (!stdPath.is_absolute() && absolute)
         stdPath = stdfs::current_path() / stdPath;
 
@@ -116,7 +116,7 @@ std::string mkshot_fs::normalizePath(const char *path, bool preferred, bool abso
             sep = '/';
             sep_alt = '\\';
         }
-        
+
         if (ret[i] == sep_alt)
             ret[i] = sep;
     }
@@ -142,7 +142,7 @@ struct SDLRWIoContext {
                       SDL_GetError());
   }
 
-  ~SDLRWIoContext() { SDL_RWclose(io); }
+  ~SDLRWIoContext() { SDL_CloseIO(io); }
 };
 
 static PHYSFS_Io *createSDLRWIo(const char *filename);
@@ -153,19 +153,19 @@ static SDL_IOStream *getSDLRWops(PHYSFS_Io *io) {
 
 static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf,
                                  PHYSFS_uint64 len) {
-  return SDL_RWread(getSDLRWops(io), buf, 1, len);
+  return SDL_ReadIO(getSDLRWops(io), buf, len);
 }
 
 static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset) {
-  return (SDL_RWseek(getSDLRWops(io), offset, SDL_IO_SEEK_SET) != -1);
+  return (SDL_SeekIO(getSDLRWops(io), offset, SDL_IO_SEEK_SET) != -1);
 }
 
 static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io) {
-  return SDL_RWseek(getSDLRWops(io), 0, SDL_IO_SEEK_CUR);
+  return SDL_SeekIO(getSDLRWops(io), 0, SDL_IO_SEEK_CUR);
 }
 
 static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io) {
-  return SDL_RWsize(getSDLRWops(io));
+  return SDL_GetIOSize(getSDLRWops(io));
 }
 
 static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io) {
@@ -421,17 +421,17 @@ void FS::addPath(const char *path, const char *mountpoint, bool reload) {
         PHYSFS_ErrorCode err = PHYSFS_getLastErrorCode();
         throw Exception(Exception::PHYSFSError, "Failed to mount %s (%s)", path, PHYSFS_getErrorByCode(err));
     }
-    
+
     if (reload) reloadPathCache();
 }
 
 void FS::removePath(const char *path, bool reload) {
-    
+
     if (!PHYSFS_unmount(path)) {
         PHYSFS_ErrorCode err = PHYSFS_getLastErrorCode();
         throw Exception(Exception::PHYSFSError, "Failed to unmount %s (%s)", path, PHYSFS_getErrorByCode(err));
     }
-    
+
     if (reload) reloadPathCache();
 }
 
@@ -538,7 +538,7 @@ void FS::createPathCache() {
 
 void FS::reloadPathCache() {
     if (!p->havePathCache) return;
-    
+
     p->fileLists.clear();
     p->pathCache.clear();
     createPathCache();
@@ -582,7 +582,7 @@ static PHYSFS_EnumerateCallbackResult fontSetEnumCB(void *data, const char *dir,
 
   d->sfs->initFontSetCB(io, filename);
 
-  SDL_RWclose(&io);
+  SDL_CloseIO(&io);
 
   return PHYSFS_ENUM_OK;
 }
@@ -765,7 +765,7 @@ bool FS::exists(const char *filename) {
 
 const char *FS::desensitize(const char *filename) {
   std::string fn_lower(filename);
-    
+
   std::transform(fn_lower.begin(), fn_lower.end(), fn_lower.begin(), [](unsigned char c){
       return std::tolower(c);
   });

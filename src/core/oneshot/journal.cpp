@@ -72,7 +72,7 @@ struct JournalData
 #endif
 
 	SDL_Thread *thread;
-	SDL_mutex *mutex;
+	SDL_Mutex *mutex;
 };
 
 struct JournalPrivate

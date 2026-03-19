@@ -48,7 +48,7 @@ struct ALStream
 
 	std::string threadName;
 
-	SDL_mutex *pauseMut;
+	SDL_Mutex *pauseMut;
 	bool preemptPause;
 
 	/* When this flag isn't set and alSrc is

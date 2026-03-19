@@ -44,19 +44,19 @@ struct KbBindingData
 
 struct CtrlBindingData
 {
-    SDL_GameControllerButton source;
+    SDL_GamepadButton source;
     Input::ButtonCode target;
-    
+
     void add(BDescVec &d) const
     {
         SourceDesc src;
         src.type = CButton;
         src.d.cb = source;
-        
+
         BindingDesc desc;
         desc.src = src;
         desc.target = target;
-        
+
         d.push_back(desc);
     }
 };
@@ -123,7 +123,7 @@ static const CtrlBindingData defaultCtrlBindings[] =
 
 static elementsN(defaultCtrlBindings);
 
-static void addAxisBinding(BDescVec &d, SDL_GameControllerAxis axis, AxisDir dir, Input::ButtonCode target)
+static void addAxisBinding(BDescVec &d, SDL_GamepadAxis axis, AxisDir dir, Input::ButtonCode target)
 {
 	SourceDesc src;
 	src.type = CAxis;
@@ -252,8 +252,8 @@ static bool verifyDesc(const BindingDesc &desc)
 	case Invalid:
 		return true;
 	case Key:
-		return src.d.scan < SDL_NUM_SCANCODES;
-            
+		return src.d.scan < SDL_SCANCODE_COUNT;
+
     case CButton:
         return true;
 

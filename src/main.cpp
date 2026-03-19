@@ -80,6 +80,13 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #define GLINIT_SHOWERROR(s) rgssThreadError(threadData, s)
 #endif
 
+// TODO: move such stuff to a dedicated header
+static void MKShot_Deinit() {
+#ifdef MKSHOT_STEAM
+    STEAMSHIM_deinit();
+#endif
+}
+
 static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg);
 static void showInitError(const std::string &msg);
 
@@ -196,7 +203,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win) {
          * with default window icon; don't interfering with them */
          // oh my god who made the previous version
 #ifndef __APPLE__
-        iconIO = SDL_IOFromConstMem(___assets_icon_png, ___assets_icon_png_len);
+        iconIO = SDL_IOFromConstMem(assets_icon_png, assets_icon_png_len);
 #elif !defined(__WIN32__)
         iconIO = SDL_IOFromFile(mkshot_fs::getPathForAsset("icon", "png").c_str(), "rb");
 #endif
@@ -207,7 +214,7 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win) {
 
         if (icon) {
             SDL_SetWindowIcon(win, icon);
-            SDL_FreeSurface(icon);
+            SDL_DestroySurface(icon);
         } else {
             Debug() << "Unable to load icon:" << SDL_GetError();
         }
@@ -216,14 +223,14 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win) {
 
 int main(int argc, char *argv[]) {
     SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-    SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
+    SDL_SetHint(SDL_HINT_TV_REMOTE_AS_JOYSTICK, "0");
 
 #ifdef GLES2
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 #endif
 
     /* initialize SDL first */
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
       showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
       return 0;
     }
@@ -277,13 +284,12 @@ int main(int argc, char *argv[]) {
     if (!STEAMSHIM_init()) {
       showInitError("Failed to initialize Steamworks. The application cannot "
                     "continue launching.");
-      SDL_Quit();
       return 0;
     }
 #endif
 
     /* Load OneShot i18n language data */
-    OneshotImpl::i18n::loadLanguageMetadata();
+    OneShot::i18n::loadLanguageMetadata();
 
     if (conf.windowTitle.empty())
       conf.windowTitle = conf.game.title;
@@ -291,45 +297,6 @@ int main(int argc, char *argv[]) {
     assert(conf.rgssVersion >= 1 && conf.rgssVersion <= 3);
     printRgssVersion(conf.rgssVersion);
 
-    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
-    if (IMG_Init(imgFlags) != imgFlags) {
-      showInitError(std::string("Error initializing SDL_image: ") +
-                    SDL_GetError());
-      SDL_Quit();
-
-#ifdef MKSHOT_STEAM
-      STEAMSHIM_deinit();
-#endif
-
-      return 0;
-    }
-
-    if (TTF_Init() < 0) {
-      showInitError(std::string("Error initializing SDL_ttf: ") +
-                    SDL_GetError());
-      IMG_Quit();
-      SDL_Quit();
-
-#ifdef MKSHOT_STEAM
-      STEAMSHIM_deinit();
-#endif
-
-      return 0;
-    }
-
-    if (Sound_Init() == 0) {
-      showInitError(std::string("Error initializing SDL_sound: ") +
-                    Sound_GetError());
-      TTF_Quit();
-      IMG_Quit();
-      SDL_Quit();
-
-#ifdef MKSHOT_STEAM
-      STEAMSHIM_deinit();
-#endif
-
-      return 0;
-    }
 #ifdef __WIN32__
     WSAData wsadata = {0};
     if (WSAStartup(0x101, &wsadata) || wsadata.wVersion != 0x101) {
@@ -342,12 +309,12 @@ int main(int argc, char *argv[]) {
 #endif
 
     SDL_Window *win;
-    Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI;
+    Uint32 winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
     if (conf.winResizable)
       winFlags |= SDL_WINDOW_RESIZABLE;
     if (conf.fullscreen)
-      winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+      winFlags |= SDL_WINDOW_FULLSCREEN;
 
 #ifdef GLES2
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -362,16 +329,11 @@ int main(int argc, char *argv[]) {
 #endif
 #endif
 
-    win = SDL_CreateWindow(conf.windowTitle.c_str(), SDL_WINDOWPOS_UNDEFINED,
-                           SDL_WINDOWPOS_UNDEFINED, conf.defScreenW,
-                           conf.defScreenH, winFlags);
+    win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
 
     if (!win) {
       showInitError(std::string("Error creating window: ") + SDL_GetError());
-
-#ifdef MKSHOT_STEAM
-      STEAMSHIM_deinit();
-#endif
+      MKShot_Deinit();
       return 0;
     }
 
@@ -384,9 +346,7 @@ int main(int argc, char *argv[]) {
                           " cannot run from the Downloads directory.\n\n" +
                           "Please move the application to the Applications folder (or anywhere else) " +
                           "and try again.");
-#ifdef MKSHOT_STEAM
-            STEAMSHIM_deinit();
-#endif
+            MKShot_Deinit();
             return 0;
         }
     }
@@ -414,23 +374,21 @@ int main(int argc, char *argv[]) {
     ALCdevice *alcDev = alcOpenDevice(0);
 
     if (!alcDev) {
-      showInitError("Could not detect an available audio device.");
+        showInitError("Could not detect an available audio device.");
       SDL_DestroyWindow(win);
-      TTF_Quit();
-      IMG_Quit();
-      SDL_Quit();
-
-#ifdef MKSHOT_STEAM
-      STEAMSHIM_deinit();
-#endif
+      MKShot_Deinit();
       return 0;
     }
 
-    SDL_DisplayMode mode;
-    SDL_GetDisplayMode(0, 0, &mode);
+    SDL_DisplayID display_id = SDL_GetDisplayForWindow(win);
+    if (!display_id) {
+        showInitError(std::string("Error getting the display ID: ") + SDL_GetError());
+    }
+
+    const SDL_DisplayMode *mode = SDL_GetCurrentDisplayMode(display_id);
 
     /* Can't sync to display refresh rate if its value is unknown */
-    if (!mode.refresh_rate)
+    if (!mode->refresh_rate)
       conf.syncToRefreshrate = false;
 
     EventThread eventThread;
@@ -441,14 +399,14 @@ int main(int argc, char *argv[]) {
     SDL_GLContext glCtx = NULL;
 #endif
 
-    RGSSThreadData rtData(&eventThread, argv[0], win, alcDev, mode.refresh_rate,
+    RGSSThreadData rtData(&eventThread, argv[0], win, alcDev, mode->refresh_rate,
                           mkshot_sys::getScalingFactor(), conf, glCtx);
 
     int winW, winH, drwW, drwH;
     SDL_GetWindowSize(win, &winW, &winH);
     rtData.windowSizeMsg.post(Vec2i(winW, winH));
 
-    SDL_GL_GetDrawableSize(win, &drwW, &drwH);
+    SDL_GetWindowSizeInPixels(win, &drwW, &drwH);
     rtData.drawableSizeMsg.post(Vec2i(drwW, drwH));
 
     /* Load and post key bindings */
@@ -502,7 +460,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (rtData.glContext)
-      SDL_GL_DeleteContext(rtData.glContext);
+      SDL_GL_DestroyContext(rtData.glContext);
 
     /* Clean up any remainin events */
     eventThread.cleanup();
@@ -517,18 +475,9 @@ int main(int argc, char *argv[]) {
       WSACleanup();
 #endif
 
-    /* Unload OneShot i18n language data */
-    OneshotImpl::i18n::unloadLocale();
-    OneshotImpl::i18n::unloadLanguageMetadata();
-
-#ifdef MKSHOT_STEAM
-    STEAMSHIM_deinit();
-#endif
-    Sound_Quit();
-    TTF_Quit();
-    IMG_Quit();
-    SDL_Quit();
-
+    OneShot::i18n::unloadLocale();
+    OneShot::i18n::unloadLanguageMetadata();
+    MKShot_Deinit();
     return 0;
 }
 
@@ -553,7 +502,7 @@ static SDL_GLContext initGL(SDL_Window *win, Config &conf,
     initGLFunctions();
   } catch (const Exception &exc) {
     GLINIT_SHOWERROR(exc.msg);
-    SDL_GL_DeleteContext(glCtx);
+    SDL_GL_DestroyContext(glCtx);
 
     return 0;
   }

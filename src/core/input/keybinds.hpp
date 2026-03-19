@@ -49,11 +49,11 @@ struct SourceDesc
 		/* Keyboard scancode */
 		SDL_Scancode scan;
 		/* Joystick button index */
-		SDL_GameControllerButton cb;
+		SDL_GamepadButton cb;
 		struct
 		{
 			/* Joystick axis index */
-			SDL_GameControllerAxis axis;
+			SDL_GamepadAxis axis;
 			/* Joystick axis direction */
 			AxisDir dir;
 		} ca;

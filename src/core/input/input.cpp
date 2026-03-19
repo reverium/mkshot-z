@@ -162,7 +162,7 @@ std::unordered_map<int, int> vKeyToScancode{
     // 0xb6 LAUNCH_APP1
     // 0xb7 LAUNCH_APP2
     // 0xb8-0xb9 reserved
-    
+
     // Everything below here is OEM
     // and can vary by country
     m(0xba, SEMICOLON),
@@ -421,13 +421,13 @@ std::unordered_map<std::string, int> strToScancode{
 #undef m
 #define m(ctrl) {#ctrl, SDL_CONTROLLER_BUTTON_##ctrl}
 
-std::unordered_map<std::string, SDL_GameControllerButton> strToGCButton {
+std::unordered_map<std::string, SDL_GamepadButton> strToGCButton {
     m(A), m(B), m(X), m(Y),
     m(BACK), m(GUIDE), m(START),
     m(LEFTSTICK), m(RIGHTSTICK),
     m(LEFTSHOULDER), m(RIGHTSHOULDER),
     m(DPAD_UP), m(DPAD_DOWN), m(DPAD_LEFT), m(DPAD_RIGHT)
-    
+
 };
 
 #undef m
@@ -471,7 +471,7 @@ struct ButtonState
     bool triggered;
     bool repeated;
     bool released;
-    
+
     ButtonState()
     : pressed(false),
     triggered(false),
@@ -491,10 +491,10 @@ struct Binding
     Binding(Input::ButtonCode target = Input::None)
     : target(target)
     {}
-    
+
     virtual bool sourceActive() const = 0;
     virtual bool sourceRepeatable() const = 0;
-    
+
     Input::ButtonCode target;
 };
 
@@ -502,26 +502,26 @@ struct Binding
 struct KbBinding : public Binding
 {
     KbBinding() {}
-    
+
     KbBinding(const KbBindingData &data)
     : Binding(data.target),
     source(data.source)
     {}
-    
+
     bool sourceActive() const
     {
         /* Special case aliases */
         if (source == SDL_SCANCODE_LSHIFT)
             return EventThread::keyStates[source]
             || EventThread::keyStates[SDL_SCANCODE_RSHIFT];
-        
+
         if (source == SDL_SCANCODE_RETURN)
             return EventThread::keyStates[source]
             || EventThread::keyStates[SDL_SCANCODE_KP_ENTER];
-        
+
         return EventThread::keyStates[source];
     }
-    
+
     bool sourceRepeatable() const
     {
         return true;
@@ -531,48 +531,48 @@ struct KbBinding : public Binding
          (source >= SDL_SCANCODE_F1    && source <= SDL_SCANCODE_F12);
          */
     }
-    
+
     SDL_Scancode source;
 };
 
 struct CtrlButtonBinding : public Binding
 {
     CtrlButtonBinding() {}
-    
+
     bool sourceActive() const
     {
         return EventThread::controllerState.buttons[source];
     }
-    
+
     bool sourceRepeatable() const
     {
         return true;
     }
-    
-    SDL_GameControllerButton source;
+
+    SDL_GamepadButton source;
 };
 
 struct CtrlAxisBinding : public Binding
 {
     CtrlAxisBinding() {}
-    
+
     CtrlAxisBinding(uint8_t source, AxisDir dir, Input::ButtonCode target)
     : Binding(target), source(source), dir(dir) {}
-    
+
     bool sourceActive() const
     {
         float val = EventThread::controllerState.axes[source];
-        
+
         if (dir == Negative)
             return val < -JAXIS_THRESHOLD;
         else
             return val > JAXIS_THRESHOLD;
     }
-    
+
     bool sourceRepeatable() const {
         return true;
     }
-    
+
     uint8_t source;
     AxisDir dir;
 };
@@ -581,23 +581,23 @@ struct CtrlAxisBinding : public Binding
 struct MsBinding : public Binding
 {
     MsBinding() {}
-    
+
     MsBinding(int buttonIndex,
               Input::ButtonCode target)
     : Binding(target),
     index(buttonIndex)
     {}
-    
+
     bool sourceActive() const
     {
         return EventThread::mouseState.buttons[index];
     }
-    
+
     bool sourceRepeatable() const
     {
         return true;
     }
-    
+
     int index;
 };
 
@@ -670,62 +670,62 @@ struct InputPrivate
     std::vector<CtrlAxisBinding> ctrlABindings;
     std::vector<CtrlButtonBinding> ctrlBBindings;
     std::vector<MsBinding> msBindings;
-    
+
     /* Collective binding array */
     std::vector<Binding*> bindings;
-    
+
     ButtonState stateArray[BUTTON_CODE_COUNT*2];
-    
+
     ButtonState *states;
     ButtonState *statesOld;
-    
+
     // Raw keystates
-    uint8_t rawStateArray[SDL_NUM_SCANCODES*2];
-    
+    uint8_t rawStateArray[SDL_SCANCODE_COUNT*2];
+
     uint8_t *rawStates;
     uint8_t *rawStatesOld;
-    
+
     // Gamepad button states
-    uint8_t rawButtonStateArray[SDL_CONTROLLER_BUTTON_MAX*2];
-    
+    uint8_t rawButtonStateArray[SDL_GAMEPAD_BUTTON_COUNT*2];
+
     uint8_t *rawButtonStates;
     uint8_t *rawButtonStatesOld;
-    
+
     // Gamepad axes & mouse coordinates
-    int16_t axisStateArray[SDL_CONTROLLER_AXIS_MAX];
+    int16_t axisStateArray[SDL_GAMEPAD_AXIS_COUNT];
     int mousePos[2];
     bool mouseInWindow;
-    
+
     Input::ButtonCode repeating;
     int rawRepeating;
     int buttonRepeating;
-    
+
     unsigned int repeatCount;
     unsigned int rawRepeatCount;
     unsigned int buttonRepeatCount;
-    
+
     double repeatTime, rawRepeatTime, buttonRepeatTime;
-    
+
     unsigned int repeatStart;
     unsigned int repeatDelay;
-    
+
     double last_update;
-    
+
     bool triedExit;
-    
+
     int vScrollDistance;
-    
+
     struct
     {
         int active;
         Input::ButtonCode previous;
     } dir4Data;
-    
+
     struct
     {
         int active;
     } dir8Data;
-    
+
     void recalcRepeatTime(unsigned int fps) {
         // 0 fps would cause a divide by zero segfault later.
         // Bail in that case.
@@ -735,78 +735,78 @@ struct InputPrivate
         }
 
         double framems = 1.f / fps;
-        
+
         // Approximate time in milliseconds
         double start = (rgssVer >= 2) ? 0.375 : 0.400;
         double delay = 0.100;
-        
+
         repeatStart = ceil(start / framems);
         repeatDelay = ceil(delay / framems);
     }
-    
+
     InputPrivate(const RGSSThreadData &rtData)
     {
         last_update = 0;
-        
+
         initStaticKbBindings();
         initMsBindings();
-        
+
         /* Main thread should have these posted by now */
         checkBindingChange(rtData);
-        
+
         triedExit = false;
-        
+
         int fps = rtData.config.fixedFramerate;
         if (!fps) fps = (rgssVer >= 2) ? 60 : 40;
         recalcRepeatTime(fps);
-        
+
         states    = stateArray;
         statesOld = stateArray + BUTTON_CODE_COUNT;
-        
+
         rawStates = rawStateArray;
-        rawStatesOld = rawStateArray + SDL_NUM_SCANCODES;
-        
+        rawStatesOld = rawStateArray + SDL_SCANCODE_COUNT;
+
         rawButtonStates = rawButtonStateArray;
-        rawButtonStatesOld = rawButtonStateArray + SDL_CONTROLLER_BUTTON_MAX;
-        
+        rawButtonStatesOld = rawButtonStateArray + SDL_GAMEPAD_BUTTON_COUNT;
+
         /* Clear buffers */
         clearBuffer();
         swapBuffers();
         clearBuffer();
-        
+
         repeating = Input::None;
         repeatCount = 0;
-        
+
         dir4Data.active = 0;
         dir4Data.previous = Input::None;
-        
+
         dir8Data.active = 0;
-        
+
         vScrollDistance = 0;
     }
-    
+
     inline ButtonState &getStateCheck(int code)
     {
         int index;
-        
+
         if (code < 0 || (size_t) code > mapToIndexN-1)
             index = 0;
         else
             index = mapToIndex[code];
-        
+
         return states[index];
     }
-    
+
     inline ButtonState &getState(Input::ButtonCode code)
     {
         return states[mapToIndex[code]];
     }
-    
+
     inline ButtonState &getOldState(Input::ButtonCode code)
     {
         return statesOld[mapToIndex[code]];
     }
-    
+
     ButtonState getStateRaw(int code, bool useVKey)
     {
         ButtonState b;
@@ -818,27 +818,27 @@ struct InputPrivate
                 case 0x10:
                     return getState(Input::Shift);
                     break;
-                    
+
                 case 0x11:
                     return getState(Input::Ctrl);
                     break;
-                    
+
                 case 0x12:
                     return getState(Input::Alt);
                     break;
-                    
+
                 case 0x1:
                     return getState(Input::MouseLeft);
                     break;
-                    
+
                 case 0x2:
                     return getState(Input::MouseRight);
                     break;
-                    
+
                 case 0x4:
                     return getState(Input::MouseMiddle);
                     break;
-                    
+
                 default:
                     ButtonState b;
                     try
@@ -850,84 +850,84 @@ struct InputPrivate
                     break;
             }
         }
-        
+
         b.pressed = rawStates[scancode];
         b.triggered = (rawStates[scancode] && !rawStatesOld[scancode]);
         b.released = (!rawStates[scancode] && rawStatesOld[scancode]);
-        
+
         b.repeated = (rawRepeating == scancode) && (rawRepeatCount >= repeatStart && ((rawRepeatCount+1) % repeatDelay) == 0);
-        
+
         return b;
     }
-    
+
     ButtonState getControllerButtonState(int button) {
         ButtonState b;
-        
+
         b.pressed = rawButtonStates[button];
         b.triggered = (rawButtonStates[button] && !rawButtonStatesOld[button]);
         b.released = (!rawButtonStates[button] && rawButtonStatesOld[button]);
-        
+
         b.repeated = (buttonRepeating == button) && (buttonRepeatCount >= repeatStart && ((buttonRepeatCount+1) % repeatDelay) == 0);
-        
+
         return b;
     }
-    
+
     void swapBuffers()
     {
         ButtonState *tmp = states;
         states = statesOld;
         statesOld = tmp;
-        
+
         uint8_t *tmpr = rawStates;
         rawStates = rawStatesOld;
         rawStatesOld = tmpr;
-        
+
         uint8_t *tmpb = rawButtonStates;
         rawButtonStates = rawButtonStatesOld;
         rawButtonStatesOld = tmpb;
     }
-    
+
     void clearBuffer()
     {
         const size_t size = sizeof(ButtonState) * BUTTON_CODE_COUNT;
         memset(states, 0, size);
-        
-        memset(rawStates, 0, SDL_NUM_SCANCODES);
-        
-        memset(rawButtonStates, 0, SDL_CONTROLLER_BUTTON_MAX);
+
+        memset(rawStates, 0, SDL_SCANCODE_COUNT);
+
+        memset(rawButtonStates, 0, SDL_GAMEPAD_BUTTON_COUNT);
     }
-    
+
     void checkBindingChange(const RGSSThreadData &rtData)
     {
         BDescVec d;
-        
+
         if (!rtData.bindingUpdateMsg.poll(d))
             return;
-        
+
         applyBindingDesc(d);
     }
-    
+
     template<class B>
     void appendBindings(std::vector<B> &bind)
     {
         for (size_t i = 0; i < bind.size(); ++i)
             bindings.push_back(&bind[i]);
     }
-    
+
     void applyBindingDesc(const BDescVec &d)
     {
         kbBindings.clear();
         ctrlABindings.clear();
         ctrlBBindings.clear();
-        
+
         for (size_t i = 0; i < d.size(); ++i)
         {
             const BindingDesc &desc = d[i];
             const SourceDesc &src = desc.src;
-            
+
             if (desc.target == Input::None)
                 continue;
-            
+
             switch (desc.src.type)
             {
                 case Invalid :
@@ -938,7 +938,7 @@ struct InputPrivate
                     bind.source = src.d.scan;
                     bind.target = desc.target;
                     kbBindings.push_back(bind);
-                    
+
                     break;
                 }
                 case CAxis :
@@ -948,7 +948,7 @@ struct InputPrivate
                     bind.dir = src.d.ca.dir;
                     bind.target = desc.target;
                     ctrlABindings.push_back(bind);
-                    
+
                     break;
                 }
                 case CButton :
@@ -957,36 +957,36 @@ struct InputPrivate
                     bind.source = src.d.cb;
                     bind.target = desc.target;
                     ctrlBBindings.push_back(bind);
-                    
+
                     break;
                 }
                 default :
                     assert(!"unreachable");
             }
         }
-        
+
         bindings.clear();
-        
+
         appendBindings(kbStatBindings);
         appendBindings(msBindings);
-        
+
         appendBindings(kbBindings);
         appendBindings(ctrlABindings);
         appendBindings(ctrlBBindings);
     }
-    
+
     void initStaticKbBindings()
     {
         kbStatBindings.clear();
-        
+
         for (size_t i = 0; i < staticKbBindingsN; ++i)
             kbStatBindings.push_back(KbBinding(staticKbBindings[i]));
     }
-    
+
     void initMsBindings()
     {
         msBindings.resize(5);
-        
+
         size_t i = 0;
         msBindings[i++] = MsBinding(SDL_BUTTON_LEFT,   Input::MouseLeft);
         msBindings[i++] = MsBinding(SDL_BUTTON_MIDDLE, Input::MouseMiddle);
@@ -994,14 +994,14 @@ struct InputPrivate
         msBindings[i++] = MsBinding(SDL_BUTTON_X1, Input::MouseX1);
         msBindings[i++] = MsBinding(SDL_BUTTON_X2, Input::MouseX2);
     }
-    
+
     void pollBindings(Input::ButtonCode &repeatCand)
     {
         for (Binding *bind : bindings) {
             // Get all binding states
             pollBindingPriv(*bind, repeatCand);
         }
-        
+
         for (Binding *bind : bindings) {
             // Check for released buttons, now that all the bindings
             // have been checked
@@ -1010,33 +1010,33 @@ struct InputPrivate
             if (!state.pressed && oldState.pressed)
                 state.released = true;
         }
-        
+
         updateDir4();
         updateDir8();
     }
-    
+
     void pollBindingPriv(const Binding &b,
                          Input::ButtonCode &repeatCand)
     {
         if (!b.sourceActive())
             return;
-        
+
         if (b.target == Input::None)
             return;
-        
+
         ButtonState &state = getState(b.target);
         ButtonState &oldState = getOldState(b.target);
-        
+
         state.pressed = true;
-        
+
         /* Must have been released before to trigger */
         if (!oldState.pressed)
             state.triggered = true;
-        
+
         /* Unbound keys don't create/break repeat */
         if (repeatCand != Input::None)
             return;
-        
+
         if (repeating != b.target &&
             !oldState.pressed)
         {
@@ -1047,13 +1047,13 @@ struct InputPrivate
                 repeating = Input::None;
         }
     }
-    
+
     void updateRaw()
     {
-        
-        memcpy(rawStates, shState->eThread().keyStates, SDL_NUM_SCANCODES);
-        
-        for (int i = 0; i < SDL_NUM_SCANCODES; i++)
+
+        memcpy(rawStates, shState->eThread().keyStates, SDL_SCANCODE_COUNT);
+
+        for (int i = 0; i < SDL_SCANCODE_COUNT; i++)
         {
             if (rawStates[i] && rawStatesOld[i])
             {
@@ -1067,23 +1067,23 @@ struct InputPrivate
                     rawRepeatTime = shState->runTime();
                     rawRepeating = i;
                 }
-                
+
                 return;
             }
         }
-        
+
         rawRepeating = -1;
-        
+
     }
-    
+
     void updateControllerRaw()
     {
-        for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
+        for (int i = 0; i < SDL_GAMEPAD_AXIS_COUNT; i++)
             axisStateArray[i] = shState->eThread().controllerState.axes[i];
-        
-        memcpy(rawButtonStates, shState->eThread().controllerState.buttons, SDL_CONTROLLER_BUTTON_MAX);
-        
-        for (int i = 0; i < SDL_CONTROLLER_BUTTON_MAX; i++)
+
+        memcpy(rawButtonStates, shState->eThread().controllerState.buttons, SDL_GAMEPAD_BUTTON_COUNT);
+
+        for (int i = 0; i < SDL_GAMEPAD_BUTTON_COUNT; i++)
         {
             if (rawButtonStates[i] && rawButtonStatesOld[i])
             {
@@ -1095,27 +1095,27 @@ struct InputPrivate
                     buttonRepeatTime = shState->runTime();
                     buttonRepeating = i;
                 }
-                
+
                 return;
             }
         }
-        
+
         buttonRepeating = -1;
     }
-    
+
     void updateDir4()
     {
         int dirFlag = 0;
-        
+
         for (size_t i = 0; i < 4; ++i)
             dirFlag |= (getState(dirs[i]).pressed ? dirFlags[i] : 0);
-        
+
         if (dirFlag == deadDirFlags[0] || dirFlag == deadDirFlags[1])
         {
             dir4Data.active = Input::None;
             return;
         }
-        
+
         if (dir4Data.previous != Input::None)
         {
             /* Check if prev still pressed */
@@ -1125,30 +1125,30 @@ struct InputPrivate
                 {
                     Input::ButtonCode other =
                     otherDirs[(dir4Data.previous/2)-1][i];
-                    
+
                     if (!getState(other).pressed)
                         continue;
-                    
+
                     dir4Data.active = other;
                     return;
                 }
             }
         }
-        
+
         for (size_t i = 0; i < 4; ++i)
         {
             if (!getState(dirs[i]).pressed)
                 continue;
-            
+
             dir4Data.active = dirs[i];
             dir4Data.previous = dirs[i];
             return;
         }
-        
+
         dir4Data.active   = Input::None;
         dir4Data.previous = Input::None;
     }
-    
+
     void updateDir8()
     {
         static const int combos[4][4] =
@@ -1158,27 +1158,27 @@ struct InputPrivate
             { 3, 0, 6, 9 },
             { 0, 7, 9, 8 }
         };
-        
+
         dir8Data.active = 0;
-        
+
         for (size_t i = 0; i < 4; ++i)
         {
             Input::ButtonCode one = dirs[i];
-            
+
             if (!getState(one).pressed)
                 continue;
-            
+
             for (int j = 0; j < 3; ++j)
             {
                 Input::ButtonCode other = otherDirs[i][j];
-                
+
                 if (!getState(other).pressed)
                     continue;
-                
+
                 dir8Data.active = combos[(one/2)-1][(other/2)-1];
                 return;
             }
-            
+
             dir8Data.active = one;
             return;
         }
@@ -1203,25 +1203,25 @@ void Input::update()
 {
     shState->checkShutdown();
     p->checkBindingChange(shState->rtData());
-    
+
     p->swapBuffers();
     p->clearBuffer();
-    
+
     ButtonCode repeatCand = None;
-    
+
     /* Poll all bindings */
     p->pollBindings(repeatCand);
-    
+
     // Update raw keys, controller buttons and axes
     p->updateRaw();
     p->updateControllerRaw();
-    
+
     // Record mouse positions
     p->mousePos[0] = shState->eThread().mouseState.x;
     p->mousePos[1] = shState->eThread().mouseState.y;
     p->mouseInWindow = shState->eThread().mouseState.inWindow;
-    
-    
+
+
     /* Check for new repeating key */
     if (repeatCand != None && repeatCand != p->repeating)
     {
@@ -1229,16 +1229,16 @@ void Input::update()
         p->repeatCount = 0;
         p->repeatTime = shState->runTime();
         p->getState(repeatCand).repeated = true;
-        
+
         p->last_update = p->repeatTime;
         return;
     }
-    
+
     /* Check if repeating key is still pressed */
     if (p->getState(p->repeating).pressed)
     {
         p->repeatCount++;
-        
+
         /*
          bool repeated;
          if (rgssVer >= 2)
@@ -1248,18 +1248,18 @@ void Input::update()
          */
         bool repeated = p->repeatCount >= p->repeatStart && ((p->repeatCount+1) % p->repeatDelay) == 0;
         p->getState(p->repeating).repeated |= repeated;
-        
+
         p->last_update = shState->runTime();
         return;
     }
-    
+
     p->repeating = None;
-    
+
     /* Fetch new cumulative scroll distance and reset counter */
-    p->vScrollDistance = SDL_AtomicSet(&EventThread::verticalScrollDistance, 0);
-    
+    p->vScrollDistance = SDL_SetAtomicInt(&EventThread::verticalScrollDistance, 0);
+
     p->last_update = shState->runTime();
-    
+
     RGSSThreadData &rtData = shState->rtData();
     p->triedExit = rtData.triedExit;
     rtData.triedExit.clear();
@@ -1271,17 +1271,17 @@ std::vector<std::string> Input::getBindings(ButtonCode code) {
         if (b.target != code) continue;
         ret.push_back(SDL_GetScancodeName(b.source));
     }
-    
+
     for (const auto &b : p->ctrlBBindings) {
         if (b.target != code) continue;
         ret.push_back(std::string("CBUTTON") + std::to_string(b.source));
     }
-    
+
     for (const auto &b : p->ctrlABindings) {
         if (b.target != code) continue;
         ret.push_back(std::string("CAXIS") + std::to_string(b.source));
     }
-    
+
     return ret;
 }
 
@@ -1307,14 +1307,14 @@ bool Input::isReleased(int button) {
 unsigned int Input::count(int button) {
     if (button != p->repeating)
         return 0;
-    
+
     return p->repeatCount;
 }
 
 double Input::repeatTime(int button) {
     if (button != p->repeating)
         return 0;
-    
+
     return shState->runTime() - p->repeatTime;
 }
 
@@ -1366,14 +1366,14 @@ unsigned int Input::repeatcount(int code, bool isVKey) {
     }
     if (c != p->rawRepeating)
         return 0;
-    
+
     return p->rawRepeatCount;
 }
 
 unsigned int Input::controllerRepeatcount(int button) {
     if (button != p->buttonRepeating)
         return 0;
-    
+
     return p->buttonRepeatCount;
 }
 
@@ -1383,17 +1383,17 @@ double Input::repeatTimeEx(int code, bool isVKey) {
         try { c = vKeyToScancode[code]; }
         catch (...) { return 0; }
     }
-    
+
     if (c != p->rawRepeating)
         return 0;
-    
+
     return shState->runTime() - p->rawRepeatTime;
 }
 
 double Input::controllerRepeatTimeEx(int button) {
     if (button != p->buttonRepeating)
         return 0;
-    
+
     return shState->runTime() - p->buttonRepeatTime;
 }
 
@@ -1421,10 +1421,10 @@ unsigned int Input::rawAxesLength() {
     return sizeof(p->axisStateArray) / sizeof(int16_t);
 }
 
-short Input::getControllerAxisValue(SDL_GameControllerAxis axis) {
+short Input::getControllerAxisValue(SDL_GamepadAxis axis) {
     if (axis < 0 || (uint32_t)axis >= rawAxesLength())
         return 0;
-    
+
     return rawAxes()[axis];
 }
 
@@ -1445,14 +1445,14 @@ int Input::dir8Value()
 int Input::mouseX()
 {
     RGSSThreadData &rtData = shState->rtData();
-    
+
     return (p->mousePos[0] - rtData.screenOffset.x) * rtData.sizeResoRatio.x;
 }
 
 int Input::mouseY()
 {
     RGSSThreadData &rtData = shState->rtData();
-    
+
     return (p->mousePos[1] - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
 
@@ -1469,7 +1469,7 @@ bool Input::getControllerConnected()
 const char *Input::getControllerName()
 {
     return (getControllerConnected()) ?
-    SDL_GameControllerName(shState->eThread().controller()) :
+    SDL_GamepadName(shState->eThread().controller()) :
     0;
 }
 
@@ -1477,8 +1477,8 @@ int Input::getControllerPowerLevel()
 {
     if (!getControllerConnected())
         return SDL_JOYSTICK_POWER_UNKNOWN;
-    
-    SDL_Joystick *js = SDL_GameControllerGetJoystick(shState->eThread().controller());
+
+    SDL_Joystick *js = SDL_GamepadGetJoystick(shState->eThread().controller());
     return SDL_JoystickCurrentPowerLevel(js);
 }
 
@@ -1516,17 +1516,17 @@ void Input::setClipboardText(char *text)
         throw Exception(Exception::SDLError, "Failed to set clipboard text: %s", SDL_GetError());
 }
 
-const char *Input::getAxisName(SDL_GameControllerAxis axis) {
-    if (axis < 0 || axis >= SDL_CONTROLLER_AXIS_MAX)
+const char *Input::getAxisName(SDL_GamepadAxis axis) {
+    if (axis < 0 || axis >= SDL_GAMEPAD_AXIS_COUNT)
         return "Invalid";
-    
+
     return axisNames[axis];
 }
 
-const char *Input::getButtonName(SDL_GameControllerButton button) {
-    if (button < 0 || button >= SDL_CONTROLLER_BUTTON_MAX)
+const char *Input::getButtonName(SDL_GamepadButton button) {
+    if (button < 0 || button >= SDL_GAMEPAD_BUTTON_COUNT)
         return "Invalid";
-    
+
     return buttonNames[button];
 }
 

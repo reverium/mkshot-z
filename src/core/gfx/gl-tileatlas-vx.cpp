@@ -305,7 +305,7 @@ void build(TEXFBO &tf, Bitmap *bitmaps[BM_COUNT])
 			TEX::uploadSubImage(shadowArea.x*32, shadowArea.y*32,
 				shadow->w, shadow->h, shadow->pixels, GL_RGBA);
 		}
-		SDL_FreeSurface(shadow);
+		SDL_DestroySurface(shadow);
 	}
 
 	Bitmap *bm;

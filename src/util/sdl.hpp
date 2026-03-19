@@ -35,24 +35,24 @@ struct AtomicFlag
 
 	AtomicFlag(bool value)
 	{
-		SDL_AtomicSet(&atom, value ? 1 : 0);
+		SDL_SetAtomicInt(&atom, value ? 1 : 0);
 	}
 
 	void set()
 	{
-		SDL_AtomicSet(&atom, 1);
+		SDL_SetAtomicInt(&atom, 1);
 	}
 
 	void clear()
 	{
-		SDL_AtomicSet(&atom, 0);
+		SDL_SetAtomicInt(&atom, 0);
 	}
-    
+
     void wait()
     {
-        while (SDL_AtomicGet(&atom)) {}
+        while (SDL_GetAtomicInt(&atom)) {}
     }
-    
+
     void reset()
     {
         wait();
@@ -61,11 +61,11 @@ struct AtomicFlag
 
 	operator bool() const
 	{
-		return SDL_AtomicGet(&atom);
+		return SDL_GetAtomicInt(&atom);
 	}
 
 private:
-	mutable SDL_atomic_t atom;
+	mutable SDL_AtomicInt atom;
 };
 
 template<class C, void (C::*func)()>
@@ -81,36 +81,20 @@ SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string())
 	return SDL_CreateThread((__sdlThreadFun<C, func>), name.c_str(), obj);
 }
 
-/* On Android, SDL_IOFromFile always opens files from inside
- * the apk asset folder even when a file with same name exists
- * on the physical filesystem. This wrapper attempts to open a
- * real file first before falling back to the assets folder */
-static inline
-SDL_IOStream *IOFromFile(const char *filename,
-                      const char *mode)
-{
-	FILE *f = fopen(filename, mode);
-
-	if (!f)
-		return SDL_IOFromFile(filename, mode);
-
-	return SDL_IOFromFP(f, SDL_TRUE);
-}
-
 inline bool readFileSDL(const char *path,
                         std::string &out)
 {
-	SDL_IOStream *f = IOFromFile(path, "rb");
+	SDL_IOStream *f = SDL_IOFromFile(path, "rb");
 
 	if (!f)
 		return false;
 
-	long size = SDL_RWsize(f);
+	long size = SDL_GetIOSize(f);
 	size_t back = out.size();
 
 	out.resize(back+size);
-	size_t read = SDL_RWread(f, &out[back], 1, size);
-	SDL_RWclose(f);
+	size_t read = SDL_ReadIO(f, &out[back], size);
+	SDL_CloseIO(f);
 
 	if (read != (size_t) size)
 		out.resize(back+read);
@@ -147,7 +131,7 @@ private:
 			start += pbSize;
 		}
 
-		size_t n = SDL_RWread(io, start, 1, bufSize - (start - base));
+		size_t n = SDL_ReadIO(io, start, bufSize - (start - base));
 		if (n == 0)
 			return traits_type::eof();
 
@@ -165,7 +149,7 @@ class SDLRWStream
 public:
 	SDLRWStream(const char *filename,
 	            const char *mode)
-	    : io(IOFromFile(filename, mode)),
+	    : io(SDL_IOFromFile(filename, mode)),
 	      buf(io),
 	      s(&buf)
 	{}
@@ -173,7 +157,7 @@ public:
 	~SDLRWStream()
 	{
 		if (io)
-			SDL_RWclose(io);
+			SDL_CloseIO(io);
 	}
 
 	operator bool() const

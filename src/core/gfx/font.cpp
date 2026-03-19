@@ -44,13 +44,13 @@
 #define BUNDLED_FONT wqymicrohei
 
 #define BUNDLED_FONT_DECL(FONT) \
-	extern unsigned char ___assets_##FONT##_ttf[]; \
-	extern unsigned int ___assets_##FONT##_ttf_len;
+	extern unsigned char assets_##FONT##_ttf[]; \
+	extern unsigned int assets_##FONT##_ttf_len;
 
 BUNDLED_FONT_DECL(BUNDLED_FONT)
 
-#define BUNDLED_FONT_D(f) ___assets_## f ##_ttf
-#define BUNDLED_FONT_L(f) ___assets_## f ##_ttf_len
+#define BUNDLED_FONT_D(f) assets_## f ##_ttf
+#define BUNDLED_FONT_L(f) assets_## f ##_ttf_len
 
 // Go fuck yourself CPP
 #define BNDL_F_D(f) BUNDLED_FONT_D(f)
@@ -93,7 +93,7 @@ struct SharedFontStatePrivate
 	/* Pool of already opened fonts; once opened, they are reused
 	 * and never closed until the termination of the program */
 	BoostHash<FontKey, TTF_Font*> pool;
-    
+
     /* Internal default font family that is used anytime an
      * empty/invalid family is requested */
     std::string defaultFamily;
@@ -303,7 +303,7 @@ struct FontPrivate
 	 * (when it is queried by a Bitmap), prior it is
 	 * set to null */
 	TTF_Font *sdlFont;
-    
+
     bool isSolid;
 
 	FontPrivate(int size)

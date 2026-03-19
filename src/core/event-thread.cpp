@@ -85,7 +85,7 @@ uint8_t EventThread::keyStates[];
 EventThread::ControllerState EventThread::controllerState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
-SDL_atomic_t EventThread::verticalScrollDistance;
+SDL_AtomicInt EventThread::verticalScrollDistance;
 
 /* User event codes */
 enum
@@ -179,16 +179,16 @@ void EventThread::process(RGSSThreadData &rtData)
     bool terminate = false;
 
 #ifdef __APPLE__
-    SDL_GameControllerAddMappingsFromFile(mkshot_fs::getPathForAsset("gamecontrollerdb", "txt").c_str());
+    SDL_GamepadAddMappingsFromFile(mkshot_fs::getPathForAsset("gamecontrollerdb", "txt").c_str());
 #else
-    SDL_GameControllerAddMappingsFromRW(
-        SDL_IOFromConstMem(___assets_gamecontrollerdb_txt, ___assets_gamecontrollerdb_txt_len),
+    SDL_GamepadAddMappingsFromRW(
+        SDL_IOFromConstMem(assets_gamecontrollerdb_txt, assets_gamecontrollerdb_txt_len),
     1);
 #endif
 
     SDL_JoystickUpdate();
     if (SDL_NumJoysticks() > 0 && SDL_IsGameController(0)) {
-            ctrl = SDL_GameControllerOpen(0);
+            ctrl = SDL_GamepadOpen(0);
     }
 
     char buffer[128];
@@ -268,7 +268,7 @@ void EventThread::process(RGSSThreadData &rtData)
                         winH = event.window.data2;
 
                         int drwW, drwH;
-                        SDL_GL_GetDrawableSize(win, &drwW, &drwH);
+                        SDL_GetWindowSizeInPixels(win, &drwW, &drwH);
 
                         windowSizeMsg.post(Vec2i(winW, winH));
                         drawableSizeMsg.post(Vec2i(drwW, drwH));
@@ -452,7 +452,7 @@ void EventThread::process(RGSSThreadData &rtData)
                 if (event.cdevice.which > 0)
                     break;
 
-                ctrl = SDL_GameControllerOpen(0);
+                ctrl = SDL_GamepadOpen(0);
                 break;
 
             case SDL_CONTROLLERDEVICEREMOVED:
@@ -477,7 +477,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
             case SDL_MOUSEWHEEL :
                 /* Only consider vertical scrolling for now */
-                SDL_AtomicAdd(&verticalScrollDistance, event.wheel.y);
+                SDL_AddAtomicInt(&verticalScrollDistance, event.wheel.y);
 
             case SDL_FINGERDOWN :
                 i = event.tfinger.fingerId;
@@ -621,8 +621,8 @@ void EventThread::process(RGSSThreadData &rtData)
     /* Just in case */
     rtData.syncPoint.resumeThreads();
 
-    if (SDL_GameControllerGetAttached(ctrl))
-        SDL_GameControllerClose(ctrl);
+    if (SDL_GamepadGetAttached(ctrl))
+        SDL_GamepadClose(ctrl);
 
 #ifndef __APPLE__
     delete sMenu;
@@ -711,7 +711,7 @@ void EventThread::resetInputStates()
 void EventThread::setFullscreen(SDL_Window *win, bool mode)
 {
     SDL_SetWindowFullscreen
-    (win, mode ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    (win, mode ? SDL_WINDOW_FULLSCREEN : 0);
     fullscreen = mode;
 }
 
@@ -840,7 +840,7 @@ bool EventThread::getControllerConnected() const
     return ctrl != 0;
 }
 
-SDL_GameController *EventThread::controller() const
+SDL_Gamepad *EventThread::controller() const
 {
     return ctrl;
 }
@@ -951,9 +951,9 @@ void SyncPoint::Util::unlock(bool multi)
     locked.clear();
 
     if (multi)
-        SDL_CondBroadcast(cond);
+        SDL_BroadcastCondition(cond);
     else
-        SDL_CondSignal(cond);
+        SDL_SignalCondition(cond);
 }
 
 void SyncPoint::Util::waitForUnlock()
@@ -961,7 +961,7 @@ void SyncPoint::Util::waitForUnlock()
     SDL_LockMutex(mut);
 
     while (locked)
-        SDL_CondWait(cond, mut);
+        SDL_WaitCondition(cond, mut);
 
     SDL_UnlockMutex(mut);
 }

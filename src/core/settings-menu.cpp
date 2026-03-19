@@ -90,22 +90,22 @@ std::string sourceDescString(const SourceDesc &src)
 		case Key:
 		{
 			if (src.d.scan == SDL_SCANCODE_LSHIFT)
-				return OneshotImpl::i18n::findtext("Shift");
+				return OneShot::i18n::findtext("Shift");
 
 			SDL_Keycode key = SDL_GetKeyFromScancode(src.d.scan);
 			const char *str = SDL_GetKeyName(key);
 
 			if (*str == '\0') {
-				return OneshotImpl::i18n::findtext("Unknown key");
+				return OneShot::i18n::findtext("Unknown key");
 			} else {
-				snprintf(buf, sizeof(buf), OneshotImpl::i18n::findtext("%s Key").c_str(), str);
+				snprintf(buf, sizeof(buf), OneShot::i18n::findtext("%s Key").c_str(), str);
 				return buf;
 			}
 		}
 
 		case CButton:
 			snprintf(buf, sizeof(buf), "%s", shState->input().getButtonName(src.d.cb));
-			return OneshotImpl::i18n::findtext(buf);
+			return OneShot::i18n::findtext(buf);
 
 		case CAxis:
 			if (src.d.ca.axis >= SDL_CONTROLLER_AXIS_LEFTX && src.d.ca.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
@@ -136,7 +136,7 @@ std::string sourceDescString(const SourceDesc &src)
 			} else {
 				snprintf(buf, sizeof(buf), "%s", shState->input().getAxisName(src.d.ca.axis));
 			}
-			return OneshotImpl::i18n::findtext(buf);
+			return OneShot::i18n::findtext(buf);
 	}
 
 	assert(!"unreachable");
@@ -183,7 +183,7 @@ struct BindingWidget : Widget
 	      vb(vButtons[vbIndex]),
 	      hoveredCell(-1)
 	{
-        
+
     }
 
 	void appendBindings(BDescVec &d) const;
@@ -454,7 +454,7 @@ struct SettingsMenuPrivate
 		SDL_Surface *txt = createTextSurface(str, c, bold);
 		if (txt) {
 			blitTextSurf(surf, x, y, alignW, txt, just);
-			SDL_FreeSurface(txt);
+			SDL_DestroySurface(txt);
 		}
 	}
 
@@ -544,7 +544,7 @@ struct SettingsMenuPrivate
 		if (state == AwaitingInput)
 		{
 			char buf[64];
-			snprintf(buf, sizeof(buf), OneshotImpl::i18n::findtext("Press key or joystick button for \"%s\"").c_str(), captureName);
+			snprintf(buf, sizeof(buf), OneShot::i18n::findtext("Press key or joystick button for \"%s\"").c_str(), captureName);
 
 			drawOff = Vec2i();
 
@@ -572,8 +572,8 @@ struct SettingsMenuPrivate
 
 			SDL_BlitSurface(txt, 0, winSurf, &fill);
 
-			SDL_FreeSurface(txt);
-			SDL_FreeSurface(dark);
+			SDL_DestroySurface(txt);
+			SDL_DestroySurface(dark);
 		}
 
 		SDL_UpdateWindowSurface(window);
@@ -651,7 +651,7 @@ struct SettingsMenuPrivate
 
 		case SDL_CONTROLLERBUTTONDOWN:
 			desc.type = CButton;
-			desc.d.cb = (SDL_GameControllerButton)event.cbutton.button;
+			desc.d.cb = (SDL_GamepadButton)event.cbutton.button;
 			break;
 
 		case SDL_CONTROLLERAXISMOTION:
@@ -663,7 +663,7 @@ struct SettingsMenuPrivate
 				return true;
 
 			desc.type = CAxis;
-			desc.d.ca.axis = (SDL_GameControllerAxis)event.caxis.axis;
+			desc.d.ca.axis = (SDL_GamepadAxis)event.caxis.axis;
 			desc.d.ca.dir = v < 0 ? Negative : Positive;
 			break;
 		}
@@ -795,7 +795,7 @@ void BindingWidget::drawHandler(SDL_Surface *surf)
 	p->strokeRectInner(surf, cLine, 0, 0, rect.w, rect.h, 2);
 
 	/* Virtual button name */
-	p->drawText(surf, OneshotImpl::i18n::findtext(vb.str).c_str(), 1, rect.h/2, cellOffX, Center, true);
+	p->drawText(surf, OneShot::i18n::findtext(vb.str).c_str(), 1, rect.h/2, cellOffX, Center, true);
 
 	/* Cell frames */
 	p->strokeLineV(surf, cLine, cellOffX, 0, rect.h, 2);
@@ -850,7 +850,7 @@ void BindingWidget::clickHandler(int x, int y, uint8_t button)
 	if (cell == -1)
 		return;
 
-	p->onBWidgetCellClicked(src[cell], OneshotImpl::i18n::findtext(vb.str).c_str(), button);
+	p->onBWidgetCellClicked(src[cell], OneShot::i18n::findtext(vb.str).c_str(), button);
 }
 
 int BindingWidget::cellIndex(int x, int y) const
@@ -907,7 +907,7 @@ void Button::drawHandler(SDL_Surface *surf)
 		p->fillRect(surf, cBgDark, 0, 0, rect.w, rect.h);
 
 	p->strokeRectInner(surf, cLine, 0, 0, rect.w, rect.h, 2);
-	p->drawText(surf, OneshotImpl::i18n::findtext(str).c_str(), 0, rect.h/2, rect.w, Center);
+	p->drawText(surf, OneShot::i18n::findtext(str).c_str(), 0, rect.h/2, rect.w, Center);
 }
 
 void Button::motionHandler(int, int)
@@ -940,7 +940,7 @@ void Label::setVisible(bool val)
 void Label::drawHandler(SDL_Surface *surf)
 {
 	if (visible)
-		p->drawText(surf, OneshotImpl::i18n::findtext(str).c_str(), 0, rect.h/2, rect.w, Left, c);
+		p->drawText(surf, OneShot::i18n::findtext(str).c_str(), 0, rect.h/2, rect.w, Left, c);
 }
 
 SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
@@ -968,8 +968,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->destroyReq = false;
 
 	p->window = SDL_CreateWindow(
-		OneshotImpl::i18n::findtext("Key bindings").c_str(),
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		OneShot::i18n::findtext("Key bindings").c_str(),
 		winSize.x, winSize.y,
 		SDL_WINDOW_INPUT_FOCUS
 	);
@@ -977,7 +976,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->winID = SDL_GetWindowID(p->window);
 
 	//p->font = SharedFontState::openBundled(fontSize);
-	p->font = shState->fontState().getFont(OneshotImpl::i18n::getFontName(), OneshotImpl::i18n::getFontSize());
+	p->font = shState->fontState().getFont(OneShot::i18n::getFontName(), OneShot::i18n::getFontSize());
 
 	p->rgb = p->winSurf->format;
 

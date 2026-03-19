@@ -50,7 +50,7 @@ RB_METHOD(journalSetLang)
 
 	shState->oneshot().journal->setLang(lang);
 
-	OneshotImpl::i18n::loadLocale(lang);
+	OneShot::i18n::loadLocale(lang);
 
 	return Qnil;
 }

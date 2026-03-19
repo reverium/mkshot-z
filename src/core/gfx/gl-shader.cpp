@@ -70,7 +70,7 @@
 #else
 #define INIT_SHADER(vert, frag, name) \
 { \
-	Shader::init(___shader_##vert##_vert, ___shader_##vert##_vert_len, ___shader_##frag##_frag, ___shader_##frag##_frag_len, \
+	Shader::init(_shaders_##vert##_vert, _shaders_##vert##_vert_len, _shaders_##frag##_frag, _shaders_##frag##_frag_len, \
 	#vert, #frag, #name); \
 }
 #endif
@@ -164,8 +164,8 @@ static void setupShaderSource(GLuint shader, GLenum type,
 	}
 
 #ifndef __APPLE__
-	shaderSrc[i] = (const GLchar*) ___shader_common_h;
-	shaderSrcSize[i] = ___shader_common_h_len;
+	shaderSrc[i] = (const GLchar*) _shaders_common_hpp;
+	shaderSrcSize[i] = _shaders_common_hpp_len;
 #else
     shaderSrc[i] = (const GLchar*) Shader::commonHeader().c_str();
     shaderSrcSize[i] = Shader::commonHeader().length();

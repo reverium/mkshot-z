@@ -73,7 +73,7 @@ struct OneshotPrivate
 	std::string txtNo;
 
 	SDL_Window *window;
-	SDL_mutex *windowMutex;
+	SDL_Mutex *windowMutex;
 	int windowPosX;
 	int windowPosY;
 	bool windowPosChanged;

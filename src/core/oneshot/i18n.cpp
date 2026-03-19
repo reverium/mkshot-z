@@ -20,7 +20,7 @@
 #include "util/sdl.hpp"
 #include "util/boost-hash.hpp"
 
-namespace OneshotImpl
+namespace OneShot
 {
 	namespace i18n
 	{

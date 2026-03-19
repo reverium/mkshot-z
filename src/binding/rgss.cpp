@@ -16,4 +16,6 @@
 ** GNU General Public License for more details.
 */
 
-// and, well... TODO: embed RGSS modules
+#include "rgss1.rb.h"
+#include "rgss2.rb.h"
+#include "rgss3.rb.h"

@@ -85,7 +85,7 @@ void main()
 {
 	/* Sample source color */
 	vec4 frag = texture2D(texture, v_texCoord);
-    
+
     /* Apply pattern */
     if (renderPattern) {
         vec4 pattfrag = texture2D(pattern, mod(v_patCoord, repeat));
@@ -99,20 +99,20 @@ void main()
             frag.rgb = blendNormal(frag.rgb, pattfrag.rgb, pattfrag.a * patternOpacity);
         }
     }
-	
+
 	/* Apply gray */
 	float luma = dot(frag.rgb, lumaF);
 	frag.rgb = mix(frag.rgb, vec3(luma), tone.w);
-	
+
 	/* Apply tone */
 	frag.rgb += tone.rgb;
 
 	/* Apply opacity */
 	frag.a *= opacity;
-	
+
 	/* Apply color */
 	frag.rgb = mix(frag.rgb, color.rgb, color.a);
-    
+
     /* Apply color inversion */
     if (invert) {
         frag.rgb = vec3(1.0 - frag.r, 1.0 - frag.g, 1.0 - frag.b);
@@ -121,6 +121,6 @@ void main()
 	/* Apply bush alpha by mathematical if */
 	lowp float underBush = float(v_texCoord.y < bushDepth);
 	frag.a *= clamp(bushOpacity + underBush, 0.0, 1.0);
-	
+
 	gl_FragColor = frag;
 }

@@ -20,7 +20,7 @@
 
 #include <string>
 
-namespace OneshotImpl
+namespace OneShot
 {
 	namespace i18n
 	{

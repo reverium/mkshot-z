@@ -56,7 +56,7 @@ struct SDLSoundSource : ALDataSource
 
 		if (!sample)
 		{
-			SDL_RWclose(&io);
+			SDL_CloseIO(&io);
 			throw Exception(Exception::SDLError, "SDL_sound: %s", Sound_GetError());
 		}
 

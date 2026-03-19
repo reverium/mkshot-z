@@ -195,7 +195,7 @@ struct SoundOpenHandler : FS::OpenHandler
 
 		if (!sample)
 		{
-			SDL_RWclose(&io);
+			SDL_CloseIO(&io);
 			return false;
 		}
 

@@ -25,7 +25,7 @@
 
 extern std::unordered_map<int, int> vKeyToScancode;
 extern std::unordered_map<std::string, int> strToScancode;
-extern std::unordered_map<std::string, SDL_GameControllerButton> strToGCButton;
+extern std::unordered_map<std::string, SDL_GamepadButton> strToGCButton;
 
 struct InputPrivate;
 struct RGSSThreadData;
@@ -57,38 +57,38 @@ public:
 
     double getDelta();
 	void update();
-    
+
     std::vector<std::string> getBindings(ButtonCode code);
-    
+
 	bool isPressed(int button);
 	bool isTriggered(int button);
 	bool isRepeated(int button);
     bool isReleased(int button);
     unsigned int count(int button);
     double repeatTime(int button);
-    
+
     bool isPressedEx(int code, bool isVKey);
     bool isTriggeredEx(int code, bool isVKey);
     bool isRepeatedEx(int code, bool isVKey);
     bool isReleasedEx(int code, bool isVKey);
     unsigned int repeatcount(int code, bool isVKey);
     double repeatTimeEx(int code, bool isVKey);
-    
+
     bool controllerIsPressedEx(int button);
     bool controllerIsTriggeredEx(int button);
     bool controllerIsRepeatedEx(int button);
     bool controllerIsReleasedEx(int button);
     unsigned int controllerRepeatcount(int button);
     double controllerRepeatTimeEx(int button);
-    
+
     uint8_t *rawKeyStates();
     unsigned int rawKeyStatesLength();
     uint8_t *rawButtonStates();
     unsigned int rawButtonStatesLength();
     int16_t *rawAxes();
     unsigned int rawAxesLength();
-    
-    short getControllerAxisValue(SDL_GameControllerAxis axis);
+
+    short getControllerAxisValue(SDL_GamepadAxis axis);
 
 	int dir4Value();
 	int dir8Value();
@@ -97,21 +97,21 @@ public:
 	int mouseY();
     int scrollV();
     bool mouseInWindow();
-    
+
     bool getControllerConnected();
     const char *getControllerName();
     int getControllerPowerLevel();
-    
+
     bool getTextInputMode();
     void setTextInputMode(bool mode);
     const char *getText();
     void clearText();
-    
+
     char *getClipboardText();
     void setClipboardText(char *text);
-    
-    const char *getAxisName(SDL_GameControllerAxis axis);
-    const char *getButtonName(SDL_GameControllerButton button);
+
+    const char *getAxisName(SDL_GamepadAxis axis);
+    const char *getButtonName(SDL_GamepadButton button);
 
 	bool hasQuit();
 

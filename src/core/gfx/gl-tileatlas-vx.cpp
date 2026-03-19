@@ -16,18 +16,18 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/tileatlasvx.hpp"
+#include "core/gfx/gl-tileatlasvx.hpp"
 
 #include "core/gfx/tilemap-common.hpp"
 #include "core/gfx/bitmap.hpp"
 #include "core/etc/table.hpp"
 #include "util/dbg-writer.hpp"
-#include "core/etc/internal.hpp"
-#include "core/gfx/util.hpp"
-#include "core/gfx/meta.hpp"
+#include "core/etc/etc-internal.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-meta.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
-#include "core/gfx/tex-pool.hpp"
+#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl-tex-pool.hpp"
 #include "util/util.hpp"
 
 #include <assert.h>

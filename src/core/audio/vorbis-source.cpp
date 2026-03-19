@@ -24,19 +24,19 @@
 #include <vector>
 #include <algorithm>
 
-static size_t vfRead(void *ptr, size_t size, size_t nmemb, void *ops)
+static size_t vfRead(void *ptr, size_t size, size_t nmemb, void *io)
 {
-	return SDL_RWread(static_cast<SDL_RWops*>(ops), ptr, size, nmemb);
+	return SDL_RWread(static_cast<SDL_IOStream*>(io), ptr, size, nmemb);
 }
 
-static int vfSeek(void *ops, ogg_int64_t offset, int whence)
+static int vfSeek(void *io, ogg_int64_t offset, int whence)
 {
-	return SDL_RWseek(static_cast<SDL_RWops*>(ops), offset, whence);
+	return SDL_RWseek(static_cast<SDL_IOStream*>(io), offset, whence);
 }
 
-static long vfTell(void *ops)
+static long vfTell(void *io)
 {
-	return SDL_RWtell(static_cast<SDL_RWops*>(ops));
+	return SDL_RWtell(static_cast<SDL_IOStream*>(io));
 }
 
 static ov_callbacks OvCallbacks =
@@ -50,7 +50,7 @@ static ov_callbacks OvCallbacks =
 
 struct VorbisSource : ALDataSource
 {
-	SDL_RWops &src;
+	SDL_IOStream &src;
 
 	OggVorbis_File vf;
 
@@ -75,9 +75,9 @@ struct VorbisSource : ALDataSource
 
 	std::vector<int16_t> sampleBuf;
 
-	VorbisSource(SDL_RWops &ops,
+	VorbisSource(SDL_IOStream &io,
 	             bool looped)
-	    : src(ops),
+	    : src(io),
 	      currentFrame(0)
 	{
 		int error = ov_open_callbacks(&src, &vf, 0, 0, OvCallbacks);
@@ -279,8 +279,8 @@ struct VorbisSource : ALDataSource
 	}
 };
 
-ALDataSource *createVorbisSource(SDL_RWops &ops,
+ALDataSource *createVorbisSource(SDL_IOStream &io,
                                  bool looped)
 {
-	return new VorbisSource(ops, looped);
+	return new VorbisSource(io, looped);
 }

@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/scene.hpp"
+#include "core/gfx/gl-scene.hpp"
 #include "core/shared-state.hpp"
 
 Scene::Scene()

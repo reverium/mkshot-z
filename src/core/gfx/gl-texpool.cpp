@@ -16,10 +16,10 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/tex-pool.hpp"
+#include "core/gfx/gl-tex-pool.hpp"
 #include "util/exception.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
+#include "core/gfx/gl-state.hpp"
 #include "util/boost-hash.hpp"
 #include "util/dbg-writer.hpp"
 

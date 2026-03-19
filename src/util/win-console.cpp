@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#ifdef SDL_PLATFORM_WIN32
+#ifdef __WIN32__
 
 #include "util/win-console.hpp"
 
@@ -85,4 +85,4 @@ static int openStdHandle(const DWORD &nStdHandle)
     return _open_osfhandle((intptr_t)handle, _O_TEXT);
 }
 
-#endif // SDL_PLATFORM_WIN32
+#endif // __WIN32__

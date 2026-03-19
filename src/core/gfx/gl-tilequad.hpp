@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 
 /* Tiled Quads
  *
@@ -27,7 +27,7 @@
  * but no advanced stuff like rotation, scaling etc.
 */
 
-#include "core/glx/quadarray.hpp"
+#include "core/gfx/gl-quadarray.hpp"
 
 namespace TileQuads
 {

@@ -18,12 +18,12 @@
 
 #pragma once
 
-#include "core/gfx/vertex.hpp"
-#include "core/gfx/util.hpp"
-#include "core/gfx/meta.hpp"
+#include "core/gfx/gl-vertex.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-meta.hpp"
 #include "core/shared-state.hpp"
 #include "core/gfx/global-ibo.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-shader.hpp"
 
 #include <vector>
 #include <stdint.h>

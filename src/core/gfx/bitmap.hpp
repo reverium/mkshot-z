@@ -19,7 +19,7 @@
 #pragma once
 
 #include "util/disposable.hpp"
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 #include "core/etc/etc.hpp"
 
 #include "sigslot.hpp"

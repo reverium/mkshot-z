@@ -26,18 +26,18 @@
 #include "util/dbg-writer.hpp"
 #include "util/disposable.hpp"
 #include "core/etc/etc.hpp"
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 #include "core/event-thread.hpp"
 #include "core/fs/fs.hpp"
-#include "core/gfx/fun.hpp"
-#include "core/gfx/util.hpp"
-#include "core/gfx/state.hpp"
+#include "core/gfx/gl-fun.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-state.hpp"
 #include "util/intru-list.hpp"
-#include "core/glx/quad.hpp"
-#include "core/gfx/scene.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-quad.hpp"
+#include "core/gfx/gl-scene.hpp"
+#include "core/gfx/gl-shader.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/tex-pool.hpp"
+#include "core/gfx/gl-tex-pool.hpp"
 #include "util/util.hpp"
 #include "core/input/input.hpp"
 #include "core/gfx/sprite.hpp"
@@ -85,14 +85,14 @@ typedef struct AudioQueue
 
 static long readMovie(THEORAPLAY_Io *io, void *buf, long buflen)
 {
-    SDL_RWops *f = (SDL_RWops *) io->userdata;
+    SDL_IOStream *f = (SDL_IOStream *) io->userdata;
     return (long) SDL_RWread(f, buf, 1, buflen);
 } // IoFopenRead
 
 
 static void closeMovie(THEORAPLAY_Io *io)
 {
-    SDL_RWops *f = (SDL_RWops *) io->userdata;
+    SDL_IOStream *f = (SDL_IOStream *) io->userdata;
     SDL_RWclose(f);
     free(io);
 } // IoFopenClose
@@ -107,7 +107,7 @@ struct Movie
     bool hasAudio;
     bool skippable;
     Bitmap *videoBitmap;
-    SDL_RWops srcOps;
+    SDL_IOStream srcIO;
     SDL_Thread *audioThread;
     AtomicFlag audioThreadTermReq;
     volatile AudioQueue *audioQueueHead;
@@ -128,16 +128,16 @@ struct Movie
         // https://ffmpeg.org/doxygen/0.11/group__lavc__misc__pixfmt.html
         THEORAPLAY_Io *io = (THEORAPLAY_Io *) malloc(sizeof (THEORAPLAY_Io));
         if(!io) {
-            SDL_RWclose(&srcOps);
+            SDL_RWclose(&srcIO);
             return false;
         }
         
         io->read = readMovie;
         io->close = closeMovie;
-        io->userdata = &srcOps;
+        io->userdata = &srcIO;
         decoder = THEORAPLAY_startDecode(io, DEF_MAX_VIDEO_FRAMES, THEORAPLAY_VIDFMT_RGBA);
         if (!decoder) {
-            SDL_RWclose(&srcOps);
+            SDL_RWclose(&srcIO);
             return false;
         }
         
@@ -421,15 +421,15 @@ struct Movie
 
 struct MovieOpenHandler : FileSystem::OpenHandler
 {
-    SDL_RWops *srcOps;
+    SDL_IOStream *srcIO;
     
-    MovieOpenHandler(SDL_RWops &srcOps)
-    :   srcOps(&srcOps)
+    MovieOpenHandler(SDL_IOStream &srcIO)
+    :   srcIO(&srcIO)
     {}
     
-    bool tryRead(SDL_RWops &ops, const char *ext)
+    bool tryRead(SDL_IOStream &io, const char *ext)
     {
-        *srcOps = ops;
+        *srcIO = io;
         return true;
     }
 };
@@ -1568,7 +1568,7 @@ void Graphics::playMovie(const char *filename, int volume_, bool skippable) {
     }
 
     Movie *movie = new Movie(skippable);
-    MovieOpenHandler handler(movie->srcOps);
+    MovieOpenHandler handler(movie->srcIO);
     shState->fileSystem().openRead(handler, filename);
     float volume = volume_ * 0.01f;
     

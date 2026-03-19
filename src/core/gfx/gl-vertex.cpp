@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/vertex.hpp"
+#include "core/gfx/gl-vertex.hpp"
 #include "util/util.hpp"
 
 #include <cstddef>

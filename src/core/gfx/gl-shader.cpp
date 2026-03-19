@@ -16,11 +16,11 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-shader.hpp"
 #include "core/config.hpp"
 #include "core/gfx/gfx.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
+#include "core/gfx/gl-state.hpp"
 #include "util/exception.hpp"
 
 #include <assert.h>

@@ -22,7 +22,7 @@
 
 #include "core/event-thread.hpp"
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "util/exception.hpp"
 #include "core/input/input.hpp"
 #include "core/shared-state.hpp"

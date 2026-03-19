@@ -19,29 +19,29 @@
 #include "core/audio/al-data-source.hpp"
 #include "util/exception.hpp"
 
-#include <SDL3/SDL_sound.h>
+#include <SDL3_sound/SDL_sound.h>
 
 struct SDLSoundSource : ALDataSource
 {
 	Sound_Sample *sample;
-	SDL_RWops &srcOps;
+	SDL_IOStream &srcIO;
 	uint8_t sampleSize;
 	bool looped;
 
 	ALenum alFormat;
 	ALsizei alFreq;
 
-	SDLSoundSource(SDL_RWops &ops,
+	SDLSoundSource(SDL_IOStream &io,
 	               const char *extension,
 	               uint32_t maxBufSize,
 	               bool looped,
 	               int fallbackMode)
-	    : srcOps(ops),
+	    : srcIO(io),
 	      looped(looped)
 	{
 		if (fallbackMode == 0)
 		{
-			sample = Sound_NewSample(&srcOps, extension, 0, maxBufSize);
+			sample = Sound_NewSample(&srcIO, extension, 0, maxBufSize);
 		}
 		else
 		{
@@ -51,12 +51,12 @@ struct SDLSoundSource : ALDataSource
 			SDL_memset(&desired, '\0', sizeof (Sound_AudioInfo));
 			desired.format = AUDIO_F32SYS;
 
-			sample = Sound_NewSample(&srcOps, extension, &desired, maxBufSize);
+			sample = Sound_NewSample(&srcIO, extension, &desired, maxBufSize);
 		}
 
 		if (!sample)
 		{
-			SDL_RWclose(&ops);
+			SDL_RWclose(&io);
 			throw Exception(Exception::SDLError, "SDL_sound: %s", Sound_GetError());
 		}
 
@@ -92,7 +92,7 @@ struct SDLSoundSource : ALDataSource
 
 	~SDLSoundSource()
 	{
-		/* This also closes 'srcOps' */
+		/* This also closes 'srcIO' */
 		Sound_FreeSample(sample);
 	}
 
@@ -156,11 +156,11 @@ struct SDLSoundSource : ALDataSource
 	}
 };
 
-ALDataSource *createSDLSource(SDL_RWops &ops,
+ALDataSource *createSDLSource(SDL_IOStream &io,
                               const char *extension,
 			                  uint32_t maxBufSize,
 			                  bool looped,
 			                  int fallbackMode)
 {
-	return new SDLSoundSource(ops, extension, maxBufSize, looped, fallbackMode);
+	return new SDLSoundSource(io, extension, maxBufSize, looped, fallbackMode);
 }

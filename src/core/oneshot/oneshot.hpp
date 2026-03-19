@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 
 #include <string>
 

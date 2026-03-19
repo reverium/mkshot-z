@@ -19,7 +19,7 @@
 #pragma once
 
 #include "util/disposable.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "core/gfx/gfx.hpp"
 
 template<class C>

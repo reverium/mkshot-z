@@ -24,14 +24,14 @@
 #include "core/gfx/bitmap.hpp"
 
 #include "core/etc/etc.hpp"
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 
-#include "core/gfx/util.hpp"
-#include "core/glx/quad.hpp"
-#include "core/glx/quadarray.hpp"
-#include "core/gfx/transform.hpp"
-#include "core/gfx/shader.hpp"
-#include "core/gfx/state.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-quad.hpp"
+#include "core/gfx/gl-quadarray.hpp"
+#include "core/gfx/gl-transform.hpp"
+#include "core/gfx/gl-shader.hpp"
+#include "core/gfx/gl-state.hpp"
 
 #include "sigslot.hpp"
 

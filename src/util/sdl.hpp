@@ -20,7 +20,7 @@
 
 #include <SDL3/SDL_atomic.h>
 #include <SDL3/SDL_thread.h>
-#include <SDL3/SDL_rwops.h>
+#include <SDL3/SDL_iostream.h>
 
 #include <string>
 #include <iostream>
@@ -81,26 +81,26 @@ SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string())
 	return SDL_CreateThread((__sdlThreadFun<C, func>), name.c_str(), obj);
 }
 
-/* On Android, SDL_RWFromFile always opens files from inside
+/* On Android, SDL_IOFromFile always opens files from inside
  * the apk asset folder even when a file with same name exists
  * on the physical filesystem. This wrapper attempts to open a
  * real file first before falling back to the assets folder */
 static inline
-SDL_RWops *RWFromFile(const char *filename,
+SDL_IOStream *IOFromFile(const char *filename,
                       const char *mode)
 {
 	FILE *f = fopen(filename, mode);
 
 	if (!f)
-		return SDL_RWFromFile(filename, mode);
+		return SDL_IOFromFile(filename, mode);
 
-	return SDL_RWFromFP(f, SDL_TRUE);
+	return SDL_IOFromFP(f, SDL_TRUE);
 }
 
 inline bool readFileSDL(const char *path,
                         std::string &out)
 {
-	SDL_RWops *f = RWFromFile(path, "rb");
+	SDL_IOStream *f = IOFromFile(path, "rb");
 
 	if (!f)
 		return false;
@@ -122,8 +122,8 @@ template<size_t bufSize = 248, size_t pbSize = 8>
 class SDLRWBuf : public std::streambuf
 {
 public:
-	SDLRWBuf(SDL_RWops *ops)
-	    : ops(ops)
+	SDLRWBuf(SDL_IOStream *io)
+	    : io(io)
 	{
 		char *end = buf + bufSize + pbSize;
 		setg(end, end, end);
@@ -132,7 +132,7 @@ public:
 private:
 	int_type underflow()
 	{
-		if (!ops)
+		if (!io)
 			return traits_type::eof();
 
 		if (gptr() < egptr())
@@ -147,7 +147,7 @@ private:
 			start += pbSize;
 		}
 
-		size_t n = SDL_RWread(ops, start, 1, bufSize - (start - base));
+		size_t n = SDL_RWread(io, start, 1, bufSize - (start - base));
 		if (n == 0)
 			return traits_type::eof();
 
@@ -156,7 +156,7 @@ private:
 		return underflow();
 	}
 
-	SDL_RWops *ops;
+	SDL_IOStream *io;
 	char buf[bufSize+pbSize];
 };
 
@@ -165,20 +165,20 @@ class SDLRWStream
 public:
 	SDLRWStream(const char *filename,
 	            const char *mode)
-	    : ops(RWFromFile(filename, mode)),
-	      buf(ops),
+	    : io(IOFromFile(filename, mode)),
+	      buf(io),
 	      s(&buf)
 	{}
 
 	~SDLRWStream()
 	{
-		if (ops)
-			SDL_RWclose(ops);
+		if (io)
+			SDL_RWclose(io);
 	}
 
 	operator bool() const
 	{
-		return ops != 0;
+		return io != 0;
 	}
 
 	std::istream &stream()
@@ -187,7 +187,7 @@ public:
 	}
 
 private:
-	SDL_RWops *ops;
+	SDL_IOStream *io;
 	SDLRWBuf<> buf;
 	std::istream s;
 };

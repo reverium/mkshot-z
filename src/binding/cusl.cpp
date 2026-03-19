@@ -17,7 +17,7 @@
 */
 
 #ifdef MKSHOT_STEAM
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "steamshim/child.hpp"
 
 #define STEAMSHIM_GETV(t, v, d)                                                \

@@ -42,7 +42,7 @@ void initXfconfFunctions()
 {
 	bool fail = false;
 
-	static void *so;
+	static SDL_SharedObject *so;
 
 	std::vector<const char *> sonames {
 		XFCONF_LIBNAME ".3",

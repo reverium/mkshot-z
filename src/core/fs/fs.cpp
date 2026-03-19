@@ -46,23 +46,23 @@
 #endif
 
 struct SDLRWIoContext {
-  SDL_RWops *ops;
+  SDL_IOStream *io;
   std::string filename;
 
   SDLRWIoContext(const char *filename)
-      : ops(SDL_RWFromFile(filename, "r")), filename(filename) {
-    if (!ops)
+      : io(SDL_IOFromFile(filename, "r")), filename(filename) {
+    if (!io)
       throw Exception(Exception::SDLError, "Failed to open file: %s",
                       SDL_GetError());
   }
 
-  ~SDLRWIoContext() { SDL_RWclose(ops); }
+  ~SDLRWIoContext() { SDL_RWclose(io); }
 };
 
 static PHYSFS_Io *createSDLRWIo(const char *filename);
 
-static SDL_RWops *getSDLRWops(PHYSFS_Io *io) {
-  return static_cast<SDLRWIoContext *>(io->opaque)->ops;
+static SDL_IOStream *getSDLRWops(PHYSFS_Io *io) {
+  return static_cast<SDLRWIoContext *>(io->opaque)->io;
 }
 
 static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf,
@@ -71,11 +71,11 @@ static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf,
 }
 
 static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset) {
-  return (SDL_RWseek(getSDLRWops(io), offset, RW_SEEK_SET) != -1);
+  return (SDL_RWseek(getSDLRWops(io), offset, SDL_IO_SEEK_SET) != -1);
 }
 
 static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io) {
-  return SDL_RWseek(getSDLRWops(io), 0, RW_SEEK_CUR);
+  return SDL_RWseek(getSDLRWops(io), 0, SDL_IO_SEEK_CUR);
 }
 
 static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io) {
@@ -126,12 +126,12 @@ static PHYSFS_Io *createSDLRWIo(const char *filename) {
   return io;
 }
 
-static inline PHYSFS_File *sdlPHYS(SDL_RWops *ops) {
-  return static_cast<PHYSFS_File *>(ops->hidden.unknown.data1);
+static inline PHYSFS_File *sdlPHYS(SDL_IOStream *io) {
+  return static_cast<PHYSFS_File *>(io->hidden.unknown.data1);
 }
 
-static Sint64 SDL_RWopsSize(SDL_RWops *ops) {
-  PHYSFS_File *f = sdlPHYS(ops);
+static Sint64 SDL_IOStreamSize(SDL_IOStream *io) {
+  PHYSFS_File *f = sdlPHYS(io);
 
   if (!f)
     return -1;
@@ -139,8 +139,8 @@ static Sint64 SDL_RWopsSize(SDL_RWops *ops) {
   return PHYSFS_fileLength(f);
 }
 
-static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence) {
-  PHYSFS_File *f = sdlPHYS(ops);
+static Sint64 SDL_IOStreamSeek(SDL_IOStream *io, int64_t offset, int whence) {
+  PHYSFS_File *f = sdlPHYS(io);
 
   if (!f)
     return -1;
@@ -149,13 +149,13 @@ static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence) {
 
   switch (whence) {
   default:
-  case RW_SEEK_SET:
+  case SDL_IO_SEEK_SET:
     base = 0;
     break;
-  case RW_SEEK_CUR:
+  case SDL_IO_SEEK_CUR:
     base = PHYSFS_tell(f);
     break;
-  case RW_SEEK_END:
+  case SDL_IO_SEEK_END:
     base = PHYSFS_fileLength(f);
     break;
   }
@@ -165,9 +165,9 @@ static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence) {
   return (result != 0) ? PHYSFS_tell(f) : -1;
 }
 
-static size_t SDL_RWopsRead(SDL_RWops *ops, void *buffer, size_t size,
+static size_t SDL_IOStreamRead(SDL_IOStream *io, void *buffer, size_t size,
                             size_t maxnum) {
-  PHYSFS_File *f = sdlPHYS(ops);
+  PHYSFS_File *f = sdlPHYS(io);
 
   if (!f)
     return 0;
@@ -177,9 +177,9 @@ static size_t SDL_RWopsRead(SDL_RWops *ops, void *buffer, size_t size,
   return (result != -1) ? (result / size) : 0;
 }
 
-static size_t SDL_RWopsWrite(SDL_RWops *ops, const void *buffer, size_t size,
+static size_t SDL_IOStreamWrite(SDL_IOStream *io, const void *buffer, size_t size,
                              size_t num) {
-  PHYSFS_File *f = sdlPHYS(ops);
+  PHYSFS_File *f = sdlPHYS(io);
 
   if (!f)
     return 0;
@@ -189,22 +189,22 @@ static size_t SDL_RWopsWrite(SDL_RWops *ops, const void *buffer, size_t size,
   return (result != -1) ? (result / size) : 0;
 }
 
-static int SDL_RWopsClose(SDL_RWops *ops) {
-  PHYSFS_File *f = sdlPHYS(ops);
+static int SDL_IOStreamClose(SDL_IOStream *io) {
+  PHYSFS_File *f = sdlPHYS(io);
 
   if (!f)
     return -1;
 
   int result = PHYSFS_close(f);
-  ops->hidden.unknown.data1 = 0;
+  io->hidden.unknown.data1 = 0;
 
   return (result != 0) ? 0 : -1;
 }
 
-static int SDL_RWopsCloseFree(SDL_RWops *ops) {
-  int result = SDL_RWopsClose(ops);
+static int SDL_IOStreamCloseFree(SDL_IOStream *io) {
+  int result = SDL_IOStreamClose(io);
 
-  SDL_FreeRW(ops);
+  SDL_FreeRW(io);
 
   return result;
 }
@@ -242,19 +242,19 @@ static const char *findExt(const char *filename) {
   return 0;
 }
 
-static void initReadOps(PHYSFS_File *handle, SDL_RWops &ops, bool freeOnClose) {
-  ops.size = SDL_RWopsSize;
-  ops.seek = SDL_RWopsSeek;
-  ops.read = SDL_RWopsRead;
-  ops.write = SDL_RWopsWrite;
+static void initReadOps(PHYSFS_File *handle, SDL_IOStream &io, bool freeOnClose) {
+  io.size = SDL_IOStreamSize;
+  io.seek = SDL_IOStreamSeek;
+  io.read = SDL_IOStreamRead;
+  io.write = SDL_IOStreamWrite;
 
   if (freeOnClose)
-    ops.close = SDL_RWopsCloseFree;
+    io.close = SDL_IOStreamCloseFree;
   else
-    ops.close = SDL_RWopsClose;
+    io.close = SDL_IOStreamClose;
 
-  ops.type = SDL_RWOPS_PHYSFS;
-  ops.hidden.unknown.data1 = handle;
+  io.type = SDL_IOStream_PHYSFS;
+  io.hidden.unknown.data1 = handle;
 }
 
 static void strTolower(std::string &str) {
@@ -262,7 +262,7 @@ static void strTolower(std::string &str) {
     str[i] = tolower(str[i]);
 }
 
-const Uint32 SDL_RWOPS_PHYSFS = SDL_RWOPS_UNKNOWN + 10;
+const Uint32 SDL_IOStream_PHYSFS = SDL_IOStream_UNKNOWN + 10;
 
 struct FileSystemPrivate {
   /* Maps: lower case full filepath,
@@ -325,7 +325,7 @@ void FileSystem::addPath(const char *path, const char *mountpoint, bool reload) 
     int state = PHYSFS_mount(path, mountpoint, 1);
   if (!state) {
     /* If it didn't work, try mounting via a wrapped
-     * SDL_RWops */
+     * SDL_IOStream */
     PHYSFS_Io *io = createSDLRWIo(path);
 
     if (io)
@@ -491,12 +491,12 @@ static PHYSFS_EnumerateCallbackResult fontSetEnumCB(void *data, const char *dir,
   if (!handle)
     return PHYSFS_ENUM_ERROR;
 
-  SDL_RWops ops;
-  initReadOps(handle, ops, false);
+  SDL_IOStream io;
+  initReadOps(handle, io, false);
 
-  d->sfs->initFontSetCB(ops, filename);
+  d->sfs->initFontSetCB(io, filename);
 
-  SDL_RWclose(&ops);
+  SDL_RWclose(&io);
 
   return PHYSFS_ENUM_OK;
 }
@@ -528,7 +528,7 @@ void FileSystem::initFontSets(SharedFontState &sfs) {
 
 struct OpenReadEnumData {
   FileSystem::OpenHandler &handler;
-  SDL_RWops ops;
+  SDL_IOStream io;
 
   /* The filename (without directory) we're looking for */
   const char *filename;
@@ -597,11 +597,11 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename) {
 
     return PHYSFS_ENUM_ERROR;
   }
-  initReadOps(phys, data.ops, false);
+  initReadOps(phys, data.io, false);
 
   const char *ext = findExt(filename);
 
-  if (data.handler.tryRead(data.ops, ext))
+  if (data.handler.tryRead(data.io, ext))
     data.stopSearching = true;
 
   ++data.matchCount;
@@ -656,7 +656,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename) {
     throw Exception(Exception::NoFileError, "%s", filename);
 }
 
-void FileSystem::openReadRaw(SDL_RWops &ops, const char *filename,
+void FileSystem::openReadRaw(SDL_IOStream &io, const char *filename,
                              bool freeOnClose) {
 
   PHYSFS_File *handle = PHYSFS_openRead(normalize(filename, 0, 0).c_str());
@@ -664,7 +664,7 @@ void FileSystem::openReadRaw(SDL_RWops &ops, const char *filename,
   if (!handle)
     throw Exception(Exception::NoFileError, "%s", filename);
 
-  initReadOps(handle, ops, freeOnClose);
+  initReadOps(handle, io, freeOnClose);
     return;
 }
 

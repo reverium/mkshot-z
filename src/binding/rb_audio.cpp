@@ -20,7 +20,7 @@
 #include "core/shared-state.hpp"
 #include "util/exception.hpp"
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 
 #define DEF_PLAY_STOP_POS(entity) \
 	RB_METHOD(audio_##entity##Play) \

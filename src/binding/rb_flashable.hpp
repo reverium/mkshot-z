@@ -16,50 +16,54 @@
 ** GNU General Public License for more details.
 */
 
-#include "binding/util.hpp"
-#include "core/shared-state.hpp"
-#include "core/oneshot/i18n.hpp"
-#include "core/oneshot/oneshot.hpp"
-#include "core/oneshot/journal.hpp"
+#pragma once
 
-RB_METHOD(journalActive)
+#include "core/gfx/flashable.hpp"
+#include "binding/rb_util.hpp"
+#include "binding/types.hpp"
+
+template<class C>
+RB_METHOD(flashableFlash)
 {
-	RB_UNUSED_PARAM;
+	Flashable *f = getPrivateData<C>(self);
 
-	return shState->oneshot().journal->isActive() ? Qtrue : Qfalse;
-}
+	VALUE colorObj;
+	int duration;
 
-RB_METHOD(journalSet)
-{
-	RB_UNUSED_PARAM;
+	Color *color;
 
-	const char *name;
-	rb_get_args(argc, argv, "z", &name RB_ARG_END);
+	rb_get_args(argc, argv, "oi", &colorObj, &duration RB_ARG_END);
 
-	shState->oneshot().journal->set(name);
+	if (NIL_P(colorObj))
+	{
+		f->flash(0, duration);
+		return Qnil;
+	}
+
+	color = getPrivateDataCheck<Color>(colorObj, ColorType);
+
+	f->flash(&color->norm, duration);
 
 	return Qnil;
 }
 
-RB_METHOD(journalSetLang)
+template<class C>
+RB_METHOD(flashableUpdate)
 {
 	RB_UNUSED_PARAM;
 
-	const char *lang;
-	rb_get_args(argc, argv, "z", &lang RB_ARG_END);
+	Flashable *f = getPrivateData<C>(self);
 
-	shState->oneshot().journal->setLang(lang);
-
-	OneshotImpl::i18n::loadLocale(lang);
+	f->update();
 
 	return Qnil;
 }
 
-void journalBindingInit()
+template<class C>
+static void flashableBindingInit(VALUE klass)
 {
-	VALUE module = rb_define_module("Journal");
-
-	_rb_define_module_function(module, "active?", journalActive);
-	_rb_define_module_function(module, "set", journalSet);
-	_rb_define_module_function(module, "setLang", journalSetLang);
+	_rb_define_method(klass, "flash", flashableFlash<C>);
+	_rb_define_method(klass, "update", flashableUpdate<C>);
 }
+
+

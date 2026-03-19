@@ -19,7 +19,7 @@
 #pragma once
 
 #include "util/serializable.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "util/exception.hpp"
 
 template<class C>

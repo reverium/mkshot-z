@@ -17,9 +17,9 @@
 */
 
 #include "binding/types.hpp"
-#include "binding/util.hpp"
-#include "binding/disposable.hpp"
-#include "binding/flashable.hpp"
+#include "binding/rb_util.hpp"
+#include "binding/rb_disposable.hpp"
+#include "binding/rb_flashable.hpp"
 #include "binding/scene.hpp"
 #include "core/shared-state.hpp"
 #include "core/gfx/viewport.hpp"

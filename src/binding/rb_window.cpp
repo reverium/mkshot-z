@@ -16,9 +16,9 @@
 ** GNU General Public License for more details.
 */
 
-#include "binding/util.hpp"
-#include "binding/disposable.hpp"
-#include "binding/viewport.hpp"
+#include "binding/rb_util.hpp"
+#include "binding/rb_disposable.hpp"
+#include "binding/rb_viewport.hpp"
 #include "core/gfx/window.hpp"
 
 DEF_TYPE(Window);

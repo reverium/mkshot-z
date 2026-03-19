@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "util/json5pp.hpp"
+#include "json5pp.hpp"
 
 #include <set>
 #include <string>

@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/tileatlas.hpp"
+#include "core/gfx/gl-tileatlas.hpp"
 
 namespace TileAtlas
 {

@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "core/gfx/scene.hpp"
-#include "binding/util.hpp"
+#include "core/gfx/gl-scene.hpp"
+#include "binding/rb_util.hpp"
 #include "core/gfx/gfx.hpp"
 
 template<class C>

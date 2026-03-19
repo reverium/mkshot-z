@@ -20,18 +20,18 @@
 
 #include "util/dbg-writer.hpp"
 
-#include "core/gfx/tileatlasvx.hpp"
-#include "core/etc/internal.hpp"
+#include "core/gfx/gl-tileatlasvx.hpp"
+#include "core/etc/etc-internal.hpp"
 #include "core/gfx/bitmap.hpp"
 #include "core/etc/table.hpp"
 #include "core/gfx/viewport.hpp"
-#include "core/gfx/util.hpp"
+#include "core/gfx/gl-util.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
-#include "core/gfx/vertex.hpp"
-#include "core/glx/quad.hpp"
-#include "core/glx/quadarray.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl-vertex.hpp"
+#include "core/gfx/gl-quad.hpp"
+#include "core/gfx/gl-quadarray.hpp"
+#include "core/gfx/gl-shader.hpp"
 #include "core/gfx/tilemap-common.hpp"
 
 #include <vector>

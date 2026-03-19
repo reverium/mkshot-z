@@ -196,40 +196,40 @@ void ALStream::closeSource()
 
 struct ALStreamOpenHandler : FileSystem::OpenHandler
 {
-	SDL_RWops *srcOps;
+	SDL_IOStream *srcIO;
 	bool looped;
 	ALDataSource *source;
 	int fallbackMode;
 	std::string errorMsg;
 
-	ALStreamOpenHandler(SDL_RWops &srcOps, bool looped)
-	    : srcOps(&srcOps), looped(looped), source(0), fallbackMode(0)
+	ALStreamOpenHandler(SDL_IOStream &srcIO, bool looped)
+	    : srcIO(&srcIO), looped(looped), source(0), fallbackMode(0)
 	{}
 
-	bool tryRead(SDL_RWops &ops, const char *ext)
+	bool tryRead(SDL_IOStream &io, const char *ext)
 	{
 		/* Copy this because we need to keep it around,
 		 * as we will continue reading data from it later */
-		*srcOps = ops;
+		*srcIO = io;
 
 		/* Try to read ogg file signature */
 		char sig[5] = { 0 };
-		SDL_RWread(srcOps, sig, 1, 4);
-		SDL_RWseek(srcOps, 0, RW_SEEK_SET);
+		SDL_RWread(srcIO, sig, 1, 4);
+		SDL_RWseek(srcIO, 0, SDL_IO_SEEK_SET);
 
 		try
 		{
 			if (!strcmp(sig, "OggS"))
 			{
-				source = createVorbisSource(*srcOps, looped);
+				source = createVorbisSource(*srcIO, looped);
 				return true;
 			}
 
-			source = createSDLSource(*srcOps, ext, STREAM_BUF_SIZE, looped, fallbackMode);
+			source = createSDLSource(*srcIO, ext, STREAM_BUF_SIZE, looped, fallbackMode);
 		}
 		catch (const Exception &e)
 		{
-			/* All source constructors will close the passed ops
+			/* All source constructors will close the passed io
 			 * before throwing errors */
 			errorMsg = e.msg;
 			return false;
@@ -241,7 +241,7 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 
 void ALStream::openSource(const std::string &filename)
 {
-	ALStreamOpenHandler handler(srcOps, looped);
+	ALStreamOpenHandler handler(srcIO, looped);
 	shState->fileSystem().openRead(handler, filename.c_str());
 	source = handler.source;
 	needsRewind.clear();

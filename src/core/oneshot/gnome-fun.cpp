@@ -60,7 +60,7 @@ void initGnomeFunctions()
 {
 	bool fail = false;
 
-	static void *so;
+	static SDL_SharedObject *so;
 
 	// Try to load GTK+ 3
 	so = SDL_LoadObject(GTK3_LIBNAME);
@@ -93,7 +93,7 @@ void initGioFunctions()
 {
 	bool fail = false;
 
-	static void *so;
+	static SDL_SharedObject *so;
 
 	// Try to load Gio 2.0
 	so = SDL_LoadObject(GTK3_LIBNAME);
@@ -118,7 +118,7 @@ void initGdkFunctions()
 {
 	bool fail = false;
 
-	static void *so;
+	static SDL_SharedObject *so;
 
 	// Try to load GDK 3
 	so = SDL_LoadObject(GTK3_LIBNAME);

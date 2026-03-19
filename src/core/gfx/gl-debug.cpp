@@ -16,12 +16,12 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/debug.hpp"
+#include "core/gfx/gl-debug.hpp"
 #include "util/dbg-writer.hpp"
 
 #include <iostream>
 
-#include "core/gfx/fun.hpp"
+#include "core/gfx/gl-fun.hpp"
 
 struct GLDebugLoggerPrivate
 {

@@ -22,7 +22,7 @@
 #include "util/sdl.hpp"
 
 #include <string>
-#include <SDL3/SDL_rwops.h>
+#include <SDL3/SDL_iostream.h>
 
 struct ALDataSource;
 
@@ -70,7 +70,7 @@ struct ALStream
 	uint64_t procFrames;
 	AL::Buffer::ID lastBuf;
 
-	SDL_RWops srcOps;
+	SDL_IOStream srcIO;
 
 	struct
 	{

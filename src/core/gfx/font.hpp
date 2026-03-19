@@ -24,7 +24,7 @@
 #include <vector>
 #include <string>
 
-struct SDL_RWops;
+struct SDL_IOStream;
 struct _TTF_Font;
 struct Config;
 
@@ -38,9 +38,9 @@ public:
 
 	/* Called from FileSystem during font cache initialization
 	 * (when "Fonts/" is scanned for available assets).
-	 * 'ops' is an opened handle to a possible font file,
+	 * 'io' is an opened handle to a possible font file,
 	 * 'filename' is the corresponding path */
-	void initFontSetCB(SDL_RWops &ops,
+	void initFontSetCB(SDL_IOStream &io,
 	                   const std::string &filename);
 
 	_TTF_Font *getFont(std::string family,

@@ -18,7 +18,7 @@
 
 #include "core/config.hpp"
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 
 #include "core/fs/fs.hpp"
 #include "core/shared-state.hpp"
@@ -29,21 +29,21 @@
 #include <ruby/thread.h>
 
 static void fileIntFreeInstance(void *inst) {
-    SDL_RWops *ops = static_cast<SDL_RWops *>(inst);
+    SDL_IOStream *io = static_cast<SDL_IOStream *>(inst);
     
-    SDL_RWclose(ops);
-    SDL_FreeRW(ops);
+    SDL_RWclose(io);
+    SDL_FreeRW(io);
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 static VALUE fileIntForPath(const char *path, bool rubyExc) {
-    SDL_RWops *ops = SDL_AllocRW();
+    SDL_IOStream *io = SDL_AllocRW();
     
     try {
-        shState->fileSystem().openReadRaw(*ops, path);
+        shState->fileSystem().openReadRaw(*io, path);
     } catch (const Exception &e) {
-        SDL_FreeRW(ops);
+        SDL_FreeRW(io);
         
         if (rubyExc)
             raiseRbExc(e);
@@ -55,19 +55,19 @@ static VALUE fileIntForPath(const char *path, bool rubyExc) {
     
     VALUE obj = rb_obj_alloc(klass);
     
-    setPrivateData(obj, ops);
+    setPrivateData(obj, io);
     
     return obj;
 }
 
 typedef struct {
-    SDL_RWops *ops;
+    SDL_IOStream *io;
     void *dst;
     int length;
 } fileIntReadCbArgs;
 
 void call_RWread_cb(fileIntReadCbArgs *args) {
-    SDL_RWread(args->ops, args->dst, 1, args->length);
+    SDL_RWread(args->io, args->dst, 1, args->length);
 }
 
 RB_METHOD(fileIntRead) {
@@ -75,20 +75,20 @@ RB_METHOD(fileIntRead) {
     int length = -1;
     rb_get_args(argc, argv, "|i", &length RB_ARG_END);
     
-    SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
+    SDL_IOStream *io = getPrivateData<SDL_IOStream>(self);
     
     if (length == -1) {
-        Sint64 cur = SDL_RWtell(ops);
-        Sint64 end = SDL_RWseek(ops, 0, SEEK_END);
+        Sint64 cur = SDL_RWtell(io);
+        Sint64 end = SDL_RWseek(io, 0, SEEK_END);
         
         // Sometimes SDL_RWseek will fail for no reason
         // with encrypted archives, so let's just ask
         // for the size up front
         if (end < 0)
-            end = ops->size(ops);
+            end = io->size(io);
         
         length = end - cur;
-        SDL_RWseek(ops, cur, SEEK_SET);
+        SDL_RWseek(io, cur, SEEK_SET);
     }
     
     if (length == 0)
@@ -98,7 +98,7 @@ RB_METHOD(fileIntRead) {
     
     
     
-    fileIntReadCbArgs cbargs {ops, RSTRING_PTR(data), length};
+    fileIntReadCbArgs cbargs {io, RSTRING_PTR(data), length};
     rb_thread_call_without_gvl([](void* args) -> void* {
         call_RWread_cb((fileIntReadCbArgs*)args);
         return 0;
@@ -110,8 +110,8 @@ RB_METHOD(fileIntRead) {
 RB_METHOD(fileIntClose) {
     RB_UNUSED_PARAM;
     
-    SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
-    SDL_RWclose(ops);
+    SDL_IOStream *io = getPrivateData<SDL_IOStream>(self);
+    SDL_RWclose(io);
     
     return Qnil;
 }
@@ -119,10 +119,10 @@ RB_METHOD(fileIntClose) {
 RB_METHOD(fileIntGetByte) {
     RB_UNUSED_PARAM;
     
-    SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
+    SDL_IOStream *io = getPrivateData<SDL_IOStream>(self);
     
     unsigned char byte;
-    size_t result = SDL_RWread(ops, &byte, 1, 1);
+    size_t result = SDL_RWread(io, &byte, 1, 1);
     
     return (result == 1) ? rb_fix_new(byte) : Qnil;
 }

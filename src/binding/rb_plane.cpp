@@ -17,10 +17,10 @@
 */
 
 #include "binding/types.hpp"
-#include "binding/util.hpp"
-#include "binding/disposable.hpp"
+#include "binding/rb_util.hpp"
+#include "binding/rb_disposable.hpp"
 #include "binding/plane.hpp"
-#include "binding/viewport.hpp"
+#include "binding/rb_viewport.hpp"
 
 DEF_TYPE(Plane);
 

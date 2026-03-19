@@ -16,10 +16,10 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/tilequad.hpp"
+#include "core/gfx/gl-tilequad.hpp"
 
-#include "core/gfx/util.hpp"
-#include "core/glx/quad.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-quad.hpp"
 
 namespace TileQuads
 {

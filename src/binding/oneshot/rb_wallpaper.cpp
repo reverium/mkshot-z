@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "core/shared-state.hpp"
 #include "core/oneshot/oneshot.hpp"
 #include "core/oneshot/wallpaper.hpp"

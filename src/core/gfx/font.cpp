@@ -58,12 +58,12 @@ BUNDLED_FONT_DECL(BUNDLED_FONT)
 
 #endif
 
-static SDL_RWops *openBundledFont()
+static SDL_IOStream *openBundledFont()
 {
 #ifndef __APPLE__
-    return SDL_RWFromConstMem(BNDL_F_D(BUNDLED_FONT), BNDL_F_L(BUNDLED_FONT));
+    return SDL_IOFromConstMem(BNDL_F_D(BUNDLED_FONT), BNDL_F_L(BUNDLED_FONT));
 #else
-    return SDL_RWFromFile(mkshot_fs::getPathForAsset("Fonts/liberation", "ttf").c_str(), "rb");
+    return SDL_IOFromFile(mkshot_fs::getPathForAsset("Fonts/liberation", "ttf").c_str(), "rb");
 #endif
 }
 
@@ -128,10 +128,10 @@ SharedFontState::~SharedFontState()
 	delete p;
 }
 
-void SharedFontState::initFontSetCB(SDL_RWops &ops,
+void SharedFontState::initFontSetCB(SDL_IOStream &io,
                                     const std::string &filename)
 {
-	TTF_Font *font = TTF_OpenFontRW(&ops, 0, 0);
+	TTF_Font *font = TTF_OpenFontRW(&io, 0, 0);
 
 	if (!font)
 		return;
@@ -182,12 +182,12 @@ _TTF_Font *SharedFontState::getFont(std::string family,
 		return font;
 
 	/* Not in pool; open new handle */
-	SDL_RWops *ops;
+	SDL_IOStream *io;
 
 	if (family.empty())
 	{
 		/* Built-in font */
-		ops = openBundledFont();
+		io = openBundledFont();
 	}
 	else
 	{
@@ -196,15 +196,15 @@ _TTF_Font *SharedFontState::getFont(std::string family,
 		const char *path = !req.regular.empty()
 		                 ? req.regular.c_str() : req.other.c_str();
 
-		ops = SDL_AllocRW();
-		shState->fileSystem().openReadRaw(*ops, path, true);
+		io = SDL_AllocRW();
+		shState->fileSystem().openReadRaw(*io, path, true);
 	}
 
 	// FIXME 0.9 is guesswork at this point
 //	float gamma = (96.0/45.0)*(5.0/14.0)*(size-5);
-//	font = TTF_OpenFontRW(ops, 1, gamma /** .90*/);
-//	font = TTF_OpenFontRW(ops, 1, size* 0.90f); // mkxp
-	font = TTF_OpenFontRW(ops, 1, size); // mkxp-oneshot
+//	font = TTF_OpenFontRW(io, 1, gamma /** .90*/);
+//	font = TTF_OpenFontRW(io, 1, size* 0.90f); // mkxp
+	font = TTF_OpenFontRW(io, 1, size); // mkxp-oneshot
 
 	if (!font)
 		throw Exception(Exception::SDLError, "%s", SDL_GetError());
@@ -230,9 +230,9 @@ bool SharedFontState::fontPresent(std::string family) const
 
 _TTF_Font *SharedFontState::openBundled(int size)
 {
-	SDL_RWops *ops = openBundledFont();
+	SDL_IOStream *io = openBundledFont();
 
-	return TTF_OpenFontRW(ops, 1, size);
+	return TTF_OpenFontRW(io, 1, size);
 }
 
 void SharedFontState::setDefaultFontFamily(const std::string &family) {

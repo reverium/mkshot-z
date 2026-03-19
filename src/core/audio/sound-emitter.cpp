@@ -25,7 +25,7 @@
 #include "util/util.hpp"
 #include "util/dbg-writer.hpp"
 
-#include <SDL3/SDL_sound.h>
+#include <SDL3_sound/SDL_sound.h>
 
 #define SE_CACHE_MEM (10*1024*1024) // 10 MB
 
@@ -189,18 +189,18 @@ struct SoundOpenHandler : FileSystem::OpenHandler
 	    : buffer(0)
 	{}
 
-	bool tryRead(SDL_RWops &ops, const char *ext)
+	bool tryRead(SDL_IOStream &io, const char *ext)
 	{
-		Sound_Sample *sample = Sound_NewSample(&ops, ext, 0, STREAM_BUF_SIZE);
+		Sound_Sample *sample = Sound_NewSample(&io, ext, 0, STREAM_BUF_SIZE);
 
 		if (!sample)
 		{
-			SDL_RWclose(&ops);
+			SDL_RWclose(&io);
 			return false;
 		}
 
 		/* Do all of the decoding in the handler so we don't have
-		 * to keep the source ops around */
+		 * to keep the source io around */
 		uint32_t decBytes = Sound_DecodeAll(sample);
 		uint8_t sampleSize = formatSampleSize(sample->actual.format);
 		uint32_t sampleCount = decBytes / sampleSize;

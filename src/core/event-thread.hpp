@@ -29,7 +29,7 @@
 #include <stdint.h>
 
 #include "core/config.hpp"
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 #include "util/sdl.hpp"
 #include "core/input/keybinds.hpp"
 

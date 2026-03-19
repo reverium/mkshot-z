@@ -21,7 +21,7 @@
 #include "util/util.hpp"
 #include "util/intru-list.hpp"
 #include "core/etc/etc.hpp"
-#include "core/etc/internal.hpp"
+#include "core/etc/etc-internal.hpp"
 
 class SceneElement;
 class Viewport;

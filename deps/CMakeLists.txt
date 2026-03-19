@@ -1,33 +1,30 @@
 # include(FetchContent)
 
 ## Dependencies ##
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(MKSHOT_VORBISFILE REQUIRED IMPORTED_TARGET vorbisfile)
-pkg_check_modules(MKSHOT_THEORADEC REQUIRED IMPORTED_TARGET theoradec)
-pkg_check_modules(MKSHOT_PIXMAN REQUIRED IMPORTED_TARGET pixman-1)
-
-find_package(PhysFS REQUIRED)
-find_package(uchardet REQUIRED)
-find_package(SDL3 REQUIRED)
-find_package(SDL3_image REQUIRED)
-find_package(SDL3_ttf REQUIRED)
-find_package(SDL3_sound REQUIRED)
-find_package(OpenAL REQUIRED)
+find_package(PkgConfig QUIET REQUIRED)
 find_package(Ruby REQUIRED)
 
-set(MKSHOT_LINKLIBS
-    PkgConfig::MKSHOT_VORBISFILE
-    PkgConfig::MKSHOT_THEORADEC
-    PkgConfig::MKSHOT_PIXMAN
+set(MKSHOT_PC
+    vorbisfile
+    theoradec
+    pixman-1
     physfs
     uchardet
-    SDL3::SDL3
-    SDL3_image::SDL3_image
-    SDL3_ttf::SDL3_ttf
-    SDL3_sound::SDL3_sound
-    OpenAL::OpenAL
-    ${RUBY_LIBRARIES}
+    sdl3
+    sdl3-image
+    sdl3-ttf
+    sdl3-sound
+    openal
 )
+
+set(MKSHOT_LIBS ${RUBY_LIBRARIES})
+
+FOREACH(__pc ${MKSHOT_PC})
+    pkg_check_modules(MKSHOT_${__pc} REQUIRED IMPORTED_TARGET GLOBAL ${__pc})
+    list(APPEND MKSHOT_LIBS PkgConfig::MKSHOT_${__pc})
+ENDFOREACH()
+
+set(MKSHOT_LINKLIBS ${MKSHOT_LIBS} PARENT_SCOPE)
 
 ## Steamworks SDK ##
 IF(MKSHOT_STEAMWORKS_PATH)

@@ -1,42 +1,42 @@
 ##  General Sources / Includes ##
 include_directories(${RUBY_INCLUDE_DIRS})
-set(MKSHOT_INCLUDES
-    "${CMAKE_CURRENT_SOURCE_DIR}"
+set(MKSHOT_INCDIRS
+    "${CMAKE_SOURCE_DIR}/deps"
     "${CMAKE_SOURCE_DIR}/embed/include"
+    "${CMAKE_SOURCE_DIR}/src"
 )
 
 set(MKSHOT_SOURCES
     main.cpp
 
-    binding/oneshot/journal.cpp
+    binding/oneshot/rb_journal.cpp
     binding/oneshot/niko.cpp
-    binding/oneshot/oneshot.cpp
-    binding/oneshot/wallpaper.cpp
+    binding/oneshot/rb_oneshot.cpp
+    binding/oneshot/rb_wallpaper.cpp
 
     core/oneshot/i18n.cpp
     core/oneshot/journal.cpp
     core/oneshot/oneshot.cpp
     core/oneshot/wallpaper.cpp
 
-    binding/audio.cpp
-    binding/bitmap.cpp
-    binding/etc.cpp
-    binding/font.cpp
-    binding/fs.cpp
-    binding/gfx.cpp
-    binding/http.cpp
-    binding/input.cpp
     binding/mri.cpp
-    binding/plane.cpp
+    binding/rb_audio.cpp
+    binding/rb_bitmap.cpp
+    binding/rb_etc.cpp
+    binding/rb_font.cpp
+    binding/rb_fs.cpp
+    binding/rb_gfx.cpp
+    binding/rb_input.cpp
+    binding/rb_plane.cpp
+    binding/rb_sprite.cpp
+    binding/rb_table.cpp
+    binding/rb_tilemap-vx.cpp
+    binding/rb_tilemap.cpp
+    binding/rb_util.cpp
+    binding/rb_viewport.cpp
+    binding/rb_window-vx.cpp
+    binding/rb_window.cpp
     binding/rgss.cpp
-    binding/sprite.cpp
-    binding/table.cpp
-    binding/tilemap-vx.cpp
-    binding/tilemap.cpp
-    binding/util.cpp
-    binding/viewport.cpp
-    binding/window-vx.cpp
-    binding/window.cpp
 
     core/audio/al-stream.cpp
     core/audio/audio.cpp
@@ -93,7 +93,7 @@ set(MKSHOT_SOURCES
     ${CMAKE_SOURCE_DIR}/deps/libnsgif/lzw.c
 
     ${CMAKE_SOURCE_DIR}/deps/theoraplay/play.c
-PARENT_SCOPE)
+)
 
 IF(WIN32)
     list(APPEND MKSHOT_SOURCES util/win-console.cpp)
@@ -104,7 +104,7 @@ ELSEIF(APPLE)
 ENDIF()
 
 IF(MKSHOT_HTTP)
-    list(APPEND MKSHOT_SOURCES binding/http.cpp core/net/net.cpp)
+    list(APPEND MKSHOT_SOURCES binding/rb_http.cpp core/net/net.cpp)
 ENDIF()
 
 
@@ -135,9 +135,9 @@ IF(MKSHOT_STEAM)
         set(STEAMSHIM_MM "${CMAKE_SOURCE_DIR}/deps/steamshim/mac_helpers.mm")
     ENDIF()
 
-    set(STEAMSHIM_DEFINES)
-    set(STEAMSHIM_CFLAGS)
-    set(STEAMSHIM_LDFLAGS)
+    set(STEAMSHIM_DEFINES "")
+    set(STEAMSHIM_CFLAGS "")
+    set(STEAMSHIM_LDFLAGS "")
     
     add_executable("steamshim" "${CMAKE_SOURCE_DIR}/deps/steamshim/parent.cpp" "${CMAKE_SOURCE_DIR}/deps/steamshim/child.h" "${STEAMSHIM_MM}")
     target_include_directories("steamshim" PRIVATE "${CMAKE_SOURCE_DIR}/deps/steamshim")
@@ -145,7 +145,7 @@ ENDIF()
 
 add_executable("${PROJECT_NAME}" ${MKSHOT_SOURCES})
 target_compile_definitions("${PROJECT_NAME}" PRIVATE ${MKSHOT_DEFINES})
-target_include_directories("${PROJECT_NAME}" PRIVATE ${MKSHOT_INCLUDES})
+target_include_directories("${PROJECT_NAME}" PRIVATE ${MKSHOT_INCDIRS})
 target_compile_options("${PROJECT_NAME}" PRIVATE ${MKSHOT_CFLAGS})
 target_link_libraries("${PROJECT_NAME}" PRIVATE ${MKSHOT_LINKLIBS})
 target_link_options("${PROJECT_NAME}" PRIVATE ${MKSHOT_LDFLAGS})

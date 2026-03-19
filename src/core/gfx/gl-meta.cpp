@@ -16,11 +16,11 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/meta.hpp"
-#include "core/gfx/fun.hpp"
+#include "core/gfx/gl-meta.hpp"
+#include "core/gfx/gl-fun.hpp"
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
-#include "core/glx/quad.hpp"
+#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl-quad.hpp"
 #include "core/config.hpp"
 #include "core/etc/etc.hpp"
 

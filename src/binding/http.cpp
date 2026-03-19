@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #include "json5pp.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 
 #include <ruby/thread.h>
 

@@ -19,7 +19,7 @@
 #include "core/config.hpp"
 #include "core/gfx/gfx.hpp"
 #include "core/shared-state.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "binding/types.hpp"
 #include "util/exception.hpp"
 

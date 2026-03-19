@@ -16,12 +16,12 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/state.hpp"
+#include "core/gfx/gl-state.hpp"
 #include "core/config.hpp"
 #include "core/etc/etc.hpp"
-#include "core/gfx/fun.hpp"
+#include "core/gfx/gl-fun.hpp"
 #include "core/gfx/gfx.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-shader.hpp"
 #include "core/shared-state.hpp"
 
 #include <SDL3/SDL_rect.h>

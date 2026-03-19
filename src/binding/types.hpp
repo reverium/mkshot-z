@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 
 DECL_TYPE(Table);
 DECL_TYPE(Rect);

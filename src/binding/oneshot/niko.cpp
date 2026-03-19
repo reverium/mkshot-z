@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "core/shared-state.hpp"
 #include "core/sys/sys.hpp"
 #include "core/oneshot/oneshot.hpp"
@@ -26,7 +26,7 @@ RB_METHOD(nikoPrepare)
 {
 	RB_UNUSED_PARAM;
 
-#ifndef SDL_PLATFORM_WIN32
+#ifndef __WIN32__
 	// Needed on non-Windows to prepare (start) Journal program
 	shState->oneshot().journal->nikoPrepare();
 #endif

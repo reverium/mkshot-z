@@ -19,7 +19,7 @@
 #pragma once
 
 #include "util/util.hpp"
-#include "core/gfx/util.hpp"
+#include "core/gfx/gl-util.hpp"
 
 class Scene;
 class Bitmap;

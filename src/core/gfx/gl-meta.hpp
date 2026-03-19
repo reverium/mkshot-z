@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "core/gfx/fun.hpp"
-#include "core/gfx/util.hpp"
-#include "core/gfx/vertex.hpp"
+#include "core/gfx/gl-fun.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-vertex.hpp"
 
 #include <SDL3/SDL_surface.h>
 

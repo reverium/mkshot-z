@@ -20,12 +20,12 @@
 
 #include "core/gfx/viewport.hpp"
 #include "core/shared-state.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "binding/types.hpp"
 #include "core/gfx/gfx.hpp"
 
 #include "binding/scene.hpp"
-#include "binding/disposable.hpp"
+#include "binding/rb_disposable.hpp"
 
 template<class C>
 RB_METHOD(viewportElementGetViewport)

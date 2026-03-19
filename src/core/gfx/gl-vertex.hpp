@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "core/etc/internal.hpp"
-#include "core/gfx/fun.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/etc/etc-internal.hpp"
+#include "core/gfx/gl-fun.hpp"
+#include "core/gfx/gl-shader.hpp"
 
 /* Simple Vertex */
 struct SVertex

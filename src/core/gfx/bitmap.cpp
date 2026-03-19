@@ -26,17 +26,17 @@
 
 #include <pixman.h>
 
-#include "core/gfx/util.hpp"
-#include "core/gfx/meta.hpp"
-#include "core/glx/quad.hpp"
-#include "core/glx/quadarray.hpp"
-#include "core/gfx/transform.hpp"
+#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl-meta.hpp"
+#include "core/gfx/gl-quad.hpp"
+#include "core/gfx/gl-quadarray.hpp"
+#include "core/gfx/gl-transform.hpp"
 #include "util/exception.hpp"
 
 #include "core/shared-state.hpp"
-#include "core/gfx/state.hpp"
-#include "core/gfx/tex-pool.hpp"
-#include "core/gfx/shader.hpp"
+#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl-tex-pool.hpp"
+#include "core/gfx/gl-shader.hpp"
 #include "core/fs/fs.hpp"
 #include "core/gfx/font.hpp"
 #include "core/event-thread.hpp"
@@ -437,9 +437,9 @@ struct BitmapOpenHandler : FileSystem::OpenHandler
     : surface(0), gif(0), gif_data(0), gif_data_size(0)
     {}
     
-    bool tryRead(SDL_RWops &ops, const char *ext)
+    bool tryRead(SDL_IOStream &io, const char *ext)
     {
-        if (IMG_isGIF(&ops)) {
+        if (IMG_isGIF(&io)) {
             // Use libnsgif to initialise the gif data
             gif = new gif_animation;
             
@@ -454,11 +454,11 @@ struct BitmapOpenHandler : FileSystem::OpenHandler
             
             gif_create(gif, &gif_bitmap_callbacks);
             
-            gif_data_size = ops.size(&ops);
+            gif_data_size = io.size(&io);
             
             gif_data = new unsigned char[gif_data_size];
-            ops.seek(&ops, 0, RW_SEEK_SET);
-            ops.read(&ops, gif_data, gif_data_size, 1);
+            io.seek(&io, 0, SDL_IO_SEEK_SET);
+            io.read(&io, gif_data, gif_data_size, 1);
             
             int status;
             do {
@@ -482,7 +482,7 @@ struct BitmapOpenHandler : FileSystem::OpenHandler
                 return false;
             }
         } else {
-            surface = IMG_LoadTyped_RW(&ops, 1, ext);
+            surface = IMG_LoadTyped_IO(&io, 1, ext);
         }
         return (surface || gif);
     }

@@ -17,9 +17,9 @@
 */
 
 #include "binding/types.hpp"
-#include "binding/util.hpp"
+#include "binding/rb_util.hpp"
 #include "core/gfx/bitmap.hpp"
-#include "binding/disposable.hpp"
+#include "binding/rb_disposable.hpp"
 #include "util/exception.hpp"
 #include "core/gfx/font.hpp"
 #include "core/shared-state.hpp"

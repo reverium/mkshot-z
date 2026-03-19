@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/gfx/fun.hpp"
+#include "core/gfx/gl-fun.hpp"
 
 #include "util/boost-hash.hpp"
 #include "util/exception.hpp"

@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include "core/gfx/fun.hpp"
-#include "core/etc/internal.hpp"
+#include "core/gfx/gl-fun.hpp"
+#include "core/etc/etc-internal.hpp"
 #include "core/shared-state.hpp"
 #include "core/config.hpp"
 

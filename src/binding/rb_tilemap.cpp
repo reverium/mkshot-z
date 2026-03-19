@@ -22,8 +22,8 @@
 #include "core/gfx/viewport.hpp"
 
 #include "binding/types.hpp"
-#include "binding/util.hpp"
-#include "binding/disposable.hpp"
+#include "binding/rb_util.hpp"
+#include "binding/rb_disposable.hpp"
 
 DEF_TYPE_CUSTOMFREE(TilemapAutotiles, RUBY_TYPED_NEVER_FREE);
 

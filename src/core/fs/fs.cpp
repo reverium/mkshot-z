@@ -373,17 +373,6 @@ FS::FS(const char *argv0, bool allowSymlinks) {
     if (PHYSFS_init(argv0) == 0)
         throwPhysfsError("Error initializing PhysFS");
 
-    // One error (=return 0) turns the whole product to 0
-
-    int er = 1;
-
-    er *= PHYSFS_registerArchiver(&RGSS1_Archiver);
-    er *= PHYSFS_registerArchiver(&RGSS2_Archiver);
-    er *= PHYSFS_registerArchiver(&RGSS3_Archiver);
-
-    if (er == 0)
-        throwPhysfsError("Error registering PhysFS RGSS archiver");
-
     p_ = new FSPrivate;
     p_->havePathCache = false;
 

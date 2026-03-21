@@ -29,15 +29,12 @@ struct Exception
 		RGSSError,
 		NoFileError,
 		IOError,
+		SDLError,
+		MKShotError,
 
 		/* Already defined by ruby */
 		TypeError,
 		ArgumentError,
-
-		/* New types introduced in mkxp */
-		PHYSFSError,
-		SDLError,
-		MKShotError
 	};
 
 	Type type;

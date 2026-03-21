@@ -46,8 +46,7 @@ class SharedFontState;
 class FS
 {
 public:
-	FS(const char *argv0,
-	           bool allowSymlinks);
+	FS(const char *argv0, bool allowSymlinks);
 	~FS();
 
 	void addPath(const char *path, const char *mountpoint = 0, bool reload = false);
@@ -88,7 +87,7 @@ public:
 	const char *desensitize(const char *filename);
 
 private:
-	FSPrivate *p;
+	FSPrivate *p_;
 };
 
 extern const Uint32 SDL_IOStream_PHYSFS;

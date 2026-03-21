@@ -16,8 +16,6 @@
 ** GNU General Public License for more details.
 */
 
-// TODO: fuh gtk there's surely a better way to handle popups on linux
-
 #pragma once
 
 #include <cstddef>

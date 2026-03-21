@@ -334,7 +334,7 @@ void Oneshot::update()
             intersect.x -= screenRect.x;
             intersect.y -= screenRect.y;
 
-            // If it's entirely within the bounds of the screen,
+            // It's entirely within the bounds of the screen,
             // we don't need to check out any other monitors
             if (intersect.x == 0 && intersect.y == 0 && intersect.w == 640 && intersect.h == 480) {
                 SDL_free(displays);
@@ -347,7 +347,7 @@ void Oneshot::update()
             }
         }
 
-        SDL_free(displays); // MUST FREE AT THE END
+        SDL_free(displays);
 
 		// Update the obscured map, and return prematurely if we don't have
 		// any changes to make to the texture

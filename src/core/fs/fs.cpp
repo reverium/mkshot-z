@@ -127,7 +127,6 @@ std::string mkshot_fs::normalizePath(const char *path, bool preferred, bool abso
 std::string mkshot_fs::getDefaultGameRoot() {
     const char *p = SDL_GetBasePath();
     std::string ret(p);
-    SDL_free(p);
     return ret;
 }
 
@@ -374,15 +373,26 @@ FS::FS(const char *argv0, bool allowSymlinks) {
     if (PHYSFS_init(argv0) == 0)
         throwPhysfsError("Error initializing PhysFS");
 
-    p = new FSPrivate;
-    p->havePathCache = false;
+    // One error (=return 0) turns the whole product to 0
+
+    int er = 1;
+
+    er *= PHYSFS_registerArchiver(&RGSS1_Archiver);
+    er *= PHYSFS_registerArchiver(&RGSS2_Archiver);
+    er *= PHYSFS_registerArchiver(&RGSS3_Archiver);
+
+    if (er == 0)
+        throwPhysfsError("Error registering PhysFS RGSS archiver");
+
+    p_ = new FSPrivate;
+    p_->havePathCache = false;
 
     if (allowSymlinks)
         PHYSFS_permitSymbolicLinks(1);
 }
 
 FS::~FS() {
-    delete p;
+    delete p_;
 
     if (PHYSFS_deinit() == 0)
         Debug() << "PhyFS failed to deinit.";
@@ -417,7 +427,7 @@ void FS::removePath(const char *path, bool reload) {
 }
 
 struct CacheEnumData {
-    FSPrivate *p;
+    FSPrivate *p_;
     std::stack<std::vector<std::string> *> fileLists;
 
 #ifdef __APPLE__
@@ -425,7 +435,7 @@ struct CacheEnumData {
     char buf[512];
 #endif
 
-    CacheEnumData(FSPrivate *p) : p(p) {
+    CacheEnumData(FSPrivate *p_) : p_(p_) {
 #ifdef __APPLE__
         nfd2nfc = iconv_open("utf-8", "utf-8-mac");
 #endif
@@ -483,7 +493,7 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir,
 
     if (stat.filetype == PHYSFS_FILETYPE_DIRECTORY) {
         // Create a new list for this directory
-        std::vector<std::string> &list = data.p->fileLists[lowerCase];
+        std::vector<std::string> &list = data.p_->fileLists[lowerCase];
 
         // Iterate over its contents
         data.fileLists.push(&list);
@@ -499,7 +509,7 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir,
         list.push_back(lowerFilename);
 
         /* Add the lower -> mixed mapping of the file's full path */
-        data.p->pathCache.insert(lowerCase, mixedCase);
+        data.p_->pathCache.insert(lowerCase, mixedCase);
     }
 
     return PHYSFS_ENUM_OK;
@@ -508,25 +518,25 @@ static PHYSFS_EnumerateCallbackResult cacheEnumCB(void *d, const char *origdir,
 void FS::createPathCache() {
     Debug() << "Loading path cache...";
 
-    CacheEnumData data(p);
-    data.fileLists.push(&p->fileLists[""]);
+    CacheEnumData data(p_);
+    data.fileLists.push(&p_->fileLists[""]);
     PHYSFS_enumerate("", cacheEnumCB, &data);
 
-    p->havePathCache = true;
+    p_->havePathCache = true;
 
     Debug() << "Path cache completed.";
 }
 
 void FS::reloadPathCache() {
-    if (!p->havePathCache) return;
+    if (!p_->havePathCache) return;
 
-    p->fileLists.clear();
-    p->pathCache.clear();
+    p_->fileLists.clear();
+    p_->pathCache.clear();
     createPathCache();
 }
 
 struct FontSetsCBData {
-    FSPrivate *p;
+    FSPrivate *p_;
     SharedFontState *sfs;
 };
 
@@ -588,7 +598,7 @@ findFontsFolderCB(void *data, const char *, const char *fname) {
 }
 
 void FS::initFontSets(SharedFontState &sfs) {
-    FontSetsCBData d = {p, &sfs};
+    FontSetsCBData d = {p_, &sfs};
     PHYSFS_enumerate("", findFontsFolderCB, &d);
 }
 
@@ -680,7 +690,7 @@ void FS::openRead(OpenHandler &handler, const char *filename) {
   size_t len = strcpySafe(buffer, filename_nm.c_str(), sizeof(buffer), -1);
   char *delim;
 
-    if (p->havePathCache)
+    if (p_->havePathCache)
         for (size_t i = 0; i < len; ++i)
             buffer[i] = tolower(buffer[i]);
 
@@ -701,12 +711,12 @@ void FS::openRead(OpenHandler &handler, const char *filename) {
         dir = buffer;
     }
     OpenReadEnumData data(handler, file, len + buffer - delim - !root,
-                          p->havePathCache ? &p->pathCache : 0);
+                          p_->havePathCache ? &p_->pathCache : 0);
 
-    if (p->havePathCache) {
+    if (p_->havePathCache) {
         /* Get the list of files contained in this directory
         * and manually iterate over them */
-        const std::vector<std::string> &fileList = p->fileLists[dir];
+        const std::vector<std::string> &fileList = p_->fileLists[dir];
 
         for (size_t i = 0; i < fileList.size(); ++i)
             openReadEnumCB(&data, dir, fileList[i].c_str());
@@ -746,7 +756,7 @@ const char *FS::desensitize(const char *filename) {
     std::transform(fn_lower.begin(), fn_lower.end(), fn_lower.begin(), [](unsigned char c){
         return std::tolower(c);
     });
-    if (p->havePathCache && p->pathCache.contains(fn_lower))
-        return p->pathCache[fn_lower].c_str();
+    if (p_->havePathCache && p_->pathCache.contains(fn_lower))
+        return p_->pathCache[fn_lower].c_str();
     return filename;
 }

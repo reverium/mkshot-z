@@ -44,7 +44,6 @@ std::string prefPath(const char *org, const char *app) {
     if (!path)
         return std::string("");
     std::string ret(path);
-    SDL_free(path);
     return ret;
 }
 

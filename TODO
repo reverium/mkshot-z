@@ -5,7 +5,7 @@ everything is sorted by priority
 _________________________
 
 [=] General: SDL2 -> SDL3
-[=] Get rid of PhysFS and RGSSAD support entirely
+[=] Get rid of RGSSAD support entirely
 [-] General: Meson/Xcode + Makefiles -> CMake + Conan
    \(-) Fully functional CMake setup
     (-) General: Embed assets without involving xxd

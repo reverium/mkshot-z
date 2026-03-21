@@ -30,20 +30,18 @@
 
 static void fileIntFreeInstance(void *inst) {
     SDL_IOStream *io = static_cast<SDL_IOStream *>(inst);
-
     SDL_CloseIO(io);
-    SDL_FreeRW(io);
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 static VALUE fileIntForPath(const char *path, bool rubyExc) {
-    SDL_IOStream *io = SDL_AllocRW();
+    SDL_IOStream *io;
 
     try {
         shState->fileSystem().openReadRaw(*io, path);
     } catch (const Exception &e) {
-        SDL_FreeRW(io);
+        SDL_CloseIO(io);
 
         if (rubyExc)
             raiseRbExc(e);
@@ -74,21 +72,20 @@ RB_METHOD(fileIntRead) {
 
     int length = -1;
     rb_get_args(argc, argv, "|i", &length RB_ARG_END);
-
-    SDL_IOStream *io = getPrivateData<SDL_IOStream>(self);
+    SDL_IOStream *io;
 
     if (length == -1) {
         Sint64 cur = SDL_TellIO(io);
-        Sint64 end = SDL_SeekIO(io, 0, SEEK_END);
+        Sint64 end = SDL_SeekIO(io, 0, SDL_IO_SEEK_END);
 
         // Sometimes SDL_SeekIO will fail for no reason
         // with encrypted archives, so let's just ask
         // for the size up front
         if (end < 0)
-            end = io->size(io);
+            end = SDL_GetIOSize(io);
 
         length = end - cur;
-        SDL_SeekIO(io, cur, SEEK_SET);
+        SDL_SeekIO(io, cur, SDL_IO_SEEK_SET);
     }
 
     if (length == 0)

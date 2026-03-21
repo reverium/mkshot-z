@@ -44,7 +44,7 @@ class EventThread
 {
 public:
 
-    struct ControllerState {
+    struct JoystickState {
         int axes[SDL_GAMEPAD_AXIS_COUNT];
         bool buttons[SDL_GAMEPAD_BUTTON_COUNT];
     };
@@ -68,7 +68,7 @@ public:
 	};
 
 	static uint8_t keyStates[SDL_SCANCODE_COUNT];
-    static ControllerState controllerState;
+    static JoystickState controllerState;
 	static MouseState mouseState;
 	static TouchState touchState;
     static SDL_AtomicInt verticalScrollDistance;
@@ -101,7 +101,7 @@ public:
 
 	bool getFullscreen() const;
 	bool getShowCursor() const;
-    bool getControllerConnected() const;
+    bool getJoystickConnected() const;
 
     SDL_Gamepad *controller() const;
 

@@ -18,7 +18,7 @@
 
 #pragma once
 
-emplate <typename T>
+template <typename T>
 struct IntruListLink
 {
 	IntruListLink<T> *prev;

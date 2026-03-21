@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-namespace fs = std::filesystem;
-
 static inline int
 wrapRange(int value, int min, int max)
 {
@@ -45,26 +43,6 @@ findNextPow2(int start)
 		i <<= 1;
 
 	return i;
-}
-
-/* Reads the contents of the file at 'path' and
-** appends them to 'out'. Returns false on failure
-*/
-inline bool readFile(const char *path,
-                     std::string &out)
-{
-    size_t size;
-    void *data = SDL_LoadFile(path, &size);
-
-    if (!data) {
-        SDL_Log("Failed to read %s: %s", path, SDL_GetError());
-        return false;
-    }
-
-    out.append(static_cast<const char*>(data), size);
-
-    SDL_free(data);
-    return true;
 }
 
 /* Check if [C]ontainer contains [V]alue */

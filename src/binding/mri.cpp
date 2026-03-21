@@ -49,6 +49,7 @@ extern "C" {
 
 #include <assert.h>
 #include <string>
+#include <zlib.h>
 
 #include <SDL3/SDL_cpuinfo.h>
 #include <SDL3/SDL_filesystem.h>
@@ -541,7 +542,7 @@ RB_METHOD(mkshotSettingsMenu) {
 RB_METHOD(mkshotCpuCount) {
     RB_UNUSED_PARAM;
 
-    return INT2NUM(SDL_GetCPUCount());
+    return INT2NUM(SDL_GetNumLogicalCPUCores());
 }
 
 RB_METHOD(mkshotSystemMemory) {

@@ -18,8 +18,6 @@ class mkshot(ConanFile):
         "sdl_ttf/3.2.2",
         "openal-soft/1.23.1",
         "cpp-httplib/0.30.1",
-        "crc_cpp/1.2.0",
-        "sigslot/1.2.3"
     )
     options = {}
     default_options = ()

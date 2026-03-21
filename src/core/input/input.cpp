@@ -860,7 +860,7 @@ struct InputPrivate
         return b;
     }
 
-    ButtonState getControllerButtonState(int button) {
+    ButtonState getJoystickButtonState(int button) {
         ButtonState b;
 
         b.pressed = rawButtonStates[button];
@@ -1076,7 +1076,7 @@ struct InputPrivate
 
     }
 
-    void updateControllerRaw()
+    void updateJoystickRaw()
     {
         for (int i = 0; i < SDL_GAMEPAD_AXIS_COUNT; i++)
             axisStateArray[i] = shState->eThread().controllerState.axes[i];
@@ -1214,7 +1214,7 @@ void Input::update()
 
     // Update raw keys, controller buttons and axes
     p->updateRaw();
-    p->updateControllerRaw();
+    p->updateJoystickRaw();
 
     // Record mouse positions
     p->mousePos[0] = shState->eThread().mouseState.x;
@@ -1339,19 +1339,19 @@ bool Input::isReleasedEx(int code, bool isVKey)
 }
 
 bool Input::controllerIsPressedEx(int button) {
-    return p->getControllerButtonState(button).pressed;
+    return p->getJoystickButtonState(button).pressed;
 }
 
 bool Input::controllerIsTriggeredEx(int button) {
-    return p->getControllerButtonState(button).triggered;
+    return p->getJoystickButtonState(button).triggered;
 }
 
 bool Input::controllerIsRepeatedEx(int button) {
-    return p->getControllerButtonState(button).repeated;
+    return p->getJoystickButtonState(button).repeated;
 }
 
 bool Input::controllerIsReleasedEx(int button) {
-    return p->getControllerButtonState(button).released;
+    return p->getJoystickButtonState(button).released;
 }
 
 unsigned int Input::repeatcount(int code, bool isVKey) {
@@ -1421,7 +1421,7 @@ unsigned int Input::rawAxesLength() {
     return sizeof(p->axisStateArray) / sizeof(int16_t);
 }
 
-short Input::getControllerAxisValue(SDL_GamepadAxis axis) {
+short Input::getJoystickAxisValue(SDL_GamepadAxis axis) {
     if (axis < 0 || (uint32_t)axis >= rawAxesLength())
         return 0;
 
@@ -1461,25 +1461,25 @@ int Input::scrollV()
      return p->vScrollDistance;
  }
 
-bool Input::getControllerConnected()
+bool Input::getJoystickConnected()
 {
-    return shState->eThread().getControllerConnected();
+    return shState->eThread().getJoystickConnected();
 }
 
-const char *Input::getControllerName()
+const char *Input::getJoystickName()
 {
-    return (getControllerConnected()) ?
+    return (getJoystickConnected()) ?
     SDL_GamepadName(shState->eThread().controller()) :
     0;
 }
 
-int Input::getControllerPowerLevel()
+int Input::getJoystickPowerInfo()
 {
-    if (!getControllerConnected())
-        return SDL_JOYSTICK_POWER_UNKNOWN;
+    if (!getJoystickConnected())
+        return SDL_POWERSTATE_UNKNOWN;
 
-    SDL_Joystick *js = SDL_GamepadGetJoystick(shState->eThread().controller());
-    return SDL_JoystickCurrentPowerLevel(js);
+    SDL_Joystick *js = SDL_GetGamepadJoystick(shState->eThread().controller());
+    return SDL_GetJoystickPowerInfo(js);
 }
 
 bool Input::getTextInputMode()

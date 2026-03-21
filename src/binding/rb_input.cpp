@@ -71,13 +71,13 @@ static int getScancodeArg(VALUE *argv) {
     return code;
 }
 
-static int getControllerButtonArg(VALUE *argv) {
+static int getJoystickButtonArg(VALUE *argv) {
     const char *button = rb_id2name(SYM2ID(*argv));
     int btn{};
     try {
         btn = strToGCButton[button];
     } catch (...) {
-        rb_raise(rb_eRuntimeError, "%s is not a valid name of an SDL Controller button.", button);
+        rb_raise(rb_eRuntimeError, "%s is not a valid name of an SDL Joystick button.", button);
     }
 
     return btn;
@@ -297,153 +297,156 @@ RB_METHOD(inputRawKeyStates) {
 
 #define M_SYMBOL(x) ID2SYM(rb_intern(x))
 #define POWERCASE(v, c)                                                        \
-case SDL_JOYSTICK_POWER_##c:                                                 \
+case SDL_POWERSTATE_##c:                                                 \
 v = M_SYMBOL(#c);                                                          \
 break;
 
-RB_METHOD(inputControllerConnected) {
+RB_METHOD(inputJoystickConnected) {
     RB_UNUSED_PARAM;
 
-    return rb_bool_new(shState->input().getControllerConnected());
+    return rb_bool_new(shState->input().getJoystickConnected());
 }
 
-RB_METHOD(inputControllerName) {
+RB_METHOD(inputJoystickName) {
     RB_UNUSED_PARAM;
 
-    if (!shState->input().getControllerConnected())
+    if (!shState->input().getJoystickConnected())
         return rb_utf8_str_new_cstr("");
 
-    return rb_utf8_str_new_cstr(shState->input().getControllerName());
+    return rb_utf8_str_new_cstr(shState->input().getJoystickName());
 }
 
-RB_METHOD(inputControllerPowerLevel) {
+RB_METHOD(inputJoystickPowerInfo) {
     RB_UNUSED_PARAM;
 
     VALUE ret;
 
-    if (!shState->input().getControllerConnected())
+    if (!shState->input().getJoystickConnected())
         ret = M_SYMBOL("UNKNOWN");
 
-    switch (shState->input().getControllerPowerLevel()) {
-            POWERCASE(ret, MAX);
-            POWERCASE(ret, WIRED);
-            POWERCASE(ret, FULL);
-            POWERCASE(ret, MEDIUM);
-            POWERCASE(ret, LOW);
-            POWERCASE(ret, EMPTY);
+    switch (shState->input().getJoystickPowerInfo()) {
+    case SDL_POWERSTATE_ERROR:
+        rb_raise(rb_eRuntimeError, "Error getting joystick power info: %s", SDL_GetError());
+        break;
 
-        default:
-            ret = M_SYMBOL("UNKNOWN");
-            break;
+    POWERCASE(ret, ON_BATTERY);
+    POWERCASE(ret, NO_BATTERY);
+    POWERCASE(ret, CHARGING);
+    POWERCASE(ret, CHARGED);
+
+    case SDL_POWERSTATE_UNKNOWN:
+    default:
+        ret = M_SYMBOL("UNKNOWN");
+        break;
     }
 
     return ret;
 }
 
 #define AXISFUNC(n, ax1, ax2) \
-RB_METHOD(inputControllerGet##n##Axis) {\
+RB_METHOD(inputJoystickGet##n##Axis) {\
 RB_UNUSED_PARAM;\
 VALUE ret = rb_ary_new(); \
-if (!shState->eThread().getControllerConnected()) {\
+if (!shState->eThread().getJoystickConnected()) {\
 rb_ary_push(ret, rb_float_new(0)); rb_ary_push(ret, rb_float_new(0)); \
 }\
-rb_ary_push(ret, rb_float_new(shState->input().getControllerAxisValue(SDL_CONTROLLER_AXIS_##ax1) / 32767.0)); \
-rb_ary_push(ret, rb_float_new(shState->input().getControllerAxisValue(SDL_CONTROLLER_AXIS_##ax2) / 32767.0)); \
+rb_ary_push(ret, rb_float_new(shState->input().getJoystickAxisValue(SDL_GAMEPAD_AXIS_##ax1) / 32767.0)); \
+rb_ary_push(ret, rb_float_new(shState->input().getJoystickAxisValue(SDL_GAMEPAD_AXIS_##ax2) / 32767.0)); \
 return ret; \
 }
 
 AXISFUNC(Left, LEFTX, LEFTY);
 AXISFUNC(Right, RIGHTX, RIGHTY);
-AXISFUNC(Trigger, TRIGGERLEFT, TRIGGERRIGHT);
+AXISFUNC(Trigger, LEFT_TRIGGER, RIGHT_TRIGGER);
 
 #undef POWERCASE
 #undef M_SYMBOL
 
-RB_METHOD(inputControllerPressEx) {
+RB_METHOD(inputJoystickPressEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_bool_new(shState->input().controllerIsPressedEx(num));
     }
 
     return rb_bool_new(shState->input().controllerIsPressedEx(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerTriggerEx) {
+RB_METHOD(inputJoystickTriggerEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_bool_new(shState->input().controllerIsTriggeredEx(num));
     }
 
     return rb_bool_new(shState->input().controllerIsTriggeredEx(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerRepeatEx) {
+RB_METHOD(inputJoystickRepeatEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_bool_new(shState->input().controllerIsRepeatedEx(num));
     }
 
     return rb_bool_new(shState->input().controllerIsRepeatedEx(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerReleaseEx) {
+RB_METHOD(inputJoystickReleaseEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_bool_new(shState->input().controllerIsReleasedEx(num));
     }
 
     return rb_bool_new(shState->input().controllerIsReleasedEx(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerCountEx) {
+RB_METHOD(inputJoystickCountEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_bool_new(shState->input().controllerRepeatcount(num));
     }
 
     return rb_bool_new(shState->input().controllerRepeatcount(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerRepeatTimeEx) {
+RB_METHOD(inputJoystickRepeatTimeEx) {
     RB_UNUSED_PARAM;
 
     VALUE button;
     rb_scan_args(argc, argv, "1", &button);
 
     if (SYMBOL_P(button)) {
-        int num = getControllerButtonArg(&button);
+        int num = getJoystickButtonArg(&button);
         return rb_float_new(shState->input().controllerRepeatTimeEx(num));
     }
 
     return rb_float_new(shState->input().controllerRepeatTimeEx(NUM2INT(button)));
 }
 
-RB_METHOD(inputControllerRawButtonStates) {
+RB_METHOD(inputJoystickRawButtonStates) {
     RB_UNUSED_PARAM;
 
     VALUE ret = rb_ary_new();
@@ -455,7 +458,7 @@ RB_METHOD(inputControllerRawButtonStates) {
     return ret;
 }
 
-RB_METHOD(inputControllerRawAxes) {
+RB_METHOD(inputJoystickRawAxes) {
     RB_UNUSED_PARAM;
 
     VALUE ret = rb_ary_new();
@@ -593,21 +596,21 @@ void inputBindingInit() {
 
     _rb_define_module_function(module, "raw_key_states", inputRawKeyStates);
 
-    VALUE submod = rb_define_module_under(module, "Controller");
-    _rb_define_module_function(submod, "connected?", inputControllerConnected);
-    _rb_define_module_function(submod, "name", inputControllerName);
-    _rb_define_module_function(submod, "power_level", inputControllerPowerLevel);
-    _rb_define_module_function(submod, "axes_left", inputControllerGetLeftAxis);
-    _rb_define_module_function(submod, "axes_right", inputControllerGetRightAxis);
-    _rb_define_module_function(submod, "axes_trigger", inputControllerGetTriggerAxis);
-    _rb_define_module_function(submod, "raw_button_states", inputControllerRawButtonStates);
-    _rb_define_module_function(submod, "raw_axes", inputControllerRawAxes);
-    _rb_define_module_function(submod, "pressex?", inputControllerPressEx);
-    _rb_define_module_function(submod, "triggerex?", inputControllerTriggerEx);
-    _rb_define_module_function(submod, "repeatex?", inputControllerRepeatEx);
-    _rb_define_module_function(submod, "releaseex?", inputControllerReleaseEx);
-    _rb_define_module_function(submod, "repeatcount", inputControllerCountEx);
-    _rb_define_module_function(submod, "timeex?", inputControllerRepeatTimeEx);
+    VALUE submod = rb_define_module_under(module, "Joystick");
+    _rb_define_module_function(submod, "connected?", inputJoystickConnected);
+    _rb_define_module_function(submod, "name", inputJoystickName);
+    _rb_define_module_function(submod, "power_info", inputJoystickPowerInfo);
+    _rb_define_module_function(submod, "axes_left", inputJoystickGetLeftAxis);
+    _rb_define_module_function(submod, "axes_right", inputJoystickGetRightAxis);
+    _rb_define_module_function(submod, "axes_trigger", inputJoystickGetTriggerAxis);
+    _rb_define_module_function(submod, "raw_button_states", inputJoystickRawButtonStates);
+    _rb_define_module_function(submod, "raw_axes", inputJoystickRawAxes);
+    _rb_define_module_function(submod, "pressex?", inputJoystickPressEx);
+    _rb_define_module_function(submod, "triggerex?", inputJoystickTriggerEx);
+    _rb_define_module_function(submod, "repeatex?", inputJoystickRepeatEx);
+    _rb_define_module_function(submod, "releaseex?", inputJoystickReleaseEx);
+    _rb_define_module_function(submod, "repeatcount", inputJoystickCountEx);
+    _rb_define_module_function(submod, "timeex?", inputJoystickRepeatTimeEx);
 
     _rb_define_module_function(module, "text_input", inputGetMode);
     _rb_define_module_function(module, "text_input=", inputSetMode);

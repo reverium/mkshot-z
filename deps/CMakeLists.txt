@@ -8,7 +8,6 @@ set(MKSHOT_PC
     theoradec
     pixman-1
     physfs
-    uchardet
     sdl3
     sdl3-image
     sdl3-ttf

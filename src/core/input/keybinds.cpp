@@ -156,12 +156,12 @@ BDescVec genDefaultBindings(const Config &conf)
 	for (size_t i = 0; i < defaultCtrlBindingsN; ++i)
 		defaultCtrlBindings[i].add(d);
 
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Negative, Input::Left);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX, Positive, Input::Right);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Negative, Input::Up);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY, Positive, Input::Down);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_TRIGGERLEFT, Positive, Input::Deactivate);
-	addAxisBinding(d, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, Positive, Input::Run);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTX, Negative, Input::Left);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTX, Positive, Input::Right);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTY, Negative, Input::Up);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTY, Positive, Input::Down);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_LEFT_TRIGGER, Positive, Input::Deactivate);
+	addAxisBinding(d, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, Positive, Input::Run);
 
 	return d;
 }

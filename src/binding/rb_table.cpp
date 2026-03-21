@@ -17,7 +17,7 @@
 */
 
 #include "binding/rb_util.hpp"
-#include "util/serializable.hpp"
+#include "binding/rb_serializable.hpp"
 #include "core/gfx/table.hpp"
 #include <algorithm>
 

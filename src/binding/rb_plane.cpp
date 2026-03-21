@@ -19,7 +19,7 @@
 #include "binding/types.hpp"
 #include "binding/rb_util.hpp"
 #include "binding/rb_disposable.hpp"
-#include "binding/plane.hpp"
+#include "core/gfx/plane.hpp"
 #include "binding/rb_viewport.hpp"
 
 DEF_TYPE(Plane);

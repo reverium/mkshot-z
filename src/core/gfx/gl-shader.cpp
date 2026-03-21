@@ -22,6 +22,7 @@
 #include "core/shared-state.hpp"
 #include "core/gfx/gl-state.hpp"
 #include "util/exception.hpp"
+#include "util/sdl.hpp"
 
 #include <assert.h>
 #include <string.h>
@@ -239,8 +240,8 @@ void Shader::initFromFile(const char *_vertFile, const char *_fragFile,
                           const char *programName)
 {
 	std::string vertContents, fragContents;
-	readFile(_vertFile, vertContents);
-	readFile(_fragFile, fragContents);
+	readFileSDL(_vertFile, vertContents);
+	readFileSDL(_fragFile, fragContents);
 
 	init((const unsigned char*) vertContents.c_str(), vertContents.size(),
 	     (const unsigned char*) fragContents.c_str(), fragContents.size(),

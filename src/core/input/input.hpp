@@ -88,7 +88,7 @@ public:
     int16_t *rawAxes();
     unsigned int rawAxesLength();
 
-    short getControllerAxisValue(SDL_GamepadAxis axis);
+    short getJoystickAxisValue(SDL_GamepadAxis axis);
 
 	int dir4Value();
 	int dir8Value();
@@ -98,9 +98,9 @@ public:
     int scrollV();
     bool mouseInWindow();
 
-    bool getControllerConnected();
-    const char *getControllerName();
-    int getControllerPowerLevel();
+    bool getJoystickConnected();
+    const char *getJoystickName();
+    int getJoystickPowerInfo();
 
     bool getTextInputMode();
     void setTextInputMode(bool mode);

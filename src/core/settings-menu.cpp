@@ -108,20 +108,20 @@ std::string sourceDescString(const SourceDesc &src)
 			return OneShot::i18n::findtext(buf);
 
 		case CAxis:
-			if (src.d.ca.axis >= SDL_CONTROLLER_AXIS_LEFTX && src.d.ca.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
+			if (src.d.ca.axis >= SDL_GAMEPAD_AXIS_LEFTX && src.d.ca.axis <= SDL_GAMEPAD_AXIS_RIGHTY) {
 				char bufDir[16];
 				switch (src.d.ca.axis)
 				{
-					case SDL_CONTROLLER_AXIS_LEFTX:
-					case SDL_CONTROLLER_AXIS_RIGHTX:
+					case SDL_GAMEPAD_AXIS_LEFTX:
+					case SDL_GAMEPAD_AXIS_RIGHTX:
 						if (src.d.ca.dir == Negative)
 							snprintf(bufDir, sizeof(bufDir), "Left");
 						else
 							snprintf(bufDir, sizeof(bufDir), "Right");
 						break;
 
-					case SDL_CONTROLLER_AXIS_LEFTY:
-					case SDL_CONTROLLER_AXIS_RIGHTY:
+					case SDL_GAMEPAD_AXIS_LEFTY:
+					case SDL_GAMEPAD_AXIS_RIGHTY:
 						if (src.d.ca.dir == Negative)
 							snprintf(bufDir, sizeof(bufDir), "Up");
 						else

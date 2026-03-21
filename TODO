@@ -17,6 +17,8 @@ _________________________
     (=) Move the macro spaghetti into a build configuration header
     ( ) Rewrite the internal GUI (i.e. keybinds menu) to use Dear IMGUI
 [ ] Configuration: JSON5 -> TOML
+[ ] Ruby: 3.4 -> 4.x
+[ ] Ruby: Full YJIT and ZJIT support
 [ ] Repo: Setup autobuilds
 [ ] OneShot: Use tinyfiledialogs for managing popups
 [ ] Audio: SDL_sound + OpenAL -> Miniaudio

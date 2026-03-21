@@ -86,7 +86,7 @@ initALCFunctions(ALCdevice *alcDev)
 #define HAVE_ALC_DEVICE_PAUSE alc.DevicePause
 
 uint8_t EventThread::keyStates[];
-EventThread::ControllerState EventThread::controllerState;
+EventThread::JoystickState EventThread::controllerState;
 EventThread::MouseState EventThread::mouseState;
 EventThread::TouchState EventThread::touchState;
 SDL_AtomicInt EventThread::verticalScrollDistance;
@@ -191,7 +191,7 @@ void EventThread::process(RGSSThreadData &rtData)
 #endif
 
     SDL_JoystickUpdate();
-    if (SDL_NumJoysticks() > 0 && SDL_IsGameController(0)) {
+    if (SDL_NumJoysticks() > 0 && SDL_IsGameJoystick(0)) {
             ctrl = SDL_GamepadOpen(0);
     }
 
@@ -839,7 +839,7 @@ bool EventThread::getShowCursor() const
     return showCursor;
 }
 
-bool EventThread::getControllerConnected() const
+bool EventThread::getJoystickConnected() const
 {
     return ctrl != 0;
 }

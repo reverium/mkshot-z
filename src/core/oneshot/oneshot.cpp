@@ -32,8 +32,8 @@
 #include <windows.h>
 #include <shlobj.h>
 #else
-#include "util/xdg-user-dirs.hpp"
-#include "core/oneshot/gnome-fun.hpp"
+#include "core/oneshot/linux/xdg-user-dirs.hpp"
+#include "core/oneshot/linux/gtk.hpp"
 #endif
 
 #include <SDL3/SDL.h>

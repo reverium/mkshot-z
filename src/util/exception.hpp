@@ -30,6 +30,7 @@ struct Exception
 		NoFileError,
 		IOError,
 		SDLError,
+        PhysFSError,
 		MKShotError,
 
 		/* Already defined by ruby */

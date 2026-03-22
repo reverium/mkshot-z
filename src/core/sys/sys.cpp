@@ -210,7 +210,7 @@ bool mkshot_sys::isWine()
 
 bool mkshot_sys::isRosetta()
 {
-	// Always false on non-Mac environment, see impl-apple.mm
+	// Always false on non-Mac environment, see mac/fs.mm
 	return false;
 }
 

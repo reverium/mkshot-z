@@ -2112,7 +2112,7 @@ void Bitmap::drawText(const IntRect &rect, const char *str, int align)
     stretchBlt(destRect, txtBitmap, sourceRect, fontColor.alpha, smooth);
 }
 
-/* http://www.lemoda.net/c/utf8-to-ucs2/index.html */
+/* http://www.lemoda.http/c/utf8-to-ucs2/index.html */
 static uint16_t utf8_to_ucs2(const char *_input,
                              const char **end_ptr)
 {

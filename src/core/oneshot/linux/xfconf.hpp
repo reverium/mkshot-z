@@ -20,7 +20,7 @@
 
 #include <cstddef>
 
-#include "core/oneshot/gnome-fun.hpp"
+#include "core/oneshot/linux/gtk.hpp"
 
 #ifndef __XFCONF_CHANNEL_H__
 typedef struct _XfconfChannel XfconfChannel;

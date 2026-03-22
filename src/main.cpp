@@ -51,7 +51,7 @@
 
 #ifdef __WIN32__
 #include <Winsock2.h>
-#include "util/win-console.hpp"
+#include "util/win/console.hpp"
 
 // Try to work around buggy GL drivers that tend to be in Optimus laptops
 // by forcing MKShot to use the dedicated card instead of the integrated one

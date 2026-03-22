@@ -42,12 +42,12 @@
 #include <unistd.h>
 #endif
 
-#include "core/oneshot/gnome-fun.hpp"
-#include "core/oneshot/xfconf-fun.hpp"
-#include "util/xdg-user-dirs.hpp"
+#include "core/oneshot/linux/gtk.hpp"
+#include "core/oneshot/linux/xfconf.hpp"
+#include "core/oneshot/linux/xdg-user-dirs.hpp"
 
 #ifdef __APPLE__
-#include "core/oneshot/oneshot-apple.hpp"
+#include "core/oneshot/oneshot-macos.hpp"
 #endif
 
 namespace fs = std::filesystem;

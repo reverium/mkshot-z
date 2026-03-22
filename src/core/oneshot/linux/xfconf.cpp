@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/oneshot/xfconf-fun.hpp"
+#include "core/oneshot/linux/xfconf.hpp"
 #include "util/dbg-writer.hpp"
 
 #include <vector>
@@ -34,7 +34,7 @@ struct XfconfFunctions dynXfconf;
 #define XFCONF_FUNC(name, type) \
 	dynXfconf.name = (type)SDL_LoadFunction(so, "xfconf_" #name); \
 	if (dynXfconf.name == NULL) { \
-		Debug() << "[xfconf-fun] Unable to load function:" << SDL_GetError(); \
+		Debug() << "[Xfconf] Unable to load function:" << SDL_GetError(); \
 		fail = true; \
 	}
 
@@ -58,7 +58,7 @@ void initXfconfFunctions()
 	}
 
 	if (so == NULL) {
-		Debug() << "[xfconf-fun] Couldn't load library:" << SDL_GetError();
+		Debug() << "[Xfconf] Couldn't load library:" << SDL_GetError();
 		fail = true;
 	}
 

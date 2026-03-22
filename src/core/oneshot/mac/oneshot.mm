@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/oneshot/oneshot-apple.hpp"
+#include "core/oneshot/oneshot.hpp"
 
 #include <string>
 

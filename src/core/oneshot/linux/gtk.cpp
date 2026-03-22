@@ -16,7 +16,7 @@
 ** GNU General Public License for more details.
 */
 
-#include "core/oneshot/gnome-fun.hpp"
+#include "core/oneshot/linux/gtk.hpp"
 #include "util/dbg-writer.hpp"
 
 #include <SDL3/SDL_loadso.h>
@@ -38,21 +38,21 @@ struct GdkFunctions dynGdk;
 #define GNOME_FUNC(name, type) \
 	dynGnome.name = (type)SDL_LoadFunction(so, #name); \
 	if (dynGnome.name == NULL) { \
-		Debug() << "[gnome-fun] Unable to load GTK+ function:" << SDL_GetError(); \
+		Debug() << "[GTK] Unable to load GTK+ function:" << SDL_GetError(); \
 		fail = true; \
 	}
 
 #define GIO_FUNC(name, type) \
 	dynGio.name = (type)SDL_LoadFunction(so, #name); \
 	if (dynGio.name == NULL) { \
-		Debug() << "[gnome-fun] Unable to load Gio function:" << SDL_GetError(); \
+		Debug() << "[GTK] Unable to load Gio function:" << SDL_GetError(); \
 		fail = true; \
 	}
 
 #define GDK_FUNC(name, type) \
 	dynGdk.name = (type)SDL_LoadFunction(so, #name); \
 	if (dynGdk.name == NULL) { \
-		Debug() << "[gnome-fun] Unable to load GDK function:" << SDL_GetError(); \
+		Debug() << "[GTK] Unable to load GDK function:" << SDL_GetError(); \
 		fail = true; \
 	}
 
@@ -66,13 +66,13 @@ void initGnomeFunctions()
 	so = SDL_LoadObject(GTK3_LIBNAME);
 
 	if (so == NULL) {
-		Debug() << "[gnome-fun] Couldn't load GTK+ 3 library:" << SDL_GetError();
+		Debug() << "[GTK] Couldn't load GTK+ 3 library:" << SDL_GetError();
 
 		// Try to load GTK+ 2
 		so = SDL_LoadObject(GTK2_LIBNAME);
 
 		if (so == NULL) {
-			Debug() << "[gnome-fun] Couldn't load GTK+ 2 library:" << SDL_GetError();
+			Debug() << "[GTK] Couldn't load GTK+ 2 library:" << SDL_GetError();
 			fail = true;
 		}
 	}
@@ -99,7 +99,7 @@ void initGioFunctions()
 	so = SDL_LoadObject(GTK3_LIBNAME);
 
 	if (so == NULL) {
-		Debug() << "[gnome-fun] Couldn't load Gio 2.0 library:" << SDL_GetError();
+		Debug() << "[GTK] Couldn't load Gio 2.0 library:" << SDL_GetError();
 		fail = true;
 	}
 
@@ -124,13 +124,13 @@ void initGdkFunctions()
 	so = SDL_LoadObject(GTK3_LIBNAME);
 
 	if (so == NULL) {
-		Debug() << "[gnome-fun] Couldn't load GDK 3 library:" << SDL_GetError();
+		Debug() << "[GTK] Couldn't load GDK 3 library:" << SDL_GetError();
 
 		// Try to load GDK 2
 		so = SDL_LoadObject(GTK2_LIBNAME);
 
 		if (so == NULL) {
-			Debug() << "[gnome-fun] Couldn't load GDK 2 library:" << SDL_GetError();
+			Debug() << "[GTK] Couldn't load GDK 2 library:" << SDL_GetError();
 			fail = true;
 		}
 	}

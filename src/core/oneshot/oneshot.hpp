@@ -82,3 +82,12 @@ public:
 	// Linux: Desktop Environment string
 	std::string desktopEnv;
 };
+
+#ifdef __APPLE__
+namespace OneshotApple
+{
+	void desktopImageSet(std::string path, double red, double blue, double green);
+	void desktopImageReset();
+	void desktopImageCache();
+}
+#endif

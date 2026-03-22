@@ -32,7 +32,7 @@ struct {
   RbException id;
   const char *name;
 } static customExc[] = {
-    {MKSHOT, "MKShotError"}, {PHYSFS, "PHYSFSError"}, {SDL, "SDLError"}};
+    {MKSHOT, "MKShotError"}, {PHYSFS, "PhysFSError"}, {SDL, "SDLError"}};
 
 RbData::RbData() {
   for (size_t i = 0; i < ARRAY_SIZE(customExc); ++i)
@@ -59,7 +59,7 @@ static const RbException excToRbExc[] = {
 
     TypeError,   ArgumentError,
 
-    PHYSFS, /* PHYSFSError */
+    PHYSFS, /* PhysFSError */
     SDL,    /* SDLError    */
     MKSHOT    /* MKShotError   */
 };

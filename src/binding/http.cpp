@@ -23,9 +23,9 @@
 
 #include <ruby/thread.h>
 
-#include "core/net/net.hpp"
+#include "core/http/http.hpp"
 
-VALUE stringMap2hash(mkshot_net::StringMap &map) {
+VALUE stringMap2hash(mkshot_http::StringMap &map) {
     VALUE ret = rb_hash_new();
     for (auto const &item : map) {
         VALUE key = rb_utf8_str_new_cstr(item.first.c_str());
@@ -35,8 +35,8 @@ VALUE stringMap2hash(mkshot_net::StringMap &map) {
     return ret;
 }
 
-mkshot_net::StringMap hash2StringMap(VALUE hash) {
-    mkshot_net::StringMap ret;
+mkshot_http::StringMap hash2StringMap(VALUE hash) {
+    mkshot_http::StringMap ret;
     Check_Type(hash, T_HASH);
 
     VALUE keys = rb_funcall(hash, rb_intern("keys"), 0);
@@ -55,7 +55,7 @@ bool strContainsStr(std::string &first, std::string second) {
     return first.find(second) != std::string::npos;
 }
 
-VALUE getResponseBody(mkshot_net::HTTPResponse &res) {
+VALUE getResponseBody(mkshot_http::HTTPResponse &res) {
     auto it = res.headers().find("Content-Type");
     if (it == res.headers().end())
         return rb_str_new(res.body().c_str(), res.body().length());
@@ -72,7 +72,7 @@ VALUE getResponseBody(mkshot_net::HTTPResponse &res) {
     return rb_str_new(res.body().c_str(), res.body().length());
 }
 
-VALUE formResponse(mkshot_net::HTTPResponse &res) {
+VALUE formResponse(mkshot_http::HTTPResponse &res) {
     VALUE ret = rb_hash_new();
 
     rb_hash_aset(ret, ID2SYM(rb_intern("status")), INT2NUM(res.status()));
@@ -85,7 +85,7 @@ void* httpGetInternal(void *req) {
     VALUE ret;
 
     GUARD_EXC(
-              mkshot_net::HTTPResponse res = ((mkshot_net::HTTPRequest*)req)->get();
+              mkshot_http::HTTPResponse res = ((mkshot_http::HTTPRequest*)req)->get();
               ret = formResponse(res);
               );
 
@@ -101,7 +101,7 @@ RB_METHOD(httpGet) {
 
     bool rd;
     rb_bool_arg(redirect, &rd);
-    mkshot_net::HTTPRequest req(RSTRING_PTR(path), rd);
+    mkshot_http::HTTPRequest req(RSTRING_PTR(path), rd);
     if (rheaders != Qnil) {
         auto headers = hash2StringMap(rheaders);
         req.headers().insert(headers.begin(), headers.end());
@@ -110,18 +110,18 @@ RB_METHOD(httpGet) {
 }
 
 typedef struct {
-    mkshot_net::HTTPRequest *req;
-    mkshot_net::StringMap *postData;
+    mkshot_http::HTTPRequest *req;
+    mkshot_http::StringMap *postData;
 } httpPostInternalArgs;
 
 void* httpPostInternal(void *args) {
     VALUE ret;
 
-    mkshot_net::HTTPRequest *req = ((httpPostInternalArgs*)args)->req;
-    mkshot_net::StringMap *postData = ((httpPostInternalArgs*)args)->postData;
+    mkshot_http::HTTPRequest *req = ((httpPostInternalArgs*)args)->req;
+    mkshot_http::StringMap *postData = ((httpPostInternalArgs*)args)->postData;
 
     GUARD_EXC(
-              mkshot_net::HTTPResponse res = req->post(*postData);
+              mkshot_http::HTTPResponse res = req->post(*postData);
               ret = formResponse(res);
               );
 
@@ -137,19 +137,19 @@ RB_METHOD(httpPost) {
 
     bool rd;
     rb_bool_arg(redirect, &rd);
-    mkshot_net::HTTPRequest req(RSTRING_PTR(path), rd);
+    mkshot_http::HTTPRequest req(RSTRING_PTR(path), rd);
     if (rheaders != Qnil) {
         auto headers = hash2StringMap(rheaders);
         req.headers().insert(headers.begin(), headers.end());
     }
 
-    mkshot_net::StringMap postData = hash2StringMap(postDataHash);
+    mkshot_http::StringMap postData = hash2StringMap(postDataHash);
     httpPostInternalArgs args {&req, &postData};
     return (VALUE)rb_thread_call_without_gvl(httpPostInternal, &args, 0, 0);
 }
 
 typedef struct {
-    mkshot_net::HTTPRequest *req;
+    mkshot_http::HTTPRequest *req;
     const char *body;
     const char *ctype;
 } httpPostBodyInternalArgs;
@@ -157,12 +157,12 @@ typedef struct {
 void* httpPostBodyInternal(void *args) {
     VALUE ret;
 
-    mkshot_net::HTTPRequest *req = ((httpPostBodyInternalArgs*)args)->req;
+    mkshot_http::HTTPRequest *req = ((httpPostBodyInternalArgs*)args)->req;
     const char *reqbody = ((httpPostBodyInternalArgs*)args)->body;
     const char *reqctype = ((httpPostBodyInternalArgs*)args)->ctype;
 
     GUARD_EXC(
-              mkshot_net::HTTPResponse res = req->post(reqbody, reqctype);
+              mkshot_http::HTTPResponse res = req->post(reqbody, reqctype);
               ret = formResponse(res);
               );
 
@@ -179,7 +179,7 @@ RB_METHOD(httpPostBody) {
     SafeStringValue(ctype);
 
 
-    mkshot_net::HTTPRequest req(RSTRING_PTR(path));
+    mkshot_http::HTTPRequest req(RSTRING_PTR(path));
     if (rheaders != Qnil) {
         auto headers = hash2StringMap(rheaders);
         req.headers().insert(headers.begin(), headers.end());

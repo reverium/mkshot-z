@@ -75,8 +75,6 @@ set(MKSHOT_SOURCES
     core/input/input.cpp
     core/input/keybinds.cpp
 
-    core/net/net.cpp
-
     core/sys/sys.cpp
 
     core/config.cpp
@@ -93,22 +91,31 @@ set(MKSHOT_SOURCES
 )
 
 IF(WIN32)
-    list(APPEND MKSHOT_SOURCES util/win-console.cpp)
+    list(APPEND MKSHOT_SOURCES util/win/console.cpp)
 ELSEIF(LINUX)
-    list(APPEND MKSHOT_SOURCES core/oneshot/gnome-fun.cpp core/oneshot/xfconf-fun.cpp util/xdg-user-dirs.cpp)
+    list(APPEND MKSHOT_SOURCES
+        core/oneshot/linux/gtk.cpp
+        core/oneshot/linux/xdg-user-dirs.cpp
+        core/oneshot/linux/xfconf.cpp
+    )
 ELSEIF(APPLE)
-    list(APPEND MKSHOT_SOURCES core/oneshot/oneshot-apple.mm core/fs/fs-apple.mm core/sys/sys-apple.mm)
+    list(APPEND MKSHOT_SOURCES
+        core/oneshot/mac/oneshot.mm
+        core/fs/mac/fs.mm
+        core/sys/mac/sys.mm
+    )
 ENDIF()
 
 IF(MKSHOT_HTTP)
-    list(APPEND MKSHOT_SOURCES binding/rb_http.cpp core/net/net.cpp)
+    list(APPEND MKSHOT_SOURCES
+        binding/rb_http.cpp
+        core/http/http.cpp
+    )
 ENDIF()
 
 
 ## Compiler flags / defines ##
-set(MKSHOT_DEFINES
-    MKSHOT_VER_HASH="${MKSHOT_VER_HASH}"
-PARENT_SCOPE)
+set(MKSHOT_DEFINES MKSHOT_VER_HASH="${MKSHOT_VER_HASH}" PARENT_SCOPE)
 set(MKSHOT_CFLAGS "" PARENT_SCOPE)
 set(MKSHOT_LDFLAGS "" PARENT_SCOPE)
 

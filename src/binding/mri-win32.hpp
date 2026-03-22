@@ -19,7 +19,7 @@
 #pragma once
 
 #include <windows.h>
-#include "util/win-console.hpp"
+#include "util/win/console.hpp"
 
 // Attempts to set $stdout and $stdin accordingly on Windows. Only
 // called when debug mode is on, since that's when the console

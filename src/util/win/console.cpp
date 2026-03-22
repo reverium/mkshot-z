@@ -18,7 +18,7 @@
 
 #ifdef __WIN32__
 
-#include "util/win-console.hpp"
+#include "util/win/console.hpp"
 
 // Attempts to allocate a console and fetch the output handle.
 // Returns whether the operation was successful.

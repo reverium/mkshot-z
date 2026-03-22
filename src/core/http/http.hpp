@@ -21,7 +21,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace mkshot_net {
+namespace mkshot_http {
 
 typedef std::unordered_map<std::string, std::string> StringMap;
 

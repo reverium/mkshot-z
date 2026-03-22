@@ -366,7 +366,7 @@ static void throwPhysfsError(const char *desc) {
             englishStr = PHYSFS_getErrorByCode(ec);
         }
 
-    throw Exception(Exception::PHYSFSError, "%s: %s", desc, englishStr);
+    throw Exception(Exception::PhysFSError, "%s: %s", desc, englishStr);
 }
 
 FS::FS(const char *argv0, bool allowSymlinks) {
@@ -399,7 +399,7 @@ void FS::addPath(const char *path, const char *mountpoint, bool reload) {
     }
     if (!state) {
         PHYSFS_ErrorCode err = PHYSFS_getLastErrorCode();
-        throw Exception(Exception::PHYSFSError, "Failed to mount %s (%s)", path, PHYSFS_getErrorByCode(err));
+        throw Exception(Exception::PhysFSError, "Failed to mount %s (%s)", path, PHYSFS_getErrorByCode(err));
     }
 
     if (reload) reloadPathCache();
@@ -409,7 +409,7 @@ void FS::removePath(const char *path, bool reload) {
 
     if (!PHYSFS_unmount(path)) {
         PHYSFS_ErrorCode err = PHYSFS_getLastErrorCode();
-        throw Exception(Exception::PHYSFSError, "Failed to unmount %s (%s)", path, PHYSFS_getErrorByCode(err));
+        throw Exception(Exception::PhysFSError, "Failed to unmount %s (%s)", path, PHYSFS_getErrorByCode(err));
     }
 
     if (reload) reloadPathCache();
@@ -714,7 +714,7 @@ void FS::openRead(OpenHandler &handler, const char *filename) {
     }
 
     if (data.physfsError)
-        throw Exception(Exception::PHYSFSError, "PhysFS: %s", data.physfsError);
+        throw Exception(Exception::PhysFSError, "PhysFS: %s", data.physfsError);
 
     if (data.matchCount == 0)
         throw Exception(Exception::NoFileError, "%s", filename);

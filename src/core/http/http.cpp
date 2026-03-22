@@ -22,7 +22,7 @@
 
 #include "httplib.hpp"
 #include "lurlparser/parser.hpp"
-#include "core/net/net.hpp"
+#include "core/http/http.hpp"
 
 const char* httpErrorNames[] = {
     "Success",
@@ -85,7 +85,7 @@ std::string getPath(LUrlParser::ParseURL url) {
 }
 
 
-using namespace mkshot_net;
+using namespace mkshot_http;
 
 HTTPResponse::HTTPResponse() :
     _headers(StringMap()),

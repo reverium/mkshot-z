@@ -30,8 +30,6 @@ Contributions are welcome. In case you're interested, the current development ro
 
 ## License
 
-See [LICENSE](LICENSE).
+**mkshot-z** is Free (Libre) and Open Source Software licensed under the GPLv3 (or later). See [LICENSE](LICENSE).
 
-## Credits
-
-See [CREDITS](CREDITS).
+Copyright information is contained at the [CREDITS](CREDITS) file.

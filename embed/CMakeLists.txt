@@ -38,26 +38,29 @@ set(MKSHOT_EMBED
 )
 
 # this stuff in particular is copied into the install directory
-set(MKSHOT_ASSETS "${CMAKE_SOURCE_DIR}/LICENSE" PARENT_SCOPE)
+set(MKSHOT_ASSETS
+    ${CMAKE_SOURCE_DIR}/CREDITS
+    ${CMAKE_SOURCE_DIR}/LICENSE
+PARENT_SCOPE)
 
 IF(WIN32)
-    list(APPEND MKSHOT_EMBED assets/icon.ico)
+    list(APPEND MKSHOT_EMBED ${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.ico)
 ELSEIF(LINUX)
-    list(APPEND MKSHOT_EMBED assets/icon.png)
+    list(APPEND MKSHOT_EMBED ${CMAKE_CURRENT_SOURCE_DIR}/assets/icon.png)
 #ELSEIF(APPLE)
     # not yet :eyes:
 ENDIF()
 
 IF(MKSHOT_STEAM AND MKSHOT_STEAM_APPID)
-    file(WRITE assets/steam_appid.txt "${MKSHOT_STEAM_APPID}")
-    list(APPEND MKSHOT_ASSETS assets/steam_appid.txt)
+    file(WRITE cmake.out/steam_appid.txt "${MKSHOT_STEAM_APPID}")
+    list(APPEND MKSHOT_ASSETS cmake.out/steam_appid.txt)
 ENDIF()
 
 file(MAKE_DIRECTORY include)
 FOREACH(__input_fullpath ${MKSHOT_EMBED})
     string(REGEX REPLACE "(assets|scripts|shaders)/" "" __input_file "${__input_fullpath}")
-    set(__output_file include/${__input_file}.h)
-    
+    set(__output_file include/${__input_file}.inc)
+
     message(STATUS "Generating a C-style array from ${__input_fullpath} for embedding into the executable...")
     execute_process(
         COMMAND xxd -i ${__input_fullpath} ${__output_file}

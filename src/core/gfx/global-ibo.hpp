@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "core/gfx/gl-util.hpp"
+#include "core/gfx/gl/util.hpp"
 
 #include <vector>
 #include <limits>

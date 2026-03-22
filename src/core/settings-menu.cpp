@@ -31,7 +31,7 @@
 #include "core/input/input.hpp"
 #include "core/gfx/etc-internal.hpp"
 #include "util/util.hpp"
-#include "core/oneshot/i18n.hpp"
+#include "oneshot/i18n.hpp"
 
 #include <algorithm>
 #include <assert.h>

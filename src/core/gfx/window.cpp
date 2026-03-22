@@ -23,13 +23,13 @@
 #include "core/gfx/bitmap.hpp"
 #include "core/gfx/etc.hpp"
 #include "core/gfx/etc-internal.hpp"
-#include "core/gfx/gl-tilequad.hpp"
+#include "core/gfx/gl/tilequad.hpp"
 
-#include "core/gfx/gl-util.hpp"
-#include "core/gfx/gl-quad.hpp"
-#include "core/gfx/gl-quadarray.hpp"
-#include "core/gfx/gl-tex-pool.hpp"
-#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl/util.hpp"
+#include "core/gfx/gl/quad.hpp"
+#include "core/gfx/gl/quadarray.hpp"
+#include "core/gfx/gl/tex-pool.hpp"
+#include "core/gfx/gl/state.hpp"
 
 #include "sigslot.hpp"
 

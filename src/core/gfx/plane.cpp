@@ -26,12 +26,12 @@
 #include "core/gfx/etc.hpp"
 #include "core/gfx/etc-internal.hpp"
 
-#include "core/gfx/gl-util.hpp"
-#include "core/gfx/gl-quad.hpp"
-#include "core/gfx/gl-quadarray.hpp"
-#include "core/gfx/gl-transform.hpp"
-#include "core/gfx/gl-shader.hpp"
-#include "core/gfx/gl-state.hpp"
+#include "core/gfx/gl/util.hpp"
+#include "core/gfx/gl/quad.hpp"
+#include "core/gfx/gl/quadarray.hpp"
+#include "core/gfx/gl/transform.hpp"
+#include "core/gfx/gl/shader.hpp"
+#include "core/gfx/gl/state.hpp"
 
 #include "sigslot.hpp"
 

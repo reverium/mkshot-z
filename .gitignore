@@ -1,5 +1,5 @@
 embed/include/**
-!embed/include/.gitkeep
+!.gitkeep
 
 # Build directories and files
 *.o

@@ -26,17 +26,17 @@
 
 #include <pixman.h>
 
-#include "core/gfx/gl-util.hpp"
-#include "core/gfx/gl-meta.hpp"
-#include "core/gfx/gl-quad.hpp"
-#include "core/gfx/gl-quadarray.hpp"
-#include "core/gfx/gl-transform.hpp"
+#include "core/gfx/gl/util.hpp"
+#include "core/gfx/gl/meta.hpp"
+#include "core/gfx/gl/quad.hpp"
+#include "core/gfx/gl/quadarray.hpp"
+#include "core/gfx/gl/transform.hpp"
 #include "util/exception.hpp"
 
 #include "core/shared-state.hpp"
-#include "core/gfx/gl-state.hpp"
-#include "core/gfx/gl-tex-pool.hpp"
-#include "core/gfx/gl-shader.hpp"
+#include "core/gfx/gl/state.hpp"
+#include "core/gfx/gl/tex-pool.hpp"
+#include "core/gfx/gl/shader.hpp"
 #include "core/fs/fs.hpp"
 #include "core/gfx/font.hpp"
 #include "core/event-thread.hpp"

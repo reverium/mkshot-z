@@ -35,19 +35,19 @@
 #include <unistd.h>
 #include <regex>
 
-#include "binding/binding.hpp"
+#include "core/bind/bind.hpp"
 #include "core/shared-state.hpp"
 #include "core/event-thread.hpp"
 #include "util/dbg-writer.hpp"
 #include "util/exception.hpp"
-#include "core/gfx/gl-debug.hpp"
-#include "core/gfx/gl-fun.hpp"
+#include "core/gfx/gl/debug.hpp"
+#include "core/gfx/gl/fun.hpp"
 
 #include "core/fs/fs.hpp"
 
 #include "core/sys/sys.hpp"
 
-#include "core/oneshot/i18n.hpp"
+#include "oneshot/i18n.hpp"
 
 #ifdef __WIN32__
 #include <Winsock2.h>

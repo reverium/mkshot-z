@@ -37,7 +37,7 @@
 #include "core/shared-state.hpp"
 #include "core/gfx/gfx.hpp"
 
-#include "core/oneshot/oneshot.hpp"
+#include "oneshot/oneshot.hpp"
 
 #ifndef __APPLE__
 #include "core/settings-menu.hpp"

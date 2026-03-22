@@ -8,34 +8,15 @@ set(MKSHOT_INCDIRS
 set(MKSHOT_SOURCES
     main.cpp
 
-    binding/oneshot/rb_journal.cpp
-    binding/oneshot/niko.cpp
-    binding/oneshot/rb_oneshot.cpp
-    binding/oneshot/rb_wallpaper.cpp
+    oneshot/bind/bind-journal.cpp
+    oneshot/bind/bind-niko.cpp
+    oneshot/bind/bind-oneshot.cpp
+    oneshot/bind/bind-wallpaper.cpp
 
-    core/oneshot/i18n.cpp
-    core/oneshot/journal.cpp
-    core/oneshot/oneshot.cpp
-    core/oneshot/wallpaper.cpp
-
-    binding/mri.cpp
-    binding/rb_audio.cpp
-    binding/rb_bitmap.cpp
-    binding/rb_etc.cpp
-    binding/rb_font.cpp
-    binding/rb_fs.cpp
-    binding/rb_gfx.cpp
-    binding/rb_input.cpp
-    binding/rb_plane.cpp
-    binding/rb_sprite.cpp
-    binding/rb_table.cpp
-    binding/rb_tilemap-vx.cpp
-    binding/rb_tilemap.cpp
-    binding/rb_util.cpp
-    binding/rb_viewport.cpp
-    binding/rb_window-vx.cpp
-    binding/rb_window.cpp
-    binding/rgss.cpp
+    oneshot/i18n.cpp
+    oneshot/journal.cpp
+    oneshot/oneshot.cpp
+    oneshot/wallpaper.cpp
 
     core/audio/al-stream.cpp
     core/audio/audio.cpp
@@ -44,7 +25,38 @@ set(MKSHOT_SOURCES
     core/audio/stream.cpp
     core/audio/vorbis-source.cpp
 
+    core/bind/bind.cpp
+    core/bind/bind-rgss.cpp
+    core/bind/bind-audio.cpp
+    core/bind/bind-bitmap.cpp
+    core/bind/bind-etc.cpp
+    core/bind/bind-font.cpp
+    core/bind/bind-fs.cpp
+    core/bind/bind-gfx.cpp
+    core/bind/bind-input.cpp
+    core/bind/bind-plane.cpp
+    core/bind/bind-sprite.cpp
+    core/bind/bind-table.cpp
+    core/bind/bind-tilemap-vx.cpp
+    core/bind/bind-tilemap.cpp
+    core/bind/bind-util.cpp
+    core/bind/bind-viewport.cpp
+    core/bind/bind-window-vx.cpp
+    core/bind/bind-window.cpp
+
     core/fs/fs.cpp
+
+    core/gfx/gl/debug.cpp
+    core/gfx/gl/fun.cpp
+    core/gfx/gl/meta.cpp
+    core/gfx/gl/scene.cpp
+    core/gfx/gl/shader.cpp
+    core/gfx/gl/state.cpp
+    core/gfx/gl/texpool.cpp
+    core/gfx/gl/tileatlas-vx.cpp
+    core/gfx/gl/tileatlas.cpp
+    core/gfx/gl/tilequad.cpp
+    core/gfx/gl/vertex.cpp
 
     core/gfx/autotiles-vx.cpp
     core/gfx/autotiles.cpp
@@ -52,17 +64,6 @@ set(MKSHOT_SOURCES
     core/gfx/etc.cpp
     core/gfx/font.cpp
     core/gfx/gfx.cpp
-    core/gfx/gl-debug.cpp
-    core/gfx/gl-fun.cpp
-    core/gfx/gl-meta.cpp
-    core/gfx/gl-scene.cpp
-    core/gfx/gl-shader.cpp
-    core/gfx/gl-state.cpp
-    core/gfx/gl-texpool.cpp
-    core/gfx/gl-tileatlas-vx.cpp
-    core/gfx/gl-tileatlas.cpp
-    core/gfx/gl-tilequad.cpp
-    core/gfx/gl-vertex.cpp
     core/gfx/plane.cpp
     core/gfx/sprite.cpp
     core/gfx/table.cpp
@@ -94,21 +95,21 @@ IF(WIN32)
     list(APPEND MKSHOT_SOURCES util/win/console.cpp)
 ELSEIF(LINUX)
     list(APPEND MKSHOT_SOURCES
-        core/oneshot/linux/gtk.cpp
-        core/oneshot/linux/xdg-user-dirs.cpp
-        core/oneshot/linux/xfconf.cpp
+        oneshot/plat/linux-gtk.cpp
+        oneshot/plat/linux-xdg-user-dirs.cpp
+        oneshot/plat/linux-xfconf.cpp
     )
 ELSEIF(APPLE)
     list(APPEND MKSHOT_SOURCES
-        core/oneshot/mac/oneshot.mm
-        core/fs/mac/fs.mm
-        core/sys/mac/sys.mm
+        oneshot/plat/mac-oneshot.mm
+        core/fs/plat/mac-fs.mm
+        core/sys/plat/mac-sys.mm
     )
 ENDIF()
 
 IF(MKSHOT_HTTP)
     list(APPEND MKSHOT_SOURCES
-        binding/rb_http.cpp
+        core/bind/bind-http.cpp
         core/http/http.cpp
     )
 ENDIF()
@@ -133,7 +134,7 @@ ENDIF()
 
 IF(MKSHOT_STEAM)
     list(APPEND MKSHOT_SOURCES
-        binding/steam.cpp
+        core/bind/steam.cpp
         core/steam/steam.cpp
     )
     list(APPEND MKSHOT_DEFINES MKSHOT_STEAM)
